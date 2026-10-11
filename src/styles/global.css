@@ -1,0 +1,91 @@
+@import 'tailwindcss';
+@import './tokens.css';
+@import './motion.css';
+@import '@fontsource-variable/montserrat';
+@import '@fontsource/instrument-serif/400.css';
+@import '@fontsource/instrument-serif/400-italic.css';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+  shadcn semantic colors. They only reference Arktic Fox tokens.
+  Raw color values stay in tokens.css.
+*/
+@theme inline {
+  --color-background: var(--color-snow-white);
+  --color-foreground: var(--color-ink);
+  --color-card: var(--color-snow-white);
+  --color-card-foreground: var(--color-ink);
+  --color-popover: var(--color-snow-white);
+  --color-popover-foreground: var(--color-ink);
+  --color-primary: var(--color-fox-coral);
+  --color-primary-foreground: var(--color-white);
+  --color-secondary: var(--color-snow-gray);
+  --color-secondary-foreground: var(--color-ink);
+  --color-muted: var(--color-snow-gray);
+  --color-muted-foreground: var(--color-ink);
+  --color-accent: var(--color-ice-blue);
+  --color-accent-foreground: var(--color-ink);
+  --color-destructive: var(--color-fox-coral);
+  --color-border: var(--color-snow-gray);
+  --color-input: var(--color-snow-gray);
+  --color-ring: var(--color-fox-coral);
+  --color-sidebar: var(--color-polar-night);
+  --color-sidebar-foreground: var(--color-snow-white);
+  --color-sidebar-primary: var(--color-fox-coral);
+  --color-sidebar-primary-foreground: var(--color-white);
+  --color-sidebar-accent: var(--color-polar-night);
+  --color-sidebar-accent-foreground: var(--color-snow-white);
+  --color-sidebar-border: var(--color-glass-border);
+  --color-sidebar-ring: var(--color-fox-coral);
+  --color-chart-1: var(--color-fox-coral);
+  --color-chart-2: var(--color-fox-pink);
+  --color-chart-3: var(--color-ice-blue);
+  --color-chart-4: var(--color-snow-gray);
+  --color-chart-5: var(--color-ink);
+  --radius-lg: var(--radius-card-sm);
+  --radius-md: 12px;
+  --radius-sm: 8px;
+  --radius-xl: var(--radius-card);
+  --radius-2xl: var(--radius-card);
+  --radius-3xl: var(--radius-card);
+  --radius-4xl: var(--radius-card);
+  --duration-hover: var(--dur-hover);
+  --duration-reveal: var(--dur-reveal);
+  --duration-slow: var(--dur-slow);
+}
+
+@layer base {
+  html {
+    background-color: var(--color-snow-white);
+    color: var(--color-ink);
+  }
+
+  body {
+    @apply bg-snow-white font-sans text-ink antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-serif text-balance;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-fox-coral);
+    outline-offset: 3px;
+  }
+}
+
+@utility glass {
+  @apply rounded-card border border-glass-border bg-glass backdrop-blur-md;
+}
+
+@utility label {
+  @apply font-sans text-xs font-medium uppercase tracking-label;
+}

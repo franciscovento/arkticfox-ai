@@ -1,0 +1,23 @@
+---
+interface Props {
+  class?: string;
+  /** Delay in milliseconds, used for stagger. */
+  stagger?: number;
+}
+
+const { class: className, stagger = 0 } = Astro.props;
+---
+
+<div
+  data-reveal
+  class={className}
+  style={stagger > 0 ? `--reveal-delay: ${stagger}ms` : undefined}
+>
+  <slot />
+</div>
+
+<script>
+  import { initReveal } from '../../motion/reveal';
+
+  initReveal();
+</script>

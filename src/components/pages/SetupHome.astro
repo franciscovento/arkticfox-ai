@@ -1,0 +1,22 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import type { Locale } from '@/i18n/routes';
+import { t } from '@/i18n/utils';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+
+<BaseLayout
+  locale={locale}
+  pageKey="home"
+  title={t(locale, 'meta.homeTitle')}
+  description={t(locale, 'meta.homeDescription')}
+>
+  <main class="mx-auto flex min-h-svh max-w-3xl items-center px-6">
+    <p class="label">{t(locale, 'home.placeholder')}</p>
+  </main>
+</BaseLayout>

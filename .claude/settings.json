@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm:*)",
+      "Bash(pnpm dlx:*)",
+      "Bash(pnpm exec:*)",
+      "Bash(node scripts/*)",
+      "Bash(git status)",
+      "Bash(git diff:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git log:*)"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Bash(rm -rf:*)",
+      "Bash(git push --force:*)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [{ "type": "command", "command": "pnpm -s check:tokens" }]
+      }
+    ]
+  }
+}

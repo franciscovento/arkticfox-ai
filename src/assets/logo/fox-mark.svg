@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 40" fill="none" role="img" aria-label="Arktic Fox mark placeholder">
+  <path d="M10 28 L22 6 L30 28 Z" fill="currentColor"/>
+  <path d="M34 28 L42 6 L54 28 Z" fill="currentColor"/>
+  <path d="M0 28 H64" stroke="currentColor" stroke-width="1.5"/>
+</svg>

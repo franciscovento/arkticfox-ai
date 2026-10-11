@@ -1,0 +1,87 @@
+/* Reveal is visible without JS. The .js class (set inline in BaseLayout) opts into the fade-and-rise. */
+html.js [data-reveal] {
+  opacity: 0;
+  transform: translateY(24px);
+  transition-property: opacity, transform;
+  transition-duration: var(--dur-reveal);
+  transition-timing-function: var(--ease-fox);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+html.js [data-reveal].is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+.marquee {
+  overflow: hidden;
+}
+
+.marquee__track {
+  display: flex;
+  width: max-content;
+  animation-name: marquee-scroll;
+  animation-duration: var(--marquee-duration, 40s);
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.marquee:hover .marquee__track,
+.marquee:focus-within .marquee__track {
+  animation-play-state: paused;
+}
+
+.marquee__group {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding-inline-end: 1.5rem;
+  white-space: nowrap;
+}
+
+@keyframes marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.hover-fox {
+  transition-property: opacity, transform, background-color, border-color, color;
+  transition-duration: var(--dur-hover);
+  transition-timing-function: var(--ease-fox);
+}
+
+.hover-fox:hover {
+  opacity: 0.86;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.js [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .marquee__track {
+    animation: none;
+  }
+
+  .hover-fox,
+  .hover-fox:hover {
+    transition: none;
+    opacity: 1;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

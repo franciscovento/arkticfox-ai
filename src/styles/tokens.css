@@ -1,0 +1,36 @@
+/* src/styles/tokens.css — SINGLE SOURCE OF TRUTH. Only file allowed to contain raw color values. */
+@theme {
+  /* wipe Tailwind's default palette so off-system colors don't exist */
+  --color-*: initial;
+
+  --color-fox-coral: #ff674c;
+  --color-fox-pink: #ff429e;
+  --color-ice-blue: #a7cdff;
+  --color-snow-gray: #e8e8e8;
+  --color-polar-night: #0b0f1a; /* dark sections (proposal) */
+  --color-snow-white: #f7f8fa; /* light sections (proposal) */
+  --color-ink: #111318; /* text on light */
+  --color-white: #ffffff;
+  --color-glass: rgb(255 255 255 / 0.08);
+  --color-glass-border: rgb(255 255 255 / 0.15);
+  --color-scrim: rgb(11 15 26 / 0.7);
+
+  --font-serif: "Instrument Serif", "Times New Roman", serif;
+  --font-sans: "Montserrat Variable", Montserrat, system-ui, sans-serif;
+
+  --radius-card: 20px;
+  --radius-card-sm: 16px;
+  --radius-pill: 9999px;
+
+  --tracking-label: 0.2em;
+  --ease-fox: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* brand gradient: max ONE gradient element per viewport */
+  --background-image-brand-gradient: linear-gradient(90deg, var(--color-fox-coral), var(--color-fox-pink));
+}
+
+:root {
+  --dur-hover: 250ms;
+  --dur-reveal: 900ms;
+  --dur-slow: 1400ms;
+}

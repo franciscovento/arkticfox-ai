@@ -1,0 +1,15 @@
+---
+interface Props {
+  label: string;
+  class?: string;
+}
+
+const { label, class: className } = Astro.props;
+---
+
+<div class:list={['marquee', className]}>
+  <div class="marquee__track">
+    <p class="label marquee__group">{label}</p>
+    <p class="label marquee__group" aria-hidden="true">{label}</p>
+  </div>
+</div>

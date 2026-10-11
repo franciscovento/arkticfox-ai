@@ -1,0 +1,9 @@
+dist
+node_modules
+.astro
+pnpm-lock.yaml
+playwright-report
+test-results
+shots
+docs/source
+00-STEP-1-project-setup.md

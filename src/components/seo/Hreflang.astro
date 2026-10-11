@@ -1,0 +1,22 @@
+---
+import { getAlternates } from '@/i18n/utils';
+import type { PageKey } from '@/i18n/routes';
+
+interface Props {
+  pageKey: PageKey;
+}
+
+const { pageKey } = Astro.props;
+const site = Astro.site ?? 'https://arkticfox.ai';
+const alternates = getAlternates(pageKey);
+---
+
+{
+  alternates.map((alternate) => (
+    <link
+      rel="alternate"
+      hreflang={alternate.hreflang}
+      href={new URL(alternate.path, site).href}
+    />
+  ))
+}

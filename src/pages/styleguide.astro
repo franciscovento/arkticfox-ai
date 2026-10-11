@@ -1,0 +1,117 @@
+---
+import foxMark from '@/assets/logo/fox-mark.svg';
+import Marquee from '@/components/motion/Marquee.astro';
+import Reveal from '@/components/motion/Reveal.astro';
+import SnowCanvas from '@/components/motion/SnowCanvas.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { t } from '@/i18n/utils';
+
+const locale = 'en';
+const swatches = [
+  { name: t(locale, 'styleguide.swatch.foxCoral'), className: 'bg-fox-coral text-white' },
+  { name: t(locale, 'styleguide.swatch.foxPink'), className: 'bg-fox-pink text-white' },
+  { name: t(locale, 'styleguide.swatch.iceBlue'), className: 'bg-ice-blue text-ink' },
+  { name: t(locale, 'styleguide.swatch.snowGray'), className: 'bg-snow-gray text-ink' },
+  { name: t(locale, 'styleguide.swatch.polarNight'), className: 'bg-polar-night text-snow-white' },
+  {
+    name: t(locale, 'styleguide.swatch.snowWhite'),
+    className: 'border border-snow-gray bg-snow-white text-ink',
+  },
+  { name: t(locale, 'styleguide.swatch.ink'), className: 'bg-ink text-snow-white' },
+] as const;
+---
+
+<BaseLayout
+  locale={locale}
+  noindex
+  title={t(locale, 'meta.styleguideTitle')}
+  description={t(locale, 'meta.styleguideDescription')}
+>
+  <main>
+    <header class="mx-auto flex max-w-6xl items-center gap-4 px-6 py-8">
+      <img src={foxMark.src} width="48" height="32" alt="" />
+      <p class="label">{t(locale, 'meta.siteName')}</p>
+    </header>
+
+    <section class="mx-auto max-w-6xl px-6 pb-16">
+      <p class="label text-fox-coral">{t(locale, 'styleguide.kicker')}</p>
+      <h1 class="mt-4 max-w-4xl font-serif text-5xl leading-none text-ink uppercase md:text-7xl">
+        {t(locale, 'styleguide.headlineLead')}{' '}
+        <em class="italic normal-case">{t(locale, 'styleguide.headlineEmphasis')}</em>
+      </h1>
+      <p class="mt-6 max-w-xl font-sans text-base text-ink">{t(locale, 'styleguide.subhead')}</p>
+    </section>
+
+    <Marquee label={t(locale, 'styleguide.marqueeLabel')} class="border-y border-snow-gray py-4" />
+
+    <section class="mx-auto max-w-6xl px-6 py-16">
+      <h2 class="label">{t(locale, 'styleguide.colorsTitle')}</h2>
+      <ul class="mt-6 grid grid-cols-2 gap-4 md:grid-cols-4">
+        {
+          swatches.map((swatch) => (
+            <li class:list={['flex h-28 items-end rounded-card-sm p-4', swatch.className]}>
+              <span class="label">{swatch.name}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section class="mx-auto max-w-6xl px-6 pb-16">
+      <h2 class="label">{t(locale, 'styleguide.typeTitle')}</h2>
+      <p class="mt-6 font-serif text-4xl text-ink uppercase md:text-6xl">
+        {t(locale, 'styleguide.headlineLead')}{' '}
+        <em class="italic normal-case">{t(locale, 'styleguide.headlineEmphasis')}</em>
+      </p>
+      <p class="mt-6 max-w-xl font-sans text-base text-ink">{t(locale, 'styleguide.subhead')}</p>
+      <p class="label mt-6">{t(locale, 'styleguide.kicker')}</p>
+    </section>
+
+    <section class="mx-auto flex max-w-6xl flex-wrap gap-4 px-6 pb-16">
+      <h2 class="label w-full">{t(locale, 'styleguide.buttonsTitle')}</h2>
+      <button
+        type="button"
+        class="hover-fox inline-flex items-center rounded-pill bg-brand-gradient px-6 py-3 font-sans text-sm font-medium text-white"
+      >
+        {t(locale, 'styleguide.primaryCta')}
+      </button>
+      <button
+        type="button"
+        class="hover-fox inline-flex items-center rounded-pill border border-ink px-6 py-3 font-sans text-sm font-medium text-ink"
+      >
+        {t(locale, 'styleguide.secondaryCta')}
+      </button>
+    </section>
+
+    <section class="relative overflow-hidden bg-polar-night text-snow-white">
+      <SnowCanvas />
+      <div class="relative mx-auto max-w-6xl px-6 py-20">
+        <div class="glass max-w-md p-8 text-snow-white">
+          <p class="label">{t(locale, 'styleguide.glassTitle')}</p>
+          <p class="mt-4 font-sans text-base">{t(locale, 'styleguide.glassBody')}</p>
+        </div>
+        <div class="mt-16 text-snow-white">
+          <p class="label">{t(locale, 'styleguide.dividerTitle')}</p>
+          <svg class="mt-4 h-8 w-full" viewBox="0 0 640 32" fill="none" aria-hidden="true">
+            <path d="M250 20 L270 4 L286 20 Z" fill="currentColor"></path>
+            <path d="M354 20 L370 4 L390 20 Z" fill="currentColor"></path>
+            <path d="M0 20 H640" stroke="currentColor" stroke-width="1"></path>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <section class="mx-auto max-w-6xl px-6 py-16">
+      <h2 class="label">{t(locale, 'styleguide.revealTitle')}</h2>
+      <div class="mt-8 grid gap-4 md:grid-cols-3">
+        {
+          [0, 120, 240].map((delay) => (
+            <Reveal stagger={delay} class="rounded-card border border-snow-gray bg-snow-white p-6">
+              <p class="font-serif text-2xl text-ink">{t(locale, 'styleguide.revealItem')}</p>
+            </Reveal>
+          ))
+        }
+      </div>
+    </section>
+  </main>
+</BaseLayout>
