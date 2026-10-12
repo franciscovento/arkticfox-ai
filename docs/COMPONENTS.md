@@ -25,4 +25,6 @@ Update this table in the same task that creates or changes a component.
 | Footer | — | — | — | planned |
 | MobileMenu | — | — | — | planned |
 | WhatsAppButton | — | — | — | planned |
-| SetupHome | `src/components/pages/SetupHome.astro` | `locale` | `/`, `/es/` | built (placeholder only, not the marketing home) |
+| PageShell | `src/components/pages/PageShell.astro` | `locale`, `pageKey`, `titleKey`, `descriptionKey`, `headingKey` | every public route except home, EN and ES | built (shell only, no page design) |
+| HomeEntry | `src/components/home/HomeEntry.astro` | `locale` | `/` and `/es/` | built (pinned stage, four journey stills, hero then a card row, loader) |
+| SnowDive | `src/components/motion/SnowDive.astro` | none | HomeEntry | built (per-plate push-in, staggered cards, depth snow) |

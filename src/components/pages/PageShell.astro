@@ -1,0 +1,34 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import type { Locale, PageKey } from '@/i18n/routes';
+import type { UiKey } from '@/i18n/ui/en';
+import { getPath, t } from '@/i18n/utils';
+
+interface Props {
+  locale: Locale;
+  pageKey: PageKey;
+  titleKey: UiKey;
+  descriptionKey: UiKey;
+  headingKey: UiKey;
+}
+
+const { locale, pageKey, titleKey, descriptionKey, headingKey } = Astro.props;
+const otherLocale: Locale = locale === 'en' ? 'es' : 'en';
+const otherLabel: UiKey = otherLocale === 'es' ? 'nav.languageEs' : 'nav.languageEn';
+---
+
+<BaseLayout
+  locale={locale}
+  pageKey={pageKey}
+  title={t(locale, titleKey)}
+  description={t(locale, descriptionKey)}
+>
+  <main class="mx-auto flex min-h-svh max-w-3xl flex-col justify-center gap-6 px-6">
+    <p class="label">{t(locale, 'meta.siteName')}</p>
+    <h1 class="font-serif text-5xl text-ink">{t(locale, headingKey)}</h1>
+    <p class="max-w-xl font-sans text-base text-ink">{t(locale, 'page.placeholder')}</p>
+    <a class="label w-fit text-fox-coral" href={getPath(otherLocale, pageKey)}>
+      {t(locale, otherLabel)}
+    </a>
+  </main>
+</BaseLayout>

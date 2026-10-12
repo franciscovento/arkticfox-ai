@@ -1,0 +1,162 @@
+<script>
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import { runScrollScene } from '../../motion/gsap';
+  import { startSmoothScroll } from '../../motion/lenis';
+  import { prefersReducedMotion } from '../../motion/reduced';
+
+  startSmoothScroll();
+
+  const root = document.querySelector<HTMLElement>('[data-snow-dive]');
+  if (root && root.dataset.diveBound !== 'true') {
+    root.dataset.diveBound = 'true';
+
+    const canvas = root.querySelector<HTMLCanvasElement>('[data-dive-snow]');
+    const plates = [...root.querySelectorAll<HTMLElement>('[data-journey-plate]')];
+    const beats = [...root.querySelectorAll<HTMLElement>('[data-journey-beat]')];
+    const pieces = [...root.querySelectorAll<HTMLElement>('[data-journey-piece]')];
+    let progress = 0;
+
+    runScrollScene(() => {
+      ScrollTrigger.create({
+        trigger: root,
+        start: 'top top',
+        end: 'bottom bottom',
+        onUpdate: (self) => {
+          progress = self.progress;
+          plates.forEach((plate, index) => {
+            plate.style.opacity = String(plateOpacity(progress, index, plates.length));
+            plate.style.transform = `scale(${plateScale(progress, index, plates.length)})`;
+          });
+          beats.forEach((beat) => {
+            const from = Number(beat.dataset.from);
+            const to = Number(beat.dataset.to);
+            const opacity = beatOpacity(progress, from, to, false);
+            const shown = opacity > 0.04;
+            const leaving = progress > from + (to - from) * 0.55;
+            beat.style.opacity = String(opacity);
+            beat.style.visibility = shown ? 'visible' : 'hidden';
+            beat.style.pointerEvents = shown ? 'auto' : 'none';
+            beat.style.transform = `translateY(${(1 - opacity) * (leaving ? -64 : 20)}px)`;
+          });
+          pieces.forEach((piece) => {
+            const opacity = pieceOpacity(progress, Number(piece.dataset.from));
+            const shown = opacity > 0.04;
+            piece.style.opacity = String(opacity);
+            piece.style.visibility = shown ? 'visible' : 'hidden';
+            piece.style.pointerEvents = shown ? 'auto' : 'none';
+            piece.style.transform = `translateX(${(1 - opacity) * 96}px)`;
+          });
+        },
+      });
+    });
+
+    if (!prefersReducedMotion() && canvas) {
+      mountDiveSnow(canvas, () => progress);
+    }
+  }
+
+  function plateScale(progress: number, index: number, count: number): number {
+    const span = 1 / Math.max(count - 1, 1);
+    const start = Math.max(0, index * span - span);
+    const end = Math.min(1, index * span + span);
+    const t = (progress - start) / Math.max(0.001, end - start);
+    return 1.05 + Math.min(1, Math.max(0, t)) * 0.55;
+  }
+
+  function pieceOpacity(progress: number, from: number): number {
+    if (progress < from) return 0;
+    return Math.min(1, (progress - from) / 0.1);
+  }
+
+  function plateOpacity(progress: number, index: number, count: number): number {
+    if (count <= 1) return 1;
+    const span = 1 / (count - 1);
+    const dist = Math.abs(progress - index * span);
+    return Math.max(0, 1 - dist / span);
+  }
+
+  function beatOpacity(progress: number, from: number, to: number, holdEnd: boolean): number {
+    const edge = 0.05;
+    if (progress < from || progress > to) return 0;
+    const fadeIn = from === 0 ? 1 : Math.min(1, (progress - from) / edge);
+    const fadeOut = holdEnd ? 1 : Math.min(1, (to - progress) / edge);
+    return Math.min(fadeIn, fadeOut);
+  }
+
+  function mountDiveSnow(canvas: HTMLCanvasElement, readProgress: () => number) {
+    const context = canvas.getContext('2d');
+    if (!context) return;
+    const ctx = context;
+    const color = getComputedStyle(document.documentElement).getPropertyValue('--color-snow-white').trim();
+    if (!color) return;
+
+    type Flake = { x: number; y: number; z: number; s: number };
+    let flakes: Flake[] = [];
+    let frame = 0;
+    let active = false;
+
+    const resize = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const { width, height } = canvas.getBoundingClientRect();
+      canvas.width = Math.max(1, Math.floor(width * dpr));
+      canvas.height = Math.max(1, Math.floor(height * dpr));
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const count = Math.round(Math.min(150, Math.max(48, (width * height) / 12000)));
+      flakes = Array.from({ length: count }, () => ({
+        x: Math.random(),
+        y: Math.random() * 0.7 + 0.15,
+        z: Math.random() * 0.85 + 0.15,
+        s: Math.random() * 0.7 + 0.35,
+      }));
+    };
+
+    const draw = () => {
+      if (!active) return;
+      const depth = readProgress();
+      const { width, height } = canvas.getBoundingClientRect();
+      ctx.clearRect(0, 0, width, height);
+      ctx.fillStyle = color;
+
+      for (const flake of flakes) {
+        flake.z -= (0.0012 + depth * 0.012) * flake.s;
+        if (flake.z < 0.04) {
+          flake.z = 1;
+          flake.x = Math.random();
+          flake.y = Math.random() * 0.55 + 0.2;
+        }
+
+        const x = 0.5 + (flake.x - 0.5) / flake.z;
+        const y = 0.6 + (flake.y - 0.6) / flake.z;
+        if (x < -0.08 || x > 1.08 || y < -0.08 || y > 1.08) continue;
+
+        const radius = ((1 - flake.z) * 2.4 + 0.25) * (0.55 + depth * 1.6) * flake.s;
+        ctx.globalAlpha = Math.min(0.8, (1 - flake.z) * 0.95);
+        ctx.beginPath();
+        ctx.arc(x * width, y * height, radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.globalAlpha = 1;
+      frame = window.requestAnimationFrame(draw);
+    };
+
+    const start = () => {
+      if (active) return;
+      active = true;
+      frame = window.requestAnimationFrame(draw);
+    };
+
+    const stop = () => {
+      active = false;
+      window.cancelAnimationFrame(frame);
+    };
+
+    resize();
+    window.addEventListener('resize', resize, { passive: true });
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) stop();
+      else start();
+    });
+    start();
+  }
+</script>

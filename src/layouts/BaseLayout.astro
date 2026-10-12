@@ -11,9 +11,10 @@ interface Props {
   locale?: Locale;
   pageKey?: PageKey;
   noindex?: boolean;
+  bodyClass?: string;
 }
 
-const { title, description, locale = 'en', pageKey, noindex = false } = Astro.props;
+const { title, description, locale = 'en', pageKey, noindex = false, bodyClass = '' } = Astro.props;
 ---
 
 <!doctype html>
@@ -34,7 +35,7 @@ const { title, description, locale = 'en', pageKey, noindex = false } = Astro.pr
       document.documentElement.classList.add('js');
     </script>
   </head>
-  <body>
+  <body class={bodyClass}>
     <slot />
   </body>
 </html>

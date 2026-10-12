@@ -14,6 +14,7 @@ Tokens live in `src/styles/tokens.css` (`--dur-hover`, `--dur-reveal`, `--dur-sl
 ## What moves
 
 - Sector marquee, CSS only, pauses on hover and reduced motion.
+- Home dive. The hero is pinned for about three viewports. Scroll pushes the plate slightly toward the horizon, lays a veil over it, and draws snowflakes that grow as they approach. The headline leaves. A single line arrives at the end. Lenis smooths the wheel and is disabled for reduced motion.
 - Nav turns to frosted glass on scroll.
 - Before/after drag slider.
 - Masonry filter transitions.
@@ -34,34 +35,38 @@ Tokens live in `src/styles/tokens.css` (`--dur-hover`, `--dur-reveal`, `--dur-sl
 - Do not put a motion library on the hero's critical path.
 - Reveals stay visible without JavaScript. The `js` class on `<html>` opts into the hidden starting state.
 
-## Hero video loop (Veo)
+## Hero video loop
 
-The fox starts camouflaged, so the first frame is almost an empty snowfield. The clip ends on that empty field after the fox runs off. A 0.5–1s crossfade hides the join.
+The fox is a close, stylized character, large enough to read on a phone. It peeks over one snow drift the way the logo peeks over a line (`public/media/logo-02.png`), steps toward the camera, then ducks back until the drift is empty again. The first and last frames match so the loop joins.
 
-1. Generate a still of the empty snowfield first. It is the last frame and the poster.
-2. Generate the video. If Veo can lock the last frame, use that still.
-3. Keep the left third clear for the headline. The fox stays in the right third.
+The source brief asked for a tiny photoreal fox in a vast snowfield. That hides a white fox. This closer mascot replaces that shot. See ADR-010.
 
-Desktop prompt (16:9):
+1. Generate the empty still first. It is the poster and, if the tool allows, the last frame.
+2. Attach `public/media/logo-02.png` as the character reference. Ask the tool to match the ear shape and the simple face, as a soft 3D character. Do not ask it to draw the word "ARKTIC FOX".
+3. Keep the left third clear for the headline. The fox stays center-right.
+
+Empty still (16:9):
 
 ```
-Cinematic wide shot of a vast arctic snowfield at blue hour, soft pastel sky
-with faint coral and pink tones on the horizon, gentle snowfall. Locked-off
-camera, no camera movement. In the right third of the frame an arctic fox
-lies perfectly camouflaged in the snow, its white fur indistinguishable from
-the drifts, only barely visible. After a few seconds the fox slowly opens its
-eyes and lifts its head, snow falling from its fur. It rises, pauses to look
-toward the camera for a beat, then sprints away across the snow and
-disappears over a snowy ridge on the right, leaving a trail of paw prints and
-a small cloud of powder. The final seconds show the empty snowfield with snow
-settling, matching the opening frame. Photorealistic, shot on ARRI Alexa,
-35mm anamorphic lens, shallow depth of field, natural soft light, subtle film
-grain, premium commercial look. The left third of the frame stays calm and
-uncluttered. No text, no logos, no people, no music.
+Close cinematic view of a single smooth snow drift filling the lower half of the frame, like a clean horizontal line. Soft blue-hour sky above, a faint coral and pink glow on the horizon. A few snowflakes drift close to the lens. No mountains, no wide landscape, no fox, no people, no text. The left third stays empty. Premium, simple, quiet.
 ```
 
-Mobile (9:16): same prompt, but "In the right third of the frame" becomes "In the lower center of the frame", and "The left third of the frame stays calm" becomes "The upper half of the frame stays calm and uncluttered".
+Video (16:9). Camera locked. The fox's head, when fully up, is about one third of the frame height:
 
-If the take is wrong, add one of: "the fox is small in the frame", "fox is fully camouflaged at the start, hard to spot", or "single fox, anatomically correct legs, natural running gait".
+```
+Locked-off camera, no camera move, no zoom. A single smooth snow drift fills the lower half of the frame. Soft blue-hour sky, faint coral and pink light on the horizon, snowflakes close to the lens.
+
+A stylized 3D arctic fox, cute and premium, large in frame, smooth white fur with a warm coral rim light so it separates from the snow. Simple face and tall pointed ears, like a brand mascot. It starts fully hidden behind the drift. Two ears rise slowly over the snow. Then the head comes up, eyes open, and it looks toward the camera. It places both front paws on the drift and leans a little closer. It pauses. Then it sinks back down: paws, head, then ears, until only the empty drift remains, matching the first frame.
+
+The fox stays in the center-right. The left third stays empty. No text, no letters, no logo, no people, no music. Not a wildlife documentary. Not a vast landscape.
+```
+
+Mobile (9:16): same action, but the drift sits in the lower third and the fox rises into the lower center. The upper half stays empty for the headline.
+
+If the fox is still too small or too real, add: `the fox is large, close to the camera, stylized 3D mascot, head fills a third of the frame`. If it never hides, add: `fully hidden at the first frame and the last frame, only the snow drift visible`.
 
 Export: MP4 (H.264) and WebM, 1920×1080, no audio, ideally under 4–6 MB. Mobile 1080×1920, lighter. Poster in JPG or WebP. Files go in `public/media/`.
+
+## Current home cut
+
+The entry pins one screen. Four stills in `public/media/journey/` crossfade while each one pushes in toward the horizon, a stand-in for a later frame-by-frame scrub. The hero rises away, then the three service cards slide in from the right, one after another, and stay. Scrolling back reverses that. Snow is a small depth field that moves toward the camera. Reduced motion unpins the stage, stacks the beats, and turns the snow off. The loader waits for the four plates.

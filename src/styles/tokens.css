@@ -27,6 +27,25 @@
 
   /* brand gradient: max ONE gradient element per viewport */
   --background-image-brand-gradient: linear-gradient(90deg, var(--color-fox-coral), var(--color-fox-pink));
+
+  /* hero type sits on the light snow plate; scrim is the token, not a new color */
+  --background-image-hero-scrim: linear-gradient(
+    90deg,
+    var(--color-scrim) 0%,
+    var(--color-scrim) 18%,
+    transparent 52%
+  );
+  --background-image-hero-scrim-top: linear-gradient(
+    180deg,
+    var(--color-scrim) 0%,
+    transparent 34%
+  );
+  --background-image-hero-scrim-top-tall: linear-gradient(
+    180deg,
+    var(--color-scrim) 0%,
+    var(--color-scrim) 42%,
+    transparent 64%
+  );
 }
 
 :root {

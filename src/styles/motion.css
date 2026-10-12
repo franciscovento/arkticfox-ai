@@ -59,11 +59,151 @@ html.js [data-reveal].is-visible {
   opacity: 0.86;
 }
 
+html.js [data-snow-dive] {
+  height: 420vh;
+}
+
+html.js [data-journey-stage] {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+}
+
+html.js [data-journey-plate] {
+  opacity: 0;
+}
+
+html.js [data-journey-plate]:first-of-type {
+  opacity: 1;
+}
+
+html.js [data-journey-beat] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+html.js [data-journey-beat][data-from='0'] {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.journey-plate {
+  transform-origin: 50% 42%;
+}
+
+html.js [data-journey-row] {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+html.js [data-journey-piece] {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.journey-piece {
+  width: min(16.5rem, 100%);
+}
+
+.journey-card-featured {
+  border-color: var(--color-ice-blue);
+}
+
+.hero-film {
+  object-position: 78% 18%;
+}
+
+@media (min-width: 1024px) {
+  .hero-film {
+    object-position: 74% 56%;
+  }
+}
+
+[data-loader-bar] {
+  transform: scaleX(0);
+  transform-origin: left;
+  transition-property: transform;
+  transition-duration: var(--dur-hover);
+  transition-timing-function: var(--ease-fox);
+}
+
+[data-loader] {
+  transition-property: opacity;
+  transition-duration: var(--dur-slow);
+  transition-timing-function: var(--ease-fox);
+}
+
+[data-loader].is-done {
+  opacity: 0;
+  pointer-events: none;
+}
+
+[data-hero-frame] {
+  transition-property: opacity;
+  transition-duration: var(--dur-slow);
+  transition-timing-function: var(--ease-fox);
+}
+
+[data-hero-frame].is-sunk {
+  opacity: 0;
+}
+
+html:not(.js) [data-loader] {
+  display: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html.js [data-reveal] {
     opacity: 1;
     transform: none;
     transition: none;
+  }
+
+  html.js [data-snow-dive] {
+    height: auto;
+  }
+
+  html.js [data-journey-stage] {
+    position: relative;
+    height: auto;
+    overflow: visible;
+  }
+
+  html.js [data-journey-beat] {
+    position: relative;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    min-height: 100svh;
+  }
+
+  html.js [data-journey-row] {
+    position: relative;
+    inset: auto;
+    pointer-events: auto;
+    margin-block: 1.5rem;
+  }
+
+  html.js [data-journey-piece] {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: none;
+  }
+
+  html.js [data-journey-plate]:not(:first-of-type) {
+    display: none;
+  }
+
+  .journey-plate {
+    transform: none;
   }
 
   .marquee__track {

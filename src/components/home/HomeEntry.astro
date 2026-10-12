@@ -1,0 +1,240 @@
+---
+import SnowDive from '@/components/motion/SnowDive.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import type { Locale, PageKey } from '@/i18n/routes';
+import type { UiKey } from '@/i18n/ui/en';
+import { getPath, t } from '@/i18n/utils';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const nav: { pageKey: PageKey; label: UiKey }[] = [
+  { pageKey: 'productImages', label: 'page.productImages.heading' },
+  { pageKey: 'adVideos', label: 'page.adVideos.heading' },
+  { pageKey: 'ugcVideos', label: 'page.ugcVideos.heading' },
+];
+
+const plates = ['/media/journey/01.jpg', '/media/journey/02.jpg', '/media/journey/03.jpg', '/media/journey/04.jpg'];
+
+const cards: {
+  from: string;
+  pageKey: PageKey;
+  eyebrow: UiKey;
+  title: UiKey;
+  emphasis: UiKey;
+  body: UiKey;
+  featured?: boolean;
+}[] = [
+  {
+    from: '0.34',
+    pageKey: 'productImages',
+    eyebrow: 'page.productImages.heading',
+    title: 'home.productTitle',
+    emphasis: 'home.productEmphasis',
+    body: 'home.productBody',
+  },
+  {
+    from: '0.5',
+    pageKey: 'adVideos',
+    eyebrow: 'page.adVideos.heading',
+    title: 'home.adsTitle',
+    emphasis: 'home.adsEmphasis',
+    body: 'home.adsBody',
+  },
+  {
+    from: '0.66',
+    pageKey: 'ugcVideos',
+    eyebrow: 'page.ugcVideos.heading',
+    title: 'home.ugcTitle',
+    emphasis: 'home.ugcEmphasis',
+    body: 'home.ugcBody',
+    featured: true,
+  },
+];
+---
+
+<BaseLayout
+  locale={locale}
+  pageKey="home"
+  title={t(locale, 'meta.homeTitle')}
+  description={t(locale, 'meta.homeDescription')}
+  bodyClass="bg-polar-night"
+>
+  <div data-snow-dive class="relative">
+    <div
+      class="fixed inset-0 z-50 flex flex-col items-center justify-center gap-8 bg-polar-night"
+      data-loader
+      role="status"
+    >
+      <p class="label text-white">{t(locale, 'meta.siteName')}</p>
+      <div class="h-px w-36 overflow-hidden bg-glass-border" aria-hidden="true">
+        <div class="h-full w-full bg-white" data-loader-bar></div>
+      </div>
+      <p class="sr-only">{t(locale, 'home.loading')}</p>
+    </div>
+
+    <header class="fixed inset-x-0 top-0 z-30 flex items-center justify-between px-5 py-5 md:px-10">
+      <nav class="hidden items-center gap-6 lg:flex" aria-label={t(locale, 'home.navLabel')}>
+        {
+          nav.map((item) => (
+            <a class="label hover-fox text-white" href={getPath(locale, item.pageKey)}>
+              {t(locale, item.label)}
+            </a>
+          ))
+        }
+      </nav>
+      <a
+        class="label text-white lg:absolute lg:left-1/2 lg:-translate-x-1/2"
+        href={getPath(locale, 'home')}
+      >
+        {t(locale, 'meta.siteName')}
+      </a>
+      <div class="flex items-center gap-3 md:gap-5">
+        <a
+          class:list={['label hover-fox', locale === 'en' ? 'text-white' : 'text-white/70']}
+          href={getPath('en', 'home')}
+          hreflang="en"
+          aria-current={locale === 'en' ? 'page' : undefined}
+        >
+          {t(locale, 'nav.languageEn')}
+        </a>
+        <a
+          class:list={['label hover-fox', locale === 'es' ? 'text-white' : 'text-white/70']}
+          href={getPath('es', 'home')}
+          hreflang="es"
+          aria-current={locale === 'es' ? 'page' : undefined}
+        >
+          {t(locale, 'nav.languageEs')}
+        </a>
+        <a
+          class="hover-fox inline-flex items-center rounded-pill border border-white px-4 py-2.5 font-sans text-xs font-medium whitespace-nowrap text-white md:px-5 md:py-3 md:text-sm"
+          href={getPath(locale, 'quote')}
+        >
+          {t(locale, 'nav.quote')}
+        </a>
+      </div>
+    </header>
+
+    <div class="relative z-20 min-h-svh" data-journey-stage>
+      {
+        plates.map((src) => (
+          <img class="journey-plate absolute inset-0 h-full w-full object-cover" src={src} alt="" data-journey-plate />
+        ))
+      }
+      <div class="pointer-events-none absolute inset-0 bg-hero-scrim-top-tall lg:bg-hero-scrim"></div>
+      <canvas class="pointer-events-none absolute inset-0 z-10 h-full w-full" data-dive-snow aria-hidden="true"
+      ></canvas>
+      <div
+        class="z-20 flex flex-col justify-end px-5 pt-28 pb-16 md:justify-center md:px-16"
+        data-journey-beat
+        data-from="0"
+        data-to="0.28"
+      >
+        <p class="label text-ice-blue">{t(locale, 'home.eyebrow')}</p>
+        <h1 class="mt-4 max-w-2xl font-serif text-4xl leading-none text-white md:text-6xl lg:text-7xl">
+          <span class="block uppercase">
+            {t(locale, 'home.line1Lead')}{' '}
+            <em class="italic normal-case">{t(locale, 'home.line1Emphasis')}</em>.
+          </span>
+          <span class="block uppercase">{t(locale, 'home.line2')}</span>
+        </h1>
+        <p class="mt-5 max-w-md font-sans text-sm leading-relaxed text-white/85 md:text-base">
+          {t(locale, 'home.subhead')}
+        </p>
+        <div class="mt-8 flex flex-wrap items-center gap-3">
+          <a
+            class="hover-fox inline-flex items-center rounded-pill bg-brand-gradient px-6 py-3 font-sans text-sm font-medium text-white"
+            href={getPath(locale, 'quote')}
+          >
+            {t(locale, 'nav.quote')}
+          </a>
+          <a
+            class="hover-fox inline-flex items-center rounded-pill border border-white px-6 py-3 font-sans text-sm font-medium text-white"
+            href={getPath(locale, 'pricing')}
+          >
+            {t(locale, 'nav.pricing')}
+          </a>
+        </div>
+      </div>
+      <div
+        class="z-20 flex flex-col items-stretch justify-end gap-3 px-4 pt-28 pb-8 md:flex-row md:items-center md:justify-center md:gap-5 md:px-10 md:pb-16"
+        data-journey-row
+      >
+        {
+          cards.map((card) => (
+            <article
+              class:list={['glass journey-piece p-4 md:p-5', card.featured && 'journey-card-featured']}
+              data-journey-piece
+              data-from={card.from}
+            >
+              <p class="label text-ice-blue">{t(locale, card.eyebrow)}</p>
+              <h2 class="mt-2 font-serif text-2xl leading-tight text-white md:text-3xl">
+                <span class="block">{t(locale, card.title)}</span>
+                <em class="mt-1 block italic">{t(locale, card.emphasis)}</em>
+              </h2>
+              <p class="mt-3 hidden font-sans text-xs leading-relaxed text-white/85 md:block md:text-sm">
+                {t(locale, card.body)}
+              </p>
+              {card.featured ? <p class="label mt-3 text-white/80">{t(locale, 'home.ugcNote')}</p> : null}
+              <a
+                class="hover-fox mt-4 inline-flex w-fit items-center rounded-pill border border-white px-4 py-2.5 font-sans text-xs font-medium text-white md:text-sm"
+                href={getPath(locale, card.pageKey)}
+              >
+                {t(locale, card.eyebrow)}
+              </a>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+  <SnowDive />
+</BaseLayout>
+
+<script>
+  function bootHomeEntry() {
+    const root = document.querySelector<HTMLElement>('[data-snow-dive]');
+    if (!root || root.dataset.booted === 'true') return;
+    root.dataset.booted = 'true';
+
+    const loader = root.querySelector<HTMLElement>('[data-loader]');
+    const bar = root.querySelector<HTMLElement>('[data-loader-bar]');
+    const plates = [...root.querySelectorAll<HTMLImageElement>('[data-journey-plate]')];
+    if (!loader || !bar || plates.length === 0) return;
+
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let loaded = 0;
+    let done = false;
+
+    const finish = () => {
+      if (done) return;
+      done = true;
+      loader.classList.add('is-done');
+      loader.setAttribute('aria-hidden', 'true');
+    };
+
+    if (reduce) {
+      finish();
+      return;
+    }
+
+    const giveUp = window.setTimeout(finish, 8000);
+    for (const plate of plates) {
+      const image = new Image();
+      image.onload = image.onerror = () => {
+        loaded += 1;
+        bar.style.transform = `scaleX(${loaded / plates.length})`;
+        if (loaded === plates.length) {
+          window.clearTimeout(giveUp);
+          finish();
+        }
+      };
+      image.src = plate.currentSrc || plate.src;
+    }
+  }
+
+  bootHomeEntry();
+</script>
