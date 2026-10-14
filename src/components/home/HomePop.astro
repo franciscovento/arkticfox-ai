@@ -1,0 +1,113 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import type { Locale, PageKey } from '@/i18n/routes';
+import type { UiKey } from '@/i18n/ui/en';
+import { getPath, t } from '@/i18n/utils';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const nav: { pageKey: PageKey; label: UiKey }[] = [
+  { pageKey: 'productImages', label: 'page.productImages.heading' },
+  { pageKey: 'adVideos', label: 'page.adVideos.heading' },
+  { pageKey: 'ugcVideos', label: 'page.ugcVideos.heading' },
+];
+
+type Kind = 'product' | 'ads' | 'ugc';
+
+const plates: {
+  src: string;
+  kind: Kind;
+  label: UiKey;
+  alt: UiKey;
+  span: 'hero' | 'full' | 'half';
+}[] = [
+  { src: '/media/mocks/fashion-01.jpg', kind: 'ads', label: 'home.v2.fashion', alt: 'home.v2.fashion', span: 'hero' },
+  { src: '/media/mocks/product-01.jpg', kind: 'product', label: 'page.productImages.heading', alt: 'page.productImages.heading', span: 'half' },
+  { src: '/media/mocks/beauty-01.jpg', kind: 'product', label: 'home.v2.beauty', alt: 'home.v2.beauty', span: 'half' },
+  { src: '/media/mocks/food-01.jpg', kind: 'ads', label: 'home.v2.food', alt: 'home.v2.food', span: 'full' },
+  { src: '/media/mocks/ugc-01.jpg', kind: 'ugc', label: 'page.ugcVideos.heading', alt: 'page.ugcVideos.heading', span: 'half' },
+  { src: '/media/mocks/auto-01.jpg', kind: 'ads', label: 'home.v2.auto', alt: 'home.v2.auto', span: 'half' },
+  { src: '/media/mocks/product-02.jpg', kind: 'product', label: 'home.v2.beauty', alt: 'home.v2.beauty', span: 'full' },
+  { src: '/media/mocks/fashion-02.jpg', kind: 'ads', label: 'home.v2.fashion', alt: 'home.v2.fashion', span: 'half' },
+  { src: '/media/mocks/product-03.jpg', kind: 'product', label: 'page.productImages.heading', alt: 'page.productImages.heading', span: 'half' },
+];
+---
+
+<BaseLayout
+  locale={locale}
+  pageKey="homeV2"
+  title={t(locale, 'home.v2.title')}
+  description={t(locale, 'home.v2.description')}
+  noindex
+  bodyClass="bg-snow-white"
+>
+  <header class="fixed inset-x-0 top-0 z-30 flex items-center justify-between bg-hero-scrim-top px-5 py-5 md:px-10">
+    <nav class="hidden items-center gap-6 lg:flex" aria-label={t(locale, 'home.navLabel')}>
+      {
+        nav.map((item) => (
+          <a class="label hover-fox text-white" href={getPath(locale, item.pageKey)}>
+            {t(locale, item.label)}
+          </a>
+        ))
+      }
+    </nav>
+    <a
+      class="label text-white lg:absolute lg:left-1/2 lg:-translate-x-1/2"
+      href={getPath(locale, 'home')}
+    >
+      {t(locale, 'meta.siteName')}
+    </a>
+    <div class="flex items-center gap-3 md:gap-5">
+      <a
+        class:list={['label hover-fox', locale === 'en' ? 'text-white' : 'text-white/70']}
+        href={getPath('en', 'homeV2')}
+        hreflang="en"
+        aria-current={locale === 'en' ? 'page' : undefined}
+      >
+        {t(locale, 'nav.languageEn')}
+      </a>
+      <a
+        class:list={['label hover-fox', locale === 'es' ? 'text-white' : 'text-white/70']}
+        href={getPath('es', 'homeV2')}
+        hreflang="es"
+        aria-current={locale === 'es' ? 'page' : undefined}
+      >
+        {t(locale, 'nav.languageEs')}
+      </a>
+      <a
+        class="hover-fox inline-flex items-center rounded-pill bg-brand-gradient px-4 py-2.5 font-sans text-xs font-medium text-white md:px-5 md:py-3 md:text-sm"
+        href={getPath(locale, 'quote')}
+      >
+        {t(locale, 'nav.quote')}
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <h1 class="sr-only">{t(locale, 'home.v2.title')}</h1>
+    <div class="pop-board">
+      {
+        plates.map((plate) => (
+          <a
+            class:list={['pop-shot', `pop-shot--${plate.span}`]}
+            href={getPath(locale, plate.kind === 'product' ? 'productImages' : plate.kind === 'ads' ? 'adVideos' : 'ugcVideos')}
+          >
+            <img
+              src={plate.src}
+              alt={t(locale, plate.alt)}
+              width="1800"
+              height="1200"
+              loading={plate.span === 'hero' ? 'eager' : 'lazy'}
+            />
+            <span class="pop-shot__name label">{t(locale, plate.label)}</span>
+          </a>
+        ))
+      }
+    </div>
+    <p class="px-5 py-4 font-sans text-xs text-ink/70 md:px-10">{t(locale, 'home.v2.note')}</p>
+  </main>
+</BaseLayout>

@@ -5,6 +5,8 @@ Ten pages per language. English lives at the root. Spanish lives under `/es/` wi
 | Page | English | Spanish | Goal |
 |---|---|---|---|
 | Home | `/` | `/es/` | Impact, summary, quote |
+| Home V2 (trial, noindex) | `/v2` | `/es/v2` | Image-led cut, not in the sitemap |
+| Sample work (mock, noindex) | `/work` | `/es/trabajo` | One stand-in case from the home marquee |
 | Product images | `/product-images` | `/es/imagenes-de-producto` | Sell product images |
 | Ad videos | `/ad-videos` | `/es/videos-publicitarios` | Sell ad films |
 | Hyperreal UGC | `/ugc-videos` | `/es/videos-ugc` | Sell AI UGC videos |

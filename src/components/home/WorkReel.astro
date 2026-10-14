@@ -1,0 +1,129 @@
+---
+interface Props {
+  closeLabel: string;
+  note: string;
+  moreLabel: string;
+  moreHref: string;
+  poster: string;
+}
+
+const { closeLabel, note, moreLabel, moreHref, poster } = Astro.props;
+---
+
+<dialog class="work-reel" id="work-reel" data-work-reel aria-labelledby="work-reel-title">
+  <div class="work-reel__frame glass sheen" data-sheen>
+    <div class="work-reel__bar">
+      <h2 class="label text-white" id="work-reel-title" data-reel-heading>&nbsp;</h2>
+      <button type="button" class="label hover-fox text-white" data-reel-close>{closeLabel}</button>
+    </div>
+    <div class="work-reel__media" transition:name="work-media">
+      <video
+        class="work-reel__shot"
+        data-reel-video
+        poster={poster}
+        muted
+        playsinline
+        controls
+        hidden
+      ></video>
+      <img class="work-reel__shot" data-reel-image alt="" hidden />
+    </div>
+    <div class="work-reel__meta">
+      <p class="work-reel__note font-sans text-xs text-white/70">{note}</p>
+      <a
+        class="hover-fox inline-flex items-center rounded-pill border border-white px-4 py-2 font-sans text-xs font-medium text-white"
+        href={moreHref}
+      >
+        {moreLabel}
+      </a>
+    </div>
+  </div>
+</dialog>
+
+<script>
+  function bootWorkReel() {
+    const dialog = document.querySelector<HTMLDialogElement>('[data-work-reel]');
+    const video = dialog?.querySelector<HTMLVideoElement>('[data-reel-video]');
+    const image = dialog?.querySelector<HTMLImageElement>('[data-reel-image]');
+    const heading = dialog?.querySelector<HTMLElement>('[data-reel-heading]');
+    const closeBtn = dialog?.querySelector<HTMLButtonElement>('[data-reel-close]');
+    if (!dialog || !video || !image || !heading || !closeBtn || dialog.dataset.booted === 'true') {
+      return;
+    }
+    dialog.dataset.booted = 'true';
+
+    const isVideo = (src: string) => /\.(mp4|webm|mov)(\?|$)/i.test(src);
+    const reduce = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const clearMedia = () => {
+      video.pause();
+      video.removeAttribute('src');
+      video.load();
+      video.hidden = true;
+      image.removeAttribute('src');
+      image.alt = '';
+      image.hidden = true;
+    };
+
+    const requestClose = () => {
+      if (!dialog.open) return;
+      dialog.classList.remove('is-open');
+      const finish = () => {
+        clearMedia();
+        if (dialog.open) dialog.close();
+      };
+      if (reduce()) {
+        finish();
+        return;
+      }
+      const onEnd = (event: TransitionEvent) => {
+        if (event.target !== dialog || event.propertyName !== 'opacity') return;
+        dialog.removeEventListener('transitionend', onEnd);
+        finish();
+      };
+      dialog.addEventListener('transitionend', onEnd);
+    };
+
+    const open = (src: string, title: string) => {
+      heading.textContent = title;
+      if (isVideo(src)) {
+        image.hidden = true;
+        video.hidden = false;
+        video.src = src;
+      } else {
+        video.hidden = true;
+        image.hidden = false;
+        image.src = src;
+        image.alt = title;
+      }
+      dialog.showModal();
+      requestAnimationFrame(() => dialog.classList.add('is-open'));
+      if (isVideo(src) && !reduce()) {
+        video.loop = true;
+        void video.play();
+      }
+    };
+
+    document.addEventListener('click', (event) => {
+      const trigger = (event.target as HTMLElement | null)?.closest<HTMLElement>('[data-reel]');
+      if (!trigger) return;
+      event.preventDefault();
+      const src = trigger.dataset.reelSrc;
+      if (!src) return;
+      open(src, trigger.dataset.reelTitle ?? '');
+    });
+
+    closeBtn.addEventListener('click', requestClose);
+
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) requestClose();
+    });
+
+    dialog.addEventListener('cancel', (event) => {
+      event.preventDefault();
+      requestClose();
+    });
+  }
+
+  document.addEventListener('astro:page-load', bootWorkReel);
+</script>

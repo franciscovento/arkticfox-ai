@@ -113,3 +113,38 @@
 - Decision: Remove Why from the pinned entry. The dive is hero → service cards → sector marquee, and it stays there. The four Why lines remain in i18n and `docs/pages/home.md` for a later block.
 - Consequences: The home no longer traps the wheel. Scroll is free again. Why is still specified; it is just not on this pin.
 
+## ADR-017 — Two home cuts while we look for the tone
+
+- Date: 2026-10-13
+- Context: The blue-hour dive (V1) is cinematic but not locked. Nabil asked for a second cut closer to [Steven Popovich](https://www.stevenpopovich.com/): large, colourful plates, almost no chrome.
+- Decision: Keep V1 at `/` and `/es/`. Ship V2 at `/v2` and `/es/v2`, `noindex`, out of the sitemap. Colour comes from the photographs. UI stays on tokens. The plates in `public/media/mocks/` are Unsplash stand-ins, labelled as such, never as client work.
+- Consequences: V2 is parked at `/v2` (see ADR-018). Replace the mock files in place; keep the filenames.
+
+## ADR-018 — Marquee words open glass work, V2 stays a parked grid
+
+- Date: 2026-10-13
+- Context: Each sector word should preview work. A Popovich-like sticky menu on V2 read as a copy. Pausing the marquee on hover/focus made the strip feel broken.
+- Decision: The marquee never pauses. `WorkReel` is a frosted-glass dialog (same `glass` + sheen as the service cards) that fades and scales in. It shows a still or a reel depending on the file. V2 stays the earlier image grid, `noindex`, and is unlinked from the V1 header.
+- Consequences: Product / fashion / beauty / food open mock stills; ads and automotive open mock MP4s. Replace files in place. V2 remains at `/v2` if we want it later.
+
+## ADR-019 — Work reel sits on the field; Read more opens one mock case
+
+- Date: 2026-10-13
+- Context: A dimmed backdrop hid the dive. The reel needed to feel like a card in the scene, and a word click should lead to a project presentation — the same stand-in for every sector until real cases exist.
+- Decision: No backdrop scrim. The glass reel pins bottom-right and grows. `Read more` goes to `/work` · `/es/trabajo` (`WorkCase`): one mock brief, stills, no client name, no statistics, `noindex`.
+- Consequences: Every marquee word opens the same case page. Swap the media and copy in place when a real job can be shown.
+
+## ADR-020 — View transitions into a same-field work case
+
+- Date: 2026-10-13
+- Context: The sample case read as a different site: a text column and a grid. The jump from the reel was a hard cut.
+- Decision: `ClientRouter` in `BaseLayout`. The reel media and the first work plate share `transition:name="work-media"`. Durations use `--dur-reveal` / `--dur-slow` and `ease-fox`. The case is the same blue-hour field, large inset plates and glass cards as the dive, told as four process beats. Motion scripts re-bind on `astro:page-load` and the dive tears down on `astro:before-swap`.
+- Consequences: Reduced motion drops the view-transition animations and the looping film. Still no real client, logos or statistics.
+
+## ADR-021 — Work case pins process titles; snow stays behind plates
+
+- Date: 2026-10-13
+- Context: Glass cards on light stills failed contrast. The page chrome stuck while the process titles did not. Snow on top of the photos would hide the work.
+- Decision: The site header on `/work` scrolls away. Each beat title (The brief, Stills, The film, The cut) is `position: sticky` until the next beat pushes it off. Cards sit on `glass-deep` (ink, token) over a bottom scrim. `SnowCanvas` is a fixed layer under the plates, so flakes fall in the field around the frames, not on the images.
+- Consequences: Contrast holds on pale stills. The sticky menu is the process, not the nav.
+

@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| URLs | `/` · `/es/` |
+| URLs | `/` · `/es/` (V1, dive). Parked V2: `/v2` · `/es/v2` (noindex, unlinked). |
 | Goal | Impact, a summary of everything, a quote request. |
 | Rhythm | Twelve blocks alternating dark (cinema) and light (snow). Every block pushes toward the quote. |
 | Roadmap | Step 4. Blocks 1–2 exist as `HomeEntry` + `SnowDive`; 3–12 are still to do. |
@@ -69,7 +69,7 @@ Muted looping fox film, full bleed, dark scrim on the left third for legibility.
 |---|---|---|---|
 | Marquee | `home.marquee.label` | `E-COMMERCE · FASHION · BEAUTY · FOOD & BEVERAGE · AUTOMOTIVE` **PDF** | `E-COMMERCE · MODA · BELLEZA · ALIMENTACIÓN · AUTOMOCIÓN` **PROPOSED** |
 
-Continuous horizontal scroll, uppercase. No client logos, ever. `Marquee` already exists.
+Continuous horizontal scroll, uppercase. No client logos, ever. The strip does not pause on hover. Each word opens a glass `WorkReel` (bottom-right, no dimmed backdrop) with a mock still or reel. `Read more` goes to the same sample case (`/work` · `/es/trabajo`).
 
 ## 4. Services — dark
 

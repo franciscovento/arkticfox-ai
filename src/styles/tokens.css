@@ -12,6 +12,7 @@
   --color-ink: #111318; /* text on light */
   --color-white: #ffffff;
   --color-glass: rgb(255 255 255 / 0.08);
+  --color-glass-deep: color-mix(in oklab, var(--color-ink) 78%, transparent);
   --color-glass-border: rgb(255 255 255 / 0.15);
   --color-scrim: rgb(11 15 26 / 0.7);
 
@@ -56,6 +57,17 @@
     var(--color-scrim) 0%,
     var(--color-scrim) 42%,
     transparent 64%
+  );
+  --background-image-hero-scrim-bottom: linear-gradient(
+    0deg,
+    var(--color-scrim) 0%,
+    var(--color-scrim) 36%,
+    transparent 78%
+  );
+  --background-image-work-pin: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--color-scrim) 48%, transparent) 0%,
+    transparent 88%
   );
 
   /* FrostField: blue-hour cold, fully procedural, so it never pixelates and costs no download */

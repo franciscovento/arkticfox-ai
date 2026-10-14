@@ -19,6 +19,7 @@ Tokens live in `src/styles/tokens.css` (`--dur-hover`, `--dur-reveal`, `--dur-sl
 - Before/after drag slider.
 - Masonry filter transitions.
 - Accordion and lightbox.
+- Home → `/work` view transition. `ClientRouter` in `BaseLayout`. The reel media morphs into the first case plate (`work-media`). Root fade uses `--dur-reveal` and `ease-fox`. Off when `prefers-reduced-motion`.
 
 ## Tool split
 

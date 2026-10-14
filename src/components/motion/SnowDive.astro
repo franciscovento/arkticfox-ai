@@ -7,8 +7,22 @@
 
   startSmoothScroll();
 
-  const root = document.querySelector<HTMLElement>('[data-snow-dive]');
-  if (root && root.dataset.diveBound !== 'true') {
+  let diveTrigger: ScrollTrigger | undefined;
+  let diveFrame = 0;
+  let stopSnow: (() => void) | undefined;
+
+  function teardownDive() {
+    diveTrigger?.kill();
+    diveTrigger = undefined;
+    if (diveFrame) window.cancelAnimationFrame(diveFrame);
+    diveFrame = 0;
+    stopSnow?.();
+    stopSnow = undefined;
+  }
+
+  function bootDive() {
+    const root = document.querySelector<HTMLElement>('[data-snow-dive]');
+    if (!root || root.dataset.diveBound === 'true') return;
     root.dataset.diveBound = 'true';
 
     const canvas = root.querySelector<HTMLCanvasElement>('[data-dive-snow]');
@@ -36,7 +50,7 @@
     };
 
     runScrollScene(() => {
-      ScrollTrigger.create({
+      diveTrigger = ScrollTrigger.create({
         trigger: root,
         start: 'top top',
         end: 'bottom bottom',
@@ -80,15 +94,18 @@
         diveTarget *= 0.92;
         dive += (diveTarget - dive) * 0.09;
         place();
-        window.requestAnimationFrame(frameLoop);
+        diveFrame = window.requestAnimationFrame(frameLoop);
       };
-      window.requestAnimationFrame(frameLoop);
+      diveFrame = window.requestAnimationFrame(frameLoop);
     });
 
     if (!prefersReducedMotion() && canvas) {
-      mountSnow(canvas, () => dive, mouse);
+      stopSnow = mountSnow(canvas, () => dive, mouse);
     }
   }
+
+  document.addEventListener('astro:before-swap', teardownDive);
+  document.addEventListener('astro:page-load', bootDive);
 
   function pieceOpacity(progress: number, from: number, to: number, fade = 0.1): number {
     if (progress < from) return 0;
@@ -118,10 +135,10 @@
     mouse: { ex: number; ey: number },
   ) {
     const context = canvas.getContext('2d');
-    if (!context) return;
+    if (!context) return undefined;
     const ctx = context;
     const color = getComputedStyle(document.documentElement).getPropertyValue('--color-white').trim();
-    if (!color) return;
+    if (!color) return undefined;
 
     // x/y are offsets from the axis of travel, not screen coordinates. z is distance.
     type Flake = { x: number; y: number; z: number; s: number; phase: number; drift: number };
@@ -200,12 +217,20 @@
       window.cancelAnimationFrame(frame);
     };
 
-    resize();
-    window.addEventListener('resize', resize, { passive: true });
-    document.addEventListener('visibilitychange', () => {
+    const onVisibility = () => {
       if (document.hidden) stop();
       else start();
-    });
+    };
+
+    resize();
+    window.addEventListener('resize', resize, { passive: true });
+    document.addEventListener('visibilitychange', onVisibility);
     start();
+
+    return () => {
+      stop();
+      window.removeEventListener('resize', resize);
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
   }
 </script>

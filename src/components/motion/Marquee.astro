@@ -3,10 +3,13 @@ interface Props {
   label: string;
   reverse?: boolean;
   pauseOnHover?: boolean;
+  clips?: string[];
+  openTemplate?: string;
   class?: string;
 }
 
-const { label, reverse = false, pauseOnHover = true, class: className } = Astro.props;
+const { label, reverse = false, pauseOnHover = false, clips, openTemplate, class: className } =
+  Astro.props;
 const items = label.split(/\s*·\s*/).filter(Boolean);
 ---
 
@@ -14,18 +17,37 @@ const items = label.split(/\s*·\s*/).filter(Boolean);
   <div class="marquee__track">
     {
       [false, true].map((copy) => (
-        <p class="label marquee__group" aria-hidden={copy ? 'true' : undefined}>
+        <div class="label marquee__group" aria-hidden={copy ? 'true' : undefined}>
           <span>
             {
-              items.map((item, index) => (
-                <>
-                  {index > 0 ? ' · ' : ''}
-                  <span class="marquee__item">{item}</span>
-                </>
-              ))
+              items.map((item, index) => {
+                const clip = clips?.[index];
+                return (
+                  <>
+                    {index > 0 ? ' · ' : ''}
+                    {clip ? (
+                      <button
+                        type="button"
+                        class="label marquee__item"
+                        data-reel
+                        data-reel-src={clip}
+                        data-reel-title={item}
+                        aria-haspopup="dialog"
+                        aria-controls="work-reel"
+                        aria-label={openTemplate ? openTemplate.replace('{name}', item) : item}
+                        tabindex={copy ? -1 : 0}
+                      >
+                        {item}
+                      </button>
+                    ) : (
+                      <span class="label marquee__item">{item}</span>
+                    )}
+                  </>
+                );
+              })
             }
           </span>
-        </p>
+        </div>
       ))
     }
   </div>

@@ -6,11 +6,14 @@
    * on any element carrying the `glass` utility. Position is written as a CSS variable, so the
    * paint stays in `--background-image-glass-sheen` and no color lives in this file.
    */
-  const targets = [...document.querySelectorAll<HTMLElement>('[data-sheen]')];
-  const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  function bootGlassSheen() {
+    const targets = [...document.querySelectorAll<HTMLElement>('[data-sheen]')];
+    const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    if (targets.length === 0 || !fine || prefersReducedMotion()) return;
 
-  if (targets.length > 0 && fine && !prefersReducedMotion()) {
     for (const target of targets) {
+      if (target.dataset.sheenBound === 'true') continue;
+      target.dataset.sheenBound = 'true';
       let frame = 0;
 
       target.addEventListener(
@@ -37,4 +40,6 @@
       );
     }
   }
+
+  document.addEventListener('astro:page-load', bootGlassSheen);
 </script>

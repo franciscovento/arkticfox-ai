@@ -28,9 +28,13 @@ const { fixed = false, class: className } = Astro.props;
 <script>
   import { onPointer } from '../../motion/pointer';
 
-  const glows = [...document.querySelectorAll<HTMLElement>('[data-frost-glow]')];
-  if (glows.length > 0) {
-    onPointer((state) => {
+  let stop: (() => void) | undefined;
+
+  function bootFrostField() {
+    stop?.();
+    const glows = [...document.querySelectorAll<HTMLElement>('[data-frost-glow]')];
+    if (glows.length === 0) return;
+    stop = onPointer((state) => {
       const x = `${(state.ex * 100).toFixed(2)}%`;
       const y = `${(state.ey * 100).toFixed(2)}%`;
       for (const glow of glows) {
@@ -39,4 +43,6 @@ const { fixed = false, class: className } = Astro.props;
       }
     });
   }
+
+  document.addEventListener('astro:page-load', bootFrostField);
 </script>

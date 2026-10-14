@@ -1,92 +1,128 @@
+---
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
 <canvas
-  data-snow="pending"
-  class="pointer-events-none absolute inset-0 h-full w-full"
-  aria-hidden="true"></canvas>
+  data-snow
+  class:list={['pointer-events-none absolute inset-0 h-full w-full', className]}
+  aria-hidden="true"
+></canvas>
 
 <script>
+  import { pointer } from '../../motion/pointer';
   import { prefersReducedMotion } from '../../motion/reduced';
 
-  const canvas = document.querySelector<HTMLCanvasElement>('[data-snow]');
-  if (!canvas || canvas.dataset.snowBound === 'true') {
-    // Another island already owns the canvas.
-  } else {
+  let frame = 0;
+  let active = false;
+  let boundCanvas: HTMLCanvasElement | undefined;
+
+  function teardownSnow() {
+    active = false;
+    if (frame) window.cancelAnimationFrame(frame);
+    frame = 0;
+    if (boundCanvas) {
+      boundCanvas.dataset.snowBound = 'false';
+      boundCanvas.dataset.snow = 'pending';
+      boundCanvas = undefined;
+    }
+  }
+
+  function bootSnow() {
+    teardownSnow();
+    const canvas = document.querySelector<HTMLCanvasElement>('[data-snow]');
+    if (!canvas) return;
     canvas.dataset.snowBound = 'true';
+    boundCanvas = canvas;
 
     if (prefersReducedMotion()) {
       canvas.dataset.snow = 'disabled';
-    } else {
-      const context = canvas.getContext('2d');
-      if (!context) {
-        canvas.dataset.snow = 'disabled';
-      } else {
-        canvas.dataset.snow = 'running';
-        const ctx = context;
-        const snow = getComputedStyle(document.documentElement)
-          .getPropertyValue('--color-snow-white')
-          .trim();
-
-        type Flake = { x: number; y: number; r: number; speed: number; alpha: number };
-        let flakes: Flake[] = [];
-        let frame = 0;
-        let active = false;
-
-        const resize = () => {
-          const dpr = Math.min(window.devicePixelRatio || 1, 2);
-          const { width, height } = canvas.getBoundingClientRect();
-          canvas.width = Math.max(1, Math.floor(width * dpr));
-          canvas.height = Math.max(1, Math.floor(height * dpr));
-          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-          const count = Math.round((width * height) / 18000);
-          flakes = Array.from({ length: Math.max(18, Math.min(count, 70)) }, () => ({
-            x: Math.random() * width,
-            y: Math.random() * height,
-            r: Math.random() * 1.4 + 0.4,
-            speed: Math.random() * 0.35 + 0.15,
-            alpha: Math.random() * 0.35 + 0.15,
-          }));
-        };
-
-        const draw = () => {
-          if (!active) return;
-          const { width, height } = canvas.getBoundingClientRect();
-          ctx.clearRect(0, 0, width, height);
-          ctx.fillStyle = snow;
-          for (const flake of flakes) {
-            flake.y += flake.speed;
-            flake.x += Math.sin(flake.y * 0.01) * 0.15;
-            if (flake.y > height) {
-              flake.y = 0;
-              flake.x = Math.random() * width;
-            }
-            ctx.globalAlpha = flake.alpha;
-            ctx.beginPath();
-            ctx.arc(flake.x, flake.y, flake.r, 0, Math.PI * 2);
-            ctx.fill();
-          }
-          ctx.globalAlpha = 1;
-          frame = window.requestAnimationFrame(draw);
-        };
-
-        const start = () => {
-          if (active) return;
-          active = true;
-          frame = window.requestAnimationFrame(draw);
-        };
-
-        const stop = () => {
-          active = false;
-          window.cancelAnimationFrame(frame);
-        };
-
-        resize();
-        window.addEventListener('resize', resize, { passive: true });
-
-        const visibility = new IntersectionObserver(([entry]) => {
-          if (entry?.isIntersecting) start();
-          else stop();
-        });
-        visibility.observe(canvas);
-      }
+      return;
     }
+
+    const context = canvas.getContext('2d');
+    if (!context) {
+      canvas.dataset.snow = 'disabled';
+      return;
+    }
+
+    canvas.dataset.snow = 'running';
+    const ctx = context;
+    const mouse = pointer();
+    const snow = getComputedStyle(document.documentElement)
+      .getPropertyValue('--color-snow-white')
+      .trim();
+
+    type Flake = { x: number; y: number; r: number; speed: number; alpha: number };
+    let flakes: Flake[] = [];
+
+    const resize = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const { width, height } = canvas.getBoundingClientRect();
+      canvas.width = Math.max(1, Math.floor(width * dpr));
+      canvas.height = Math.max(1, Math.floor(height * dpr));
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const count = Math.round((width * height) / 18000);
+      flakes = Array.from({ length: Math.max(18, Math.min(count, 70)) }, () => ({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        r: Math.random() * 1.4 + 0.4,
+        speed: Math.random() * 0.35 + 0.15,
+        alpha: Math.random() * 0.35 + 0.15,
+      }));
+    };
+
+    const draw = () => {
+      if (!active) return;
+      const { width, height } = canvas.getBoundingClientRect();
+      ctx.clearRect(0, 0, width, height);
+      ctx.fillStyle = snow;
+      const windX = (mouse.ex - 0.5) * 0.85;
+      const windY = (mouse.ey - 0.5) * 0.22;
+      const shiftX = (mouse.ex - 0.5) * 42;
+      const shiftY = (mouse.ey - 0.5) * 14;
+      for (const flake of flakes) {
+        flake.y += flake.speed + windY;
+        flake.x += Math.sin(flake.y * 0.01) * 0.15 + windX;
+        if (flake.y > height + 20) {
+          flake.y = -8;
+          flake.x = Math.random() * width;
+        }
+        if (flake.x < -20) flake.x = width + 8;
+        if (flake.x > width + 20) flake.x = -8;
+        ctx.globalAlpha = flake.alpha;
+        ctx.beginPath();
+        ctx.arc(flake.x + shiftX, flake.y + shiftY, flake.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+      frame = window.requestAnimationFrame(draw);
+    };
+
+    const start = () => {
+      if (active) return;
+      active = true;
+      frame = window.requestAnimationFrame(draw);
+    };
+
+    const stop = () => {
+      active = false;
+      window.cancelAnimationFrame(frame);
+    };
+
+    resize();
+    window.addEventListener('resize', resize, { passive: true });
+
+    const visibility = new IntersectionObserver(([entry]) => {
+      if (entry?.isIntersecting) start();
+      else stop();
+    });
+    visibility.observe(canvas);
   }
+
+  document.addEventListener('astro:before-swap', teardownSnow);
+  document.addEventListener('astro:page-load', bootSnow);
 </script>

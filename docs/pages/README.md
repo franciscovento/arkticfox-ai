@@ -5,6 +5,7 @@ One file per page. Each file is the single source of truth for **what that page 
 | Page | Spec | EN | ES |
 |---|---|---|---|
 | Home | [`home.md`](./home.md) | `/` | `/es/` |
+| Sample work | [`work.md`](./work.md) | `/work` | `/es/trabajo` |
 | Product images | [`product-images.md`](./product-images.md) | `/product-images` | `/es/imagenes-de-producto` |
 | Ad videos | [`ad-videos.md`](./ad-videos.md) | `/ad-videos` | `/es/videos-publicitarios` |
 | Hyperreal UGC | [`ugc-videos.md`](./ugc-videos.md) | `/ugc-videos` | `/es/videos-ugc` |

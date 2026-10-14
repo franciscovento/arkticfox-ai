@@ -1,6 +1,7 @@
 ---
 import FrostField from '@/components/motion/FrostField.astro';
 import GlassSheen from '@/components/motion/GlassSheen.astro';
+import WorkReel from '@/components/home/WorkReel.astro';
 import Marquee from '@/components/motion/Marquee.astro';
 import SnowDive from '@/components/motion/SnowDive.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
@@ -60,6 +61,20 @@ const cards: {
     emphasis: 'home.ugcEmphasis',
     body: 'home.ugcBody',
   },
+];
+
+const sectorClips = [
+  '/media/mocks/product-01.jpg',
+  '/media/mocks/fashion-01.jpg',
+  '/media/mocks/beauty-01.jpg',
+  '/media/mocks/food-01.jpg',
+  '/media/mocks/reel-02.mp4',
+];
+
+const serviceClips = [
+  '/media/mocks/product-03.jpg',
+  '/media/mocks/reel-01.mp4',
+  '/media/mocks/ugc-01.jpg',
 ];
 
 ---
@@ -210,10 +225,18 @@ const cards: {
         data-to="1"
       >
         <div class="flex flex-col gap-2">
-          <Marquee class="text-white" label={t(locale, 'home.marquee.label')} pauseOnHover={false} />
+          <Marquee
+            class="text-white"
+            label={t(locale, 'home.marquee.label')}
+            clips={sectorClips}
+            openTemplate={t(locale, 'home.reel.open')}
+            pauseOnHover={false}
+          />
           <Marquee
             class="text-white/70"
             label={t(locale, 'home.marquee.services')}
+            clips={serviceClips}
+            openTemplate={t(locale, 'home.reel.open')}
             reverse
             pauseOnHover={false}
           />
@@ -221,6 +244,13 @@ const cards: {
       </div>
     </div>
   </div>
+  <WorkReel
+    closeLabel={t(locale, 'home.reel.close')}
+    note={t(locale, 'home.reel.note')}
+    moreLabel={t(locale, 'home.reel.more')}
+    moreHref={getPath(locale, 'work')}
+    poster="/media/mocks/fashion-01.jpg"
+  />
   <SnowDive />
   <GlassSheen />
 </BaseLayout>
@@ -244,5 +274,15 @@ const cards: {
     window.setTimeout(finish, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 280);
   }
 
-  bootHomeEntry();
+  let firstLoad = true;
+  const onPage = () => {
+    bootHomeEntry();
+    const loader = document.querySelector<HTMLElement>('[data-loader]');
+    if (!firstLoad && loader) {
+      loader.classList.add('is-done');
+      loader.setAttribute('aria-hidden', 'true');
+    }
+    firstLoad = false;
+  };
+  document.addEventListener('astro:page-load', onPage);
 </script>

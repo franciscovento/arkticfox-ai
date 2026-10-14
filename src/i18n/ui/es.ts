@@ -99,4 +99,52 @@ export const es = {
   'home.why.testingBody': 'Varios hooks y variaciones por concepto, para que encuentres el que funciona.',
   'home.why.qualityTitle': 'Calidad de marca',
   'home.why.qualityBody': 'Revisado por personas, fiel a tu marca siempre.',
+  'home.versionField': 'V1',
+  'home.versionPop': 'V2',
+  'home.v2.title': 'Arktic Fox | Corte estudio',
+  'home.v2.description':
+    'Un corte más claro y visual de la home. Las fotos son de prueba, hasta que entren las del estudio.',
+  'home.v2.note': 'Fotos de prueba. Cámbialas por trabajo del estudio.',
+  'home.v2.filterAll': 'Todo',
+  'home.v2.fashion': 'Moda',
+  'home.v2.beauty': 'Belleza',
+  'home.v2.food': 'Alimentación',
+  'home.v2.auto': 'Automoción',
+  'home.v2.commerce': 'E-commerce',
+  'home.v2.ugc': 'UGC',
+  'home.reel.close': 'Cerrar',
+  'home.reel.note': 'Prueba. Cámbialo por una imagen o un reel del estudio de este sector.',
+  'home.reel.open': 'Ver trabajo: {name}',
+  'home.reel.more': 'Leer más',
+  'work.title': 'Arktic Fox | Proyecto de muestra',
+  'work.description':
+    'Un caso de prueba: stills de producto, un film corto y UGC a partir de un brief. Medios de placeholder, no un trabajo de cliente.',
+  'work.eyebrow': 'Proyecto de muestra',
+  'work.heading': 'Un brief. Still, film y UGC.',
+  'work.lead':
+    'Un caso de prueba para que veas cómo presentamos un trabajo. La marca, las fotos y estos textos son placeholders, no un cliente real.',
+  'work.briefTitle': 'El brief',
+  'work.brief':
+    'Una marca mediana necesitaba un kit de lanzamiento: pack shots, un film corto para social y un UGC a cámara. Sin estudio y sin equipo.',
+  'work.approachTitle': 'Cómo lo montamos',
+  'work.approach':
+    'Partimos de las fotos de producto que ya tienes. Montamos las escenas, un film de 15 a 30 s y clips con avatares. Un editor cierra el corte.',
+  'work.deliverTitle': 'Qué te llevas',
+  'work.deliver':
+    'Sets de stills para tienda y ads, un film para social y variantes UGC con hooks distintos. Formatos: 9:16, 4:5, 1:1 y 16:9.',
+  'work.note': 'Empieza con una mirada.',
+  'work.process': 'Cómo se hizo',
+  'work.step2Title': 'Stills',
+  'work.step2Body':
+    'Cogemos las fotos de producto que ya tienes y las metemos en escenas, luces y temporadas nuevas — tienda, ads, lookbook — sin un día de estudio.',
+  'work.step3Title': 'El film',
+  'work.step3Body':
+    'Un corte de 15 a 30 s para social, web y pre-roll. El mismo producto, grado de cine, cerrado por un editor. Sin equipo en set.',
+  'work.step4Title': 'El corte',
+  'work.step4Body':
+    'UGC a cámara con avatares de IA y hooks distintos. Luego cerramos stills, film y clips en 9:16, 4:5, 1:1 y 16:9.',
+  'work.card1Title': 'Kit de lanzamiento',
+  'work.card2Title': 'Escenas nuevas',
+  'work.card3Title': 'Para el feed',
+  'work.card4Title': 'Listo para publicar',
 } as const satisfies Record<UiKey, string>;

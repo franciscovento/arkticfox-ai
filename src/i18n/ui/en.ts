@@ -96,6 +96,54 @@ export const en = {
   'home.why.testingBody': 'Multiple hooks and variations per concept, so you can find the winner.',
   'home.why.qualityTitle': 'Brand-safe quality',
   'home.why.qualityBody': 'Reviewed by humans, on-brand every time.',
+  'home.versionField': 'V1',
+  'home.versionPop': 'V2',
+  'home.v2.title': 'Arktic Fox | Studio cut',
+  'home.v2.description':
+    'A brighter, image-led cut of the home. Placeholder photos stand in for studio work.',
+  'home.v2.note': 'Placeholder photos. Swap them for studio work.',
+  'home.v2.filterAll': 'All',
+  'home.v2.fashion': 'Fashion',
+  'home.v2.beauty': 'Beauty',
+  'home.v2.food': 'Food',
+  'home.v2.auto': 'Automotive',
+  'home.v2.commerce': 'E-commerce',
+  'home.v2.ugc': 'UGC',
+  'home.reel.close': 'Close',
+  'home.reel.note': 'Mock work. Replace with a studio still or reel for this sector.',
+  'home.reel.open': 'View work: {name}',
+  'home.reel.more': 'Read more',
+  'work.title': 'Arktic Fox | Sample project',
+  'work.description':
+    'A stand-in case: product stills, a short film and UGC from one brief. Placeholder media, not a client job.',
+  'work.eyebrow': 'Sample project',
+  'work.heading': 'One brief. Still, film and UGC.',
+  'work.lead':
+    'A stand-in case so you can see how we present a job. The brand, the photos and this copy are placeholders — not a real client.',
+  'work.briefTitle': 'The brief',
+  'work.brief':
+    'A mid-size brand needed a launch kit: pack shots, a short film for social and a UGC-style talk to camera. No studio, no crew.',
+  'work.approachTitle': 'How we work it',
+  'work.approach':
+    'We start from the product photos you already have. Then we build the scenes, a 15 to 30-second film and avatar-led clips. A human editor finishes the cut.',
+  'work.deliverTitle': 'What you get',
+  'work.deliver':
+    'Still sets for store and ads, a social film, and UGC variants with alternate hooks. Formats: 9:16, 4:5, 1:1 and 16:9.',
+  'work.note': 'It begins with a look.',
+  'work.process': 'How it was made',
+  'work.step2Title': 'Stills',
+  'work.step2Body':
+    'We take the pack shots you already have and drop them into new scenes, light and seasons — store, ads, lookbook — without a studio day.',
+  'work.step3Title': 'The film',
+  'work.step3Body':
+    'A 15 to 30-second cut for social, web and pre-roll. Same product, cinematic grade, finished by an editor. No crew on set.',
+  'work.step4Title': 'The cut',
+  'work.step4Body':
+    'UGC-style talk-to-camera with AI avatars, plus alternate hooks. Then we lock stills, film and clips in 9:16, 4:5, 1:1 and 16:9.',
+  'work.card1Title': 'Launch kit',
+  'work.card2Title': 'New scenes',
+  'work.card3Title': 'For the feed',
+  'work.card4Title': 'Ready to run',
 } as const;
 
 export type UiKey = keyof typeof en;
