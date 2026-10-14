@@ -81,7 +81,7 @@
 
 - Date: 2026-10-11
 - Context: The home read as a static poster. The ask is a scroll that feels like walking into the snow. The only plate is a 640×360 loop of one drift. Zooming it hard makes the pixels worse, and there is no traveling shot down a path.
-- Decision: Pin the hero and scrub a short dolly (scale 1.16 toward the horizon), a polar-night veil, and canvas flakes that grow toward the camera. Lenis runs only for this scene and turns off with reduced motion. The fox loop stays in the plate. A real path needs a new forward-moving clip.
+- Decision: Pin the hero and scrub a short dolly (scale 1.16 toward the horizon), a polar-night veil, and canvas flakes that grow toward the camera. Lenis runs only for this scene on fine pointers; touch and reduced motion use native scroll. The fox loop stays in the plate. A real path needs a new forward-moving clip.
 - Consequences: The scroll is feelable now. It is not a mountain trail. Replacing the plate with a traveling MP4 is the next asset, not another zoom.
 - Update: Each journey still pushes in on its own (scale about 1.05 to 1.6, origin toward the horizon) and crossfades into the next. The hero leaves upward. The three service cards then slide in from the right, staggered, and remain together. The last card keeps the ice border. Snow stays the small depth field. The stills remain the stand-in for a later frame scrub.
 

@@ -14,7 +14,7 @@ Tokens live in `src/styles/tokens.css` (`--dur-hover`, `--dur-reveal`, `--dur-sl
 ## What moves
 
 - Sector marquee, CSS only, pauses on hover and reduced motion.
-- Home dive. The hero is pinned for about three viewports. Scroll pushes the plate slightly toward the horizon, lays a veil over it, and draws snowflakes that grow as they approach. The headline leaves. A single line arrives at the end. Lenis smooths the wheel and is disabled for reduced motion.
+- Home dive. The hero is pinned for about 440vh on small screens and 680vh from 768px up. Scroll pushes the plate slightly toward the horizon, lays a veil over it, and draws snowflakes that grow as they approach. The headline leaves. A single line arrives at the end. Lenis smooths the wheel on fine pointers only; touch uses native scroll. Off for reduced motion.
 - Nav turns to frosted glass on scroll.
 - Before/after drag slider.
 - Masonry filter transitions.

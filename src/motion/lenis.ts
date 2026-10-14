@@ -7,9 +7,13 @@ import { prefersReducedMotion } from './reduced';
 let lenis: Lenis | undefined;
 let ticker: ((time: number) => void) | undefined;
 
-/** Smooth wheel scrolling for scrubbed scenes. Off when reduced motion is requested. */
+function isCoarsePointer(): boolean {
+  return window.matchMedia('(pointer: coarse)').matches;
+}
+
+/** Smooth wheel scrolling for scrubbed scenes. Off on touch and reduced motion. */
 export function startSmoothScroll(): void {
-  if (typeof window === 'undefined' || prefersReducedMotion()) return;
+  if (typeof window === 'undefined' || prefersReducedMotion() || isCoarsePointer()) return;
   if (lenis) {
     lenis.resize();
     ScrollTrigger.refresh();

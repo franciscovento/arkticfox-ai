@@ -85,7 +85,13 @@ button.marquee__item {
 }
 
 html.js [data-snow-dive] {
-  height: 680vh;
+  height: 440vh;
+}
+
+@media (min-width: 768px) {
+  html.js [data-snow-dive] {
+    height: 680vh;
+  }
 }
 
 html.js [data-journey-stage] {
@@ -304,13 +310,14 @@ html:not(.js) [data-loader] {
 }
 
 .work-reel {
-  width: min(94vw, 48rem);
-  max-height: 88svh;
+  width: min(calc(100vw - 1.5rem), 48rem);
+  max-height: min(88svh, calc(100dvh - 1.5rem));
   margin: 0;
-  inset: auto 1.25rem 1.25rem auto;
+  inset: auto max(0.75rem, env(safe-area-inset-right)) max(0.75rem, env(safe-area-inset-bottom)) auto;
   padding: 0;
   border: 0;
   background: transparent;
+  overflow: hidden;
   opacity: 0;
   transform: translate(1.25rem, 1.25rem) scale(0.96);
   transition-property: opacity, transform;
@@ -337,17 +344,33 @@ html:has([data-work-reel][open]) [data-marquee-hint] {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  max-height: min(88svh, calc(100dvh - 1.5rem));
+  min-height: 0;
   padding: 1rem;
 }
 
 .work-reel__bar {
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
 }
 
+.work-reel__bar h2 {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.work-reel__bar [data-reel-close] {
+  flex-shrink: 0;
+}
+
 .work-reel__media {
+  flex: 1 1 auto;
+  min-height: 0;
   overflow: hidden;
   border-radius: var(--radius-card-sm);
 }
@@ -355,20 +378,27 @@ html:has([data-work-reel][open]) [data-marquee-hint] {
 .work-reel__shot {
   display: block;
   width: 100%;
-  max-height: 72svh;
+  height: 100%;
+  max-height: 38svh;
   object-fit: cover;
   opacity: 0.92;
 }
 
 .work-reel__meta {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
+  flex-shrink: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
 }
 
 .work-reel__note {
   margin: 0;
+}
+
+.work-reel__meta a {
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .work-snow {
@@ -459,6 +489,17 @@ html:has([data-work-reel][open]) [data-marquee-hint] {
   .work-reel {
     width: min(56vw, 52rem);
     inset: auto 2.5rem 2rem auto;
+  }
+
+  .work-reel__shot {
+    max-height: 72svh;
+  }
+
+  .work-reel__meta {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
   }
 
   .work-beat__intro {
