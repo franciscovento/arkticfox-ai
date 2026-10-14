@@ -16,7 +16,7 @@ Update this table in the same task that creates or changes a component.
 | FoxDivider | — | placeholder SVG is inline on the styleguide | styleguide | planned |
 | Badge | — | — | — | planned |
 | Reveal | `src/components/motion/Reveal.astro` | `stagger` (ms), `as`, `class` | styleguide | built |
-| Marquee | `src/components/motion/Marquee.astro` | `label`, `class` | styleguide | built |
+| Marquee | `src/components/motion/Marquee.astro` | `label`, `reverse`, `pauseOnHover`, `class` | styleguide, HomeEntry | built |
 | SnowCanvas | `src/components/motion/SnowCanvas.astro` | none | styleguide | built |
 | Seo | `src/components/seo/Seo.astro` | `title`, `description`, `siteName`, `noindex` | BaseLayout | built |
 | Hreflang | `src/components/seo/Hreflang.astro` | `pageKey` | BaseLayout | built |
@@ -26,5 +26,7 @@ Update this table in the same task that creates or changes a component.
 | MobileMenu | — | — | — | planned |
 | WhatsAppButton | — | — | — | planned |
 | PageShell | `src/components/pages/PageShell.astro` | `locale`, `pageKey`, `titleKey`, `descriptionKey`, `headingKey` | every public route except home, EN and ES | built (shell only, no page design) |
-| HomeEntry | `src/components/home/HomeEntry.astro` | `locale` | `/` and `/es/` | built (pinned stage, four journey stills, hero then a card row, loader) |
-| SnowDive | `src/components/motion/SnowDive.astro` | none | HomeEntry | built (per-plate push-in, staggered cards, depth snow) |
+| HomeEntry | `src/components/home/HomeEntry.astro` | `locale` | `/` and `/es/` | built (pinned stage, blue-hour field, glass cards, sector marquee, loader) |
+| SnowDive | `src/components/motion/SnowDive.astro` | none | HomeEntry | built (parallax drifts, staggered cards, head-on snow) |
+| FrostField | `src/components/motion/FrostField.astro` | `fixed`, `class` | HomeEntry | built (procedural blue-hour sky) |
+| GlassSheen | `src/components/motion/GlassSheen.astro` | none | HomeEntry | built (pointer sheen on `[data-sheen]`) |

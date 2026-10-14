@@ -1,15 +1,32 @@
 ---
 interface Props {
   label: string;
+  reverse?: boolean;
+  pauseOnHover?: boolean;
   class?: string;
 }
 
-const { label, class: className } = Astro.props;
+const { label, reverse = false, pauseOnHover = true, class: className } = Astro.props;
+const items = label.split(/\s*·\s*/).filter(Boolean);
 ---
 
-<div class:list={['marquee', className]}>
+<div class:list={['marquee', reverse && 'marquee--reverse', pauseOnHover && 'marquee--pause', className]}>
   <div class="marquee__track">
-    <p class="label marquee__group">{label}</p>
-    <p class="label marquee__group" aria-hidden="true">{label}</p>
+    {
+      [false, true].map((copy) => (
+        <p class="label marquee__group" aria-hidden={copy ? 'true' : undefined}>
+          <span>
+            {
+              items.map((item, index) => (
+                <>
+                  {index > 0 ? ' · ' : ''}
+                  <span class="marquee__item">{item}</span>
+                </>
+              ))
+            }
+          </span>
+        </p>
+      ))
+    }
   </div>
 </div>

@@ -1,0 +1,42 @@
+---
+/**
+ * Procedural blue-hour arctic: deep ice sky, horizon bloom, pointer glow, grain, vignette.
+ * Pure CSS gradients, so it is sharp at any viewport and costs nothing to download.
+ * Purely decorative — it never holds content and is hidden from assistive tech.
+ */
+interface Props {
+  /** Pin to the viewport instead of the nearest positioned ancestor. */
+  fixed?: boolean;
+  class?: string;
+}
+
+const { fixed = false, class: className } = Astro.props;
+---
+
+<div
+  class:list={['frost-field', fixed && 'frost-field--fixed', className]}
+  data-frost-field
+  aria-hidden="true"
+>
+  <div class="frost-field__layer bg-arctic-sky"></div>
+  <div class="frost-field__layer bg-frost-aurora"></div>
+  <div class="frost-field__layer bg-frost-glow" data-frost-glow></div>
+  <div class="frost-field__layer frost-field__grain bg-frost-grain"></div>
+  <div class="frost-field__layer bg-frost-vignette"></div>
+</div>
+
+<script>
+  import { onPointer } from '../../motion/pointer';
+
+  const glows = [...document.querySelectorAll<HTMLElement>('[data-frost-glow]')];
+  if (glows.length > 0) {
+    onPointer((state) => {
+      const x = `${(state.ex * 100).toFixed(2)}%`;
+      const y = `${(state.ey * 100).toFixed(2)}%`;
+      for (const glow of glows) {
+        glow.style.setProperty('--frost-x', x);
+        glow.style.setProperty('--frost-y', y);
+      }
+    });
+  }
+</script>

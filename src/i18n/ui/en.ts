@@ -85,6 +85,17 @@ export const en = {
   'home.ugcBody':
     'Hyperrealistic UGC-style videos with AI creators: testimonials, unboxings and tutorials, each with alternative hooks to test.',
   'home.ugcNote': 'All creators are AI-generated avatars.',
+  'home.marquee.label': 'E-commerce · Fashion · Beauty · Food & beverage · Automotive',
+  'home.marquee.services': 'Product images · Ad videos · Hyperreal UGC',
+  'home.why.eyebrow': 'Why Arktic Fox',
+  'home.why.speedTitle': 'Speed',
+  'home.why.speedBody': 'From brief to first drafts in days, not weeks.',
+  'home.why.costTitle': 'Cost',
+  'home.why.costBody': 'A fraction of a traditional shoot. No studio, no crew, no logistics.',
+  'home.why.testingTitle': 'Testing',
+  'home.why.testingBody': 'Multiple hooks and variations per concept, so you can find the winner.',
+  'home.why.qualityTitle': 'Brand-safe quality',
+  'home.why.qualityBody': 'Reviewed by humans, on-brand every time.',
 } as const;
 
 export type UiKey = keyof typeof en;

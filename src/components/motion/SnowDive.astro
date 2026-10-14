@@ -2,6 +2,7 @@
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
   import { runScrollScene } from '../../motion/gsap';
   import { startSmoothScroll } from '../../motion/lenis';
+  import { pointer } from '../../motion/pointer';
   import { prefersReducedMotion } from '../../motion/reduced';
 
   startSmoothScroll();
@@ -11,10 +12,28 @@
     root.dataset.diveBound = 'true';
 
     const canvas = root.querySelector<HTMLCanvasElement>('[data-dive-snow]');
-    const plates = [...root.querySelectorAll<HTMLElement>('[data-journey-plate]')];
+    const layers = [...root.querySelectorAll<HTMLElement>('[data-drift-layer]')];
+    const veil = root.querySelector<HTMLElement>('[data-dive-veil]');
     const beats = [...root.querySelectorAll<HTMLElement>('[data-journey-beat]')];
     const pieces = [...root.querySelectorAll<HTMLElement>('[data-journey-piece]')];
+    const mouse = pointer();
     let progress = 0;
+    // `dive` tracks scroll *speed*, not position: moving makes the snow come at the camera,
+    // stopping lets it settle back into a calm fall. It decays on its own in the frame loop.
+    let dive = 0;
+    let diveTarget = 0;
+
+    const place = () => {
+      for (const layer of layers) {
+        const depth = Number(layer.dataset.depth) || 0;
+        const rise = progress * depth * 46;
+        const scale = 1 + progress * depth * 1.15;
+        const turnX = (mouse.ex - 0.5) * depth * -38;
+        const turnY = (mouse.ey - 0.5) * depth * -9;
+        layer.style.transform = `translate3d(${turnX.toFixed(2)}px, ${rise.toFixed(2)}vh, 0) translateY(${turnY.toFixed(2)}px) scale(${scale.toFixed(4)})`;
+      }
+      if (veil) veil.style.opacity = String(Math.min(1, progress * 1.25));
+    };
 
     runScrollScene(() => {
       ScrollTrigger.create({
@@ -23,77 +42,102 @@
         end: 'bottom bottom',
         onUpdate: (self) => {
           progress = self.progress;
-          plates.forEach((plate, index) => {
-            plate.style.opacity = String(plateOpacity(progress, index, plates.length));
-            plate.style.transform = `scale(${plateScale(progress, index, plates.length)})`;
-          });
-          beats.forEach((beat) => {
+          diveTarget = Math.min(1, Math.abs(self.getVelocity()) / 2400);
+          place();
+          for (const beat of beats) {
             const from = Number(beat.dataset.from);
             const to = Number(beat.dataset.to);
-            const opacity = beatOpacity(progress, from, to, false);
+            const opacity = beatOpacity(progress, from, to);
             const shown = opacity > 0.04;
             const leaving = progress > from + (to - from) * 0.55;
             beat.style.opacity = String(opacity);
             beat.style.visibility = shown ? 'visible' : 'hidden';
             beat.style.pointerEvents = shown ? 'auto' : 'none';
             beat.style.transform = `translateY(${(1 - opacity) * (leaving ? -64 : 20)}px)`;
-          });
-          pieces.forEach((piece) => {
-            const opacity = pieceOpacity(progress, Number(piece.dataset.from));
+          }
+          for (const piece of pieces) {
+            const opacity = pieceOpacity(
+              progress,
+              Number(piece.dataset.from),
+              Number(piece.dataset.to),
+              Number(piece.dataset.fade),
+            );
             const shown = opacity > 0.04;
+            const rise = piece.dataset.enter === 'up';
             piece.style.opacity = String(opacity);
             piece.style.visibility = shown ? 'visible' : 'hidden';
             piece.style.pointerEvents = shown ? 'auto' : 'none';
-            piece.style.transform = `translateX(${(1 - opacity) * 96}px)`;
-          });
+            piece.style.transform = rise
+              ? `translateY(${(1 - opacity) * 28}px)`
+              : `translateX(${(1 - opacity) * 96}px)`;
+          }
         },
       });
+
+      // Keeps running when the scroll is idle: the pointer still moves the scene, and `dive`
+      // needs to ease back to zero once the wheel stops, which no scroll event will tell us.
+      const frameLoop = () => {
+        diveTarget *= 0.92;
+        dive += (diveTarget - dive) * 0.09;
+        place();
+        window.requestAnimationFrame(frameLoop);
+      };
+      window.requestAnimationFrame(frameLoop);
     });
 
     if (!prefersReducedMotion() && canvas) {
-      mountDiveSnow(canvas, () => progress);
+      mountSnow(canvas, () => dive, mouse);
     }
   }
 
-  function plateScale(progress: number, index: number, count: number): number {
-    const span = 1 / Math.max(count - 1, 1);
-    const start = Math.max(0, index * span - span);
-    const end = Math.min(1, index * span + span);
-    const t = (progress - start) / Math.max(0.001, end - start);
-    return 1.05 + Math.min(1, Math.max(0, t)) * 0.55;
-  }
-
-  function pieceOpacity(progress: number, from: number): number {
+  function pieceOpacity(progress: number, from: number, to: number, fade = 0.1): number {
     if (progress < from) return 0;
-    return Math.min(1, (progress - from) / 0.1);
+    const fadeIn = Math.min(1, (progress - from) / (Number.isFinite(fade) && fade > 0 ? fade : 0.1));
+    if (Number.isNaN(to)) return fadeIn;
+    if (progress > to) return 0;
+    return Math.min(fadeIn, Math.min(1, (to - progress) / 0.08));
   }
 
-  function plateOpacity(progress: number, index: number, count: number): number {
-    if (count <= 1) return 1;
-    const span = 1 / (count - 1);
-    const dist = Math.abs(progress - index * span);
-    return Math.max(0, 1 - dist / span);
-  }
-
-  function beatOpacity(progress: number, from: number, to: number, holdEnd: boolean): number {
-    const edge = 0.05;
+  function beatOpacity(progress: number, from: number, to: number, edge = 0.05): number {
+    const fade = Number.isFinite(edge) && edge > 0 ? edge : 0.05;
     if (progress < from || progress > to) return 0;
-    const fadeIn = from === 0 ? 1 : Math.min(1, (progress - from) / edge);
-    const fadeOut = holdEnd ? 1 : Math.min(1, (to - progress) / edge);
+    const fadeIn = from === 0 ? 1 : Math.min(1, (progress - from) / fade);
+    const fadeOut = to >= 1 ? 1 : Math.min(1, (to - progress) / fade);
     return Math.min(fadeIn, fadeOut);
   }
 
-  function mountDiveSnow(canvas: HTMLCanvasElement, readProgress: () => number) {
+  /**
+   * Snow in perspective: flakes live in 3D and travel toward the camera. At rest they drift down
+   * calmly; as `dive` rises with scroll speed, gravity gives way to a head-on rush, which is what
+   * reads as moving forward. The pointer shifts the vanishing point, so looking around feels like
+   * turning your head into the snowfall.
+   */
+  function mountSnow(
+    canvas: HTMLCanvasElement,
+    readDive: () => number,
+    mouse: { ex: number; ey: number },
+  ) {
     const context = canvas.getContext('2d');
     if (!context) return;
     const ctx = context;
-    const color = getComputedStyle(document.documentElement).getPropertyValue('--color-snow-white').trim();
+    const color = getComputedStyle(document.documentElement).getPropertyValue('--color-white').trim();
     if (!color) return;
 
-    type Flake = { x: number; y: number; z: number; s: number };
+    // x/y are offsets from the axis of travel, not screen coordinates. z is distance.
+    type Flake = { x: number; y: number; z: number; s: number; phase: number; drift: number };
     let flakes: Flake[] = [];
     let frame = 0;
     let active = false;
+    let time = 0;
+
+    const spawn = (far: boolean): Flake => ({
+      x: (Math.random() - 0.5) * 2.4,
+      y: (Math.random() - 0.5) * 2.4,
+      z: far ? 1 : Math.random() * 0.9 + 0.1,
+      s: Math.random() * 0.55 + 0.45,
+      phase: Math.random() * Math.PI * 2,
+      drift: Math.random() * 0.5 + 0.7,
+    });
 
     const resize = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -101,38 +145,43 @@
       canvas.width = Math.max(1, Math.floor(width * dpr));
       canvas.height = Math.max(1, Math.floor(height * dpr));
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const count = Math.round(Math.min(150, Math.max(48, (width * height) / 12000)));
-      flakes = Array.from({ length: count }, () => ({
-        x: Math.random(),
-        y: Math.random() * 0.7 + 0.15,
-        z: Math.random() * 0.85 + 0.15,
-        s: Math.random() * 0.7 + 0.35,
-      }));
+      const count = Math.round(Math.min(260, Math.max(90, (width * height) / 7600)));
+      flakes = Array.from({ length: count }, () => spawn(false));
     };
 
     const draw = () => {
       if (!active) return;
-      const depth = readProgress();
+      const dive = readDive();
       const { width, height } = canvas.getBoundingClientRect();
       ctx.clearRect(0, 0, width, height);
       ctx.fillStyle = color;
+      time += 0.006;
+
+      // Head turn: the vanishing point leads the pointer, so the field swings around it.
+      const vanishX = 0.5 + (mouse.ex - 0.5) * 0.3;
+      const vanishY = 0.52 + (mouse.ey - 0.5) * 0.18;
+      // Diving spreads the field wider, so flakes sweep past the edges instead of straight down.
+      const spread = 0.2 + dive * 0.14;
 
       for (const flake of flakes) {
-        flake.z -= (0.0012 + depth * 0.012) * flake.s;
-        if (flake.z < 0.04) {
-          flake.z = 1;
-          flake.x = Math.random();
-          flake.y = Math.random() * 0.55 + 0.2;
-        }
+        // A slow base approach keeps the hero alive. Scroll speed turns it into a rush.
+        flake.z -= (0.0016 + dive * 0.03) * flake.s;
+        // Gravity rules at rest and fades out as the dive takes over.
+        flake.y += 0.0017 * (1 - dive * 0.82) * flake.s;
+        flake.x += Math.sin(time * flake.drift + flake.phase) * 0.0009;
 
-        const x = 0.5 + (flake.x - 0.5) / flake.z;
-        const y = 0.6 + (flake.y - 0.6) / flake.z;
-        if (x < -0.08 || x > 1.08 || y < -0.08 || y > 1.08) continue;
+        if (flake.z <= 0.06) Object.assign(flake, spawn(true));
 
-        const radius = ((1 - flake.z) * 2.4 + 0.25) * (0.55 + depth * 1.6) * flake.s;
-        ctx.globalAlpha = Math.min(0.8, (1 - flake.z) * 0.95);
+        const scale = 1 / flake.z;
+        const sx = vanishX + flake.x * scale * spread;
+        const sy = vanishY + flake.y * scale * spread;
+        if (sx < -0.1 || sx > 1.1 || sy < -0.1 || sy > 1.1) continue;
+
+        const near = 1 - flake.z;
+        const radius = (0.35 + near * near * 3.4) * flake.s * (1 + dive * 1.1);
+        ctx.globalAlpha = Math.min(0.85, 0.1 + near * near * 0.9);
         ctx.beginPath();
-        ctx.arc(x * width, y * height, radius, 0, Math.PI * 2);
+        ctx.arc(sx * width, sy * height, radius, 0, Math.PI * 2);
         ctx.fill();
       }
 

@@ -85,3 +85,31 @@
 - Consequences: The scroll is feelable now. It is not a mountain trail. Replacing the plate with a traveling MP4 is the next asset, not another zoom.
 - Update: Each journey still pushes in on its own (scale about 1.05 to 1.6, origin toward the horizon) and crossfades into the next. The hero leaves upward. The three service cards then slide in from the right, staggered, and remain together. The last card keeps the ice border. Snow stays the small depth field. The stills remain the stand-in for a later frame scrub.
 
+## ADR-013 — Content lives in one spec per page, with provenance markers
+
+- Date: 2026-10-13
+- Context: Copy was spread across the source PDF, `docs/01-project-brief.md` and a flat `docs/05-content.md`. Iterating on a page's design meant re-reading all three and re-deciding what the page says. The PDF also mixes approved copy with the author's own proposals and with gaps, and nothing recorded which was which, so every design pass risked either inventing copy or discarding approved lines.
+- Decision: One spec per page in `docs/pages/`, block by block, EN and ES side by side, with every line marked **PDF** (approved, literal), **PROPOSED** (written or translated by us, usable, pending review) or **OPEN** (needs a decision or data we don't have). The three service pages share `_service-template.md` and only carry what differs. Prices exist only in `pages/pricing.md`. Legal body text is never drafted. `docs/05-content.md` becomes a thin index plus the cross-page rules, so there is no second copy of any string.
+- Consequences: Design iteration now changes presentation without renegotiating copy. Spanish beyond the few lines the PDF supplies is explicitly a proposal, not a decision. The specs are the staging area for `src/i18n/ui/*.ts`, and they must be updated in the same task whenever a design change alters what a block says, or they will drift. Blocked content is visible as **OPEN** rather than quietly invented, which is what rules 3 and 7 in `CLAUDE.md` demand.
+
+## ADR-014 — Home field is blue hour, cards stay frosted glass
+
+- Date: 2026-10-13
+- Context: Polar night made the hero feel gloomy. A daylight rewrite made it a white slab: the CSS snow banks filled half the viewport, and the frosted cards lost the contrast they need to read as glass.
+- Decision: Keep the original `glass` cards, white type and ice eyebrows. The field is a procedural blue hour — ice mixed into ink, not snow-white and not polar-night black. The ridges stay small, low and in shade. Snow still comes at the camera. The pointer turns the head, mostly left to right.
+- Consequences: No raster landscape on the home. The four journey stills are unused. Daylight and night remain available for later sections; the entry is neither.
+
+## ADR-015 — Why tiles borrow the unused palette, then hold at full opacity
+
+- Date: 2026-10-13
+- Context: The four Why cards at the end of the dive read as empty glass compared with the service cards. They also never reached opacity 1: fade-in needs 0.10 of pin progress and the last tile started at 0.975. Coral, pink and snow-gray were sitting unused while everything on the home was ice and white.
+- Decision: Keep the frosted tiles. Give each one a single palette accent — ice, coral, pink, snow-gray — as a top hairline, line icon and corner bloom. The quote button under the grid is the only brand-gradient in that viewport. The marquee holds until 0.92; Why starts at 0.88 with a short fade so the fourth tile is still opaque before the pin ends.
+- Consequences: Why is still four short, stat-free lines. Color is structural, not a new visual language. Later light-section Why (block 6 of the home spec) can reuse the same accents on snow-white.
+
+## ADR-016 — Dive ends on the sector marquee
+
+- Date: 2026-10-13
+- Context: Why-as-slides (paging, snap, locked wheel) fought Lenis: you could not scroll back, a fast wheel skipped every card, and it sometimes stuck on the second beat.
+- Decision: Remove Why from the pinned entry. The dive is hero → service cards → sector marquee, and it stays there. The four Why lines remain in i18n and `docs/pages/home.md` for a later block.
+- Consequences: The home no longer traps the wheel. Scroll is free again. Why is still specified; it is just not on this pin.
+

@@ -88,4 +88,15 @@ export const es = {
   'home.ugcBody':
     'Vídeos con aire de UGC hiperrealista y creadores de IA: testimonios, unboxings y tutoriales, cada uno con ganchos distintos para probar.',
   'home.ugcNote': 'Todos los creadores son avatares generados con IA.',
+  'home.marquee.label': 'E-commerce · Moda · Belleza · Alimentación · Automoción',
+  'home.marquee.services': 'Imágenes de producto · Vídeos publicitarios · UGC hiperrealista',
+  'home.why.eyebrow': 'Por qué Arktic Fox',
+  'home.why.speedTitle': 'Velocidad',
+  'home.why.speedBody': 'Del brief a las primeras propuestas en días, no semanas.',
+  'home.why.costTitle': 'Coste',
+  'home.why.costBody': 'Una fracción de un rodaje tradicional. Sin estudio, sin equipo, sin logística.',
+  'home.why.testingTitle': 'Testeo',
+  'home.why.testingBody': 'Varios hooks y variaciones por concepto, para que encuentres el que funciona.',
+  'home.why.qualityTitle': 'Calidad de marca',
+  'home.why.qualityBody': 'Revisado por personas, fiel a tu marca siempre.',
 } as const satisfies Record<UiKey, string>;

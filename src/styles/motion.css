@@ -26,8 +26,12 @@ html.js [data-reveal].is-visible {
   animation-iteration-count: infinite;
 }
 
-.marquee:hover .marquee__track,
-.marquee:focus-within .marquee__track {
+.marquee--reverse .marquee__track {
+  animation-direction: reverse;
+}
+
+.marquee--pause:hover .marquee__track,
+.marquee--pause:focus-within .marquee__track {
   animation-play-state: paused;
 }
 
@@ -37,6 +41,17 @@ html.js [data-reveal].is-visible {
   gap: 1.5rem;
   padding-inline-end: 1.5rem;
   white-space: nowrap;
+}
+
+.marquee__item {
+  transition-property: color;
+  transition-duration: var(--dur-slow);
+  transition-timing-function: var(--ease-fox);
+}
+
+.marquee__item:hover,
+.marquee__item:focus-visible {
+  color: var(--color-ice-blue);
 }
 
 @keyframes marquee-scroll {
@@ -60,7 +75,7 @@ html.js [data-reveal].is-visible {
 }
 
 html.js [data-snow-dive] {
-  height: 420vh;
+  height: 680vh;
 }
 
 html.js [data-journey-stage] {
@@ -70,12 +85,140 @@ html.js [data-journey-stage] {
   overflow: hidden;
 }
 
-html.js [data-journey-plate] {
-  opacity: 0;
+.frost-field {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
 }
 
-html.js [data-journey-plate]:first-of-type {
-  opacity: 1;
+.frost-field--fixed {
+  position: fixed;
+}
+
+.frost-field__layer {
+  position: absolute;
+  inset: 0;
+}
+
+.frost-field__grain {
+  /* grain has to stay faint: it kills gradient banding without reading as texture */
+  opacity: 0.07;
+  mix-blend-mode: overlay;
+}
+
+/*
+ * Drift layers are drawn, not photographed. The floor bar is gone on purpose: a solid strip
+ * of snow-shade read as a blue line under the CTAs. Crests fade out at the top so the ridge
+ * never becomes a hard horizon.
+ */
+.drift {
+  position: absolute;
+  inset: 0;
+  z-index: 9;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.drift-layer {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 100%;
+  will-change: transform;
+}
+
+.drift-layer__crest {
+  position: absolute;
+  background-image: var(--background-image-drift-crest);
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, var(--color-white) 28%);
+  mask-image: linear-gradient(180deg, transparent 0%, var(--color-white) 28%);
+}
+
+.drift-layer--far {
+  opacity: 0.45;
+  filter: blur(3px);
+}
+
+.drift-layer--far .drift-layer__crest:nth-child(1) {
+  left: -40%;
+  bottom: 18vh;
+  width: 120%;
+  height: 10vh;
+}
+
+.drift-layer--far .drift-layer__crest:nth-child(2) {
+  left: 36%;
+  bottom: 17vh;
+  width: 110%;
+  height: 8vh;
+}
+
+.drift-layer--mid {
+  opacity: 0.62;
+}
+
+.drift-layer--mid .drift-layer__crest:nth-child(1) {
+  left: -28%;
+  bottom: 4vh;
+  width: 92%;
+  height: 18vh;
+}
+
+.drift-layer--mid .drift-layer__crest:nth-child(2) {
+  left: 48%;
+  bottom: 2vh;
+  width: 80%;
+  height: 16vh;
+}
+
+.drift-layer--near {
+  opacity: 0.78;
+}
+
+.drift-layer--near .drift-layer__crest:nth-child(1) {
+  left: -38%;
+  bottom: -10vh;
+  width: 108%;
+  height: 22vh;
+}
+
+.drift-layer--near .drift-layer__crest:nth-child(2) {
+  left: 56%;
+  bottom: -12vh;
+  width: 90%;
+  height: 20vh;
+}
+
+.drift-veil {
+  position: absolute;
+  inset: 0;
+  z-index: 9;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sheen {
+  position: relative;
+  isolation: isolate;
+}
+
+.sheen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background-image: var(--background-image-glass-sheen);
+  opacity: 0;
+  transition-property: opacity;
+  transition-duration: var(--dur-slow);
+  transition-timing-function: var(--ease-fox);
+}
+
+.sheen:hover::after,
+.sheen:focus-within::after {
+  opacity: 0.45;
 }
 
 html.js [data-journey-beat] {
@@ -92,10 +235,6 @@ html.js [data-journey-beat][data-from='0'] {
   pointer-events: auto;
 }
 
-.journey-plate {
-  transform-origin: 50% 42%;
-}
-
 html.js [data-journey-row] {
   position: absolute;
   inset: 0;
@@ -110,20 +249,14 @@ html.js [data-journey-piece] {
 
 .journey-piece {
   width: min(16.5rem, 100%);
+  transition-property: border-color;
+  transition-duration: var(--dur-slow);
+  transition-timing-function: var(--ease-fox);
 }
 
-.journey-card-featured {
+.journey-piece:hover,
+.journey-piece:focus-within {
   border-color: var(--color-ice-blue);
-}
-
-.hero-film {
-  object-position: 78% 18%;
-}
-
-@media (min-width: 1024px) {
-  .hero-film {
-    object-position: 74% 56%;
-  }
 }
 
 [data-loader-bar] {
@@ -198,12 +331,16 @@ html:not(.js) [data-loader] {
     transform: none;
   }
 
-  html.js [data-journey-plate]:not(:first-of-type) {
+  .drift-layer {
+    transform: none;
+  }
+
+  .drift-veil {
     display: none;
   }
 
-  .journey-plate {
-    transform: none;
+  .sheen::after {
+    display: none;
   }
 
   .marquee__track {

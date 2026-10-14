@@ -1,0 +1,40 @@
+<script>
+  import { prefersReducedMotion } from '../../motion/reduced';
+
+  /**
+   * Specular highlight that tracks the pointer across frosted glass. Opt in with `data-sheen`
+   * on any element carrying the `glass` utility. Position is written as a CSS variable, so the
+   * paint stays in `--background-image-glass-sheen` and no color lives in this file.
+   */
+  const targets = [...document.querySelectorAll<HTMLElement>('[data-sheen]')];
+  const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+  if (targets.length > 0 && fine && !prefersReducedMotion()) {
+    for (const target of targets) {
+      let frame = 0;
+
+      target.addEventListener(
+        'pointermove',
+        (event) => {
+          if (frame) return;
+          frame = window.requestAnimationFrame(() => {
+            frame = 0;
+            const box = target.getBoundingClientRect();
+            target.style.setProperty('--sheen-x', `${((event.clientX - box.left) / box.width) * 100}%`);
+            target.style.setProperty('--sheen-y', `${((event.clientY - box.top) / box.height) * 100}%`);
+          });
+        },
+        { passive: true },
+      );
+
+      target.addEventListener(
+        'pointerleave',
+        () => {
+          target.style.removeProperty('--sheen-x');
+          target.style.removeProperty('--sheen-y');
+        },
+        { passive: true },
+      );
+    }
+  }
+</script>

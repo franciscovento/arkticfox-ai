@@ -1,11 +1,14 @@
 # Roadmap
 
+Page copy is specified per page in [`pages/`](./pages/README.md). Build steps 4–8 read from there.
+
 | Step | Goal | Status |
 |---|---|---|
 | 1 | Environment, tooling, guardrails, docs | done — pending approval |
+| 1b | Content specs per page (`docs/pages/`), EN + ES, provenance marked | done — Spanish and all `OPEN` items pending Nabil |
 | 2 | Design system build: tokens ← Claude Design handoff, primitives, FoxDivider, logo, `/styleguide` approved | todo |
 | 3 | Layout: Nav (split + mobile menu), Footer, language switcher, WhatsApp button, Seo/Hreflang | todo |
-| 4 | Home sections 1→12 (dark/light rhythm, hero video, marquee, sliders, masonry) | entry hero and scroll dive started; sections 3–12 still todo |
+| 4 | Home sections 1→12 (dark/light rhythm, hero video, marquee, sliders, masonry) | dive through the sector marquee is in; Why and sections 5, 7–12 still todo |
 | 5 | Service page template + 3 services | todo |
 | 6 | Pricing page | todo |
 | 7 | Quote form + Thanks + legal template + cookie banner | todo |
