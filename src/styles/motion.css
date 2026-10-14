@@ -207,6 +207,13 @@ html.js [data-journey-stage] {
   height: 20vh;
 }
 
+.video-shade {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
 .drift-veil {
   position: absolute;
   inset: 0;
@@ -646,6 +653,11 @@ html:has([data-work-reel][open]) [data-marquee-hint] {
 
   .drift-veil {
     display: none;
+  }
+
+  [data-dive-video] {
+    height: 100svh;
+    bottom: auto;
   }
 
   .sheen::after {

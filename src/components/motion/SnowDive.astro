@@ -9,6 +9,7 @@
   let diveTrigger: ScrollTrigger | undefined;
   let diveFrame = 0;
   let stopSnow: (() => void) | undefined;
+  let stopVideo: (() => void) | undefined;
 
   function teardownDive() {
     diveTrigger?.kill();
@@ -17,6 +18,8 @@
     diveFrame = 0;
     stopSnow?.();
     stopSnow = undefined;
+    stopVideo?.();
+    stopVideo = undefined;
     stopSmoothScroll();
   }
 
@@ -30,6 +33,8 @@
     const canvas = root.querySelector<HTMLCanvasElement>('[data-dive-snow]');
     const layers = [...root.querySelectorAll<HTMLElement>('[data-drift-layer]')];
     const veil = root.querySelector<HTMLElement>('[data-dive-veil]');
+    const video = root.querySelector<HTMLVideoElement>('[data-dive-video]');
+    stopVideo = bindDiveVideo(video);
     const beats = [...root.querySelectorAll<HTMLElement>('[data-journey-beat]')];
     const pieces = [...root.querySelectorAll<HTMLElement>('[data-journey-piece]')];
     const mouse = pointer();
@@ -105,7 +110,10 @@
     });
 
     if (!prefersReducedMotion() && canvas) {
-      stopSnow = mountSnow(canvas, () => dive, mouse);
+      // `data-snow-direction="dive"` on the canvas is the previous head-on field.
+      const direction = canvas.dataset.snowDirection === 'dive' ? 'dive' : 'fall';
+      stopSnow =
+        direction === 'dive' ? mountSnow(canvas, () => dive, mouse) : mountFallingSnow(canvas, mouse);
     }
 
     window.requestAnimationFrame(() => {
@@ -132,11 +140,132 @@
     return Math.min(fadeIn, fadeOut);
   }
 
+  /** Background loop. Scroll does not seek it. Reduced motion and a hidden tab leave it paused. */
+  function bindDiveVideo(video: HTMLVideoElement | null) {
+    if (!video) return () => {};
+
+    video.muted = true;
+    video.loop = true;
+    if (prefersReducedMotion()) {
+      video.pause();
+      return () => video.pause();
+    }
+
+    const onVisibility = () => {
+      if (document.hidden) video.pause();
+      else void video.play();
+    };
+
+    document.addEventListener('visibilitychange', onVisibility);
+    void video.play();
+
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibility);
+      video.pause();
+    };
+  }
+
   /**
-   * Snow in perspective: flakes live in 3D and travel toward the camera. At rest they drift down
-   * calmly; as `dive` rises with scroll speed, gravity gives way to a head-on rush, which is what
-   * reads as moving forward. The pointer shifts the vanishing point, so looking around feels like
-   * turning your head into the snowfall.
+   * Top-down snow for `data-snow-direction="fall"`. Flakes enter above the frame and leave
+   * through the bottom. Scroll speed does not pull them toward the camera.
+   */
+  function mountFallingSnow(canvas: HTMLCanvasElement, mouse: { ex: number; ey: number }) {
+    const context = canvas.getContext('2d');
+    if (!context) return undefined;
+    const ctx = context;
+    const color = getComputedStyle(document.documentElement).getPropertyValue('--color-white').trim();
+    if (!color) return undefined;
+
+    type Flake = {
+      x: number;
+      y: number;
+      r: number;
+      speed: number;
+      sway: number;
+      phase: number;
+      alpha: number;
+    };
+    let flakes: Flake[] = [];
+    let frame = 0;
+    let active = false;
+    let time = 0;
+
+    const spawn = (anywhere: boolean, width: number, height: number): Flake => ({
+      x: Math.random() * width,
+      y: anywhere ? Math.random() * height : -Math.random() * 28 - 4,
+      r: Math.random() * 1.5 + 0.45,
+      speed: Math.random() * 0.9 + 0.45,
+      sway: Math.random() * 0.4 + 0.15,
+      phase: Math.random() * Math.PI * 2,
+      alpha: Math.random() * 0.4 + 0.25,
+    });
+
+    const resize = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const { width, height } = canvas.getBoundingClientRect();
+      canvas.width = Math.max(1, Math.floor(width * dpr));
+      canvas.height = Math.max(1, Math.floor(height * dpr));
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const count = Math.round(Math.min(220, Math.max(70, (width * height) / 9000)));
+      flakes = Array.from({ length: count }, () => spawn(true, width, height));
+    };
+
+    const draw = () => {
+      if (!active) return;
+      const { width, height } = canvas.getBoundingClientRect();
+      ctx.clearRect(0, 0, width, height);
+      ctx.fillStyle = color;
+      time += 0.016;
+      const wind = (mouse.ex - 0.5) * 0.4;
+
+      for (const flake of flakes) {
+        flake.y += flake.speed;
+        flake.x += Math.sin(time * flake.sway + flake.phase) * 0.35 + wind;
+        if (flake.y > height + 8) Object.assign(flake, spawn(false, width, height));
+        if (flake.x < -12) flake.x = width + 8;
+        if (flake.x > width + 12) flake.x = -8;
+        ctx.globalAlpha = flake.alpha;
+        ctx.beginPath();
+        ctx.arc(flake.x, flake.y, flake.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.globalAlpha = 1;
+      frame = window.requestAnimationFrame(draw);
+    };
+
+    const start = () => {
+      if (active) return;
+      active = true;
+      frame = window.requestAnimationFrame(draw);
+    };
+
+    const stop = () => {
+      active = false;
+      window.cancelAnimationFrame(frame);
+    };
+
+    const onVisibility = () => {
+      if (document.hidden) stop();
+      else start();
+    };
+
+    resize();
+    window.addEventListener('resize', resize, { passive: true });
+    document.addEventListener('visibilitychange', onVisibility);
+    start();
+
+    return () => {
+      stop();
+      window.removeEventListener('resize', resize);
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
+  }
+
+  /**
+   * Snow in perspective, used when `data-snow-direction="dive"`. Flakes travel toward the camera.
+   * At rest they drift down; as `dive` rises with scroll speed, gravity gives way to a head-on rush.
+   * The pointer shifts the vanishing point, so looking around feels like turning your head.
    */
   function mountSnow(
     canvas: HTMLCanvasElement,

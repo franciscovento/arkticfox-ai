@@ -1,5 +1,4 @@
 ---
-import FrostField from '@/components/motion/FrostField.astro';
 import GlassSheen from '@/components/motion/GlassSheen.astro';
 import WorkReel from '@/components/home/WorkReel.astro';
 import Marquee from '@/components/motion/Marquee.astro';
@@ -19,14 +18,6 @@ const nav: { pageKey: PageKey; label: UiKey }[] = [
   { pageKey: 'productImages', label: 'page.productImages.heading' },
   { pageKey: 'adVideos', label: 'page.adVideos.heading' },
   { pageKey: 'ugcVideos', label: 'page.ugcVideos.heading' },
-];
-
-// One place, three distances, drawn in CSS. Depth drives how fast each layer travels, so the
-// horizon holds still and only the near bank rushes past.
-const drifts: { depth: string; class: string }[] = [
-  { depth: '0.16', class: 'drift-layer--far' },
-  { depth: '0.5', class: 'drift-layer--mid' },
-  { depth: '1', class: 'drift-layer--near' },
 ];
 
 const cards: {
@@ -142,19 +133,28 @@ const serviceClips = [
     </header>
 
     <div class="relative z-20 min-h-svh" data-journey-stage>
-      <FrostField />
-      <div class="drift" aria-hidden="true">
-        {
-          drifts.map((drift) => (
-            <div class:list={['drift-layer', drift.class]} data-drift-layer data-depth={drift.depth}>
-              <div class="drift-layer__crest"></div>
-              <div class="drift-layer__crest"></div>
-            </div>
-          ))
-        }
-      </div>
+      <video
+        class="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover"
+        data-dive-video
+        src="/media/hero-loop.mp4"
+        poster="/media/hero-loop.jpg"
+        muted
+        loop
+        playsinline
+        preload="auto"
+        disablepictureinpicture
+        aria-hidden="true"
+      ></video>
+      <div class="video-shade bg-video-shade" aria-hidden="true"></div>
       <div class="drift-veil bg-dive-veil" data-dive-veil aria-hidden="true"></div>
-      <canvas class="pointer-events-none absolute inset-0 z-10 h-full w-full" data-dive-snow aria-hidden="true"
+      {
+        /* Snow direction: "fall" drops from the top. "dive" restores the head-on rush. */
+      }
+      <canvas
+        class="pointer-events-none absolute inset-0 z-10 h-full w-full"
+        data-dive-snow
+        data-snow-direction="fall"
+        aria-hidden="true"
       ></canvas>
       <div
         class="z-20 flex flex-col justify-end px-5 pt-28 pb-16 md:justify-center md:px-16"
@@ -163,12 +163,14 @@ const serviceClips = [
         data-to="0.28"
       >
         <p class="label text-ice-blue">{t(locale, 'home.eyebrow')}</p>
-        <h1 class="mt-4 max-w-2xl font-serif text-4xl leading-none text-white md:text-6xl lg:text-7xl">
-          <span class="block uppercase">
+        <h1 class="mt-4 max-w-3xl font-serif text-4xl leading-tight text-white md:text-5xl lg:text-6xl">
+          <span class="block">
             {t(locale, 'home.line1Lead')}{' '}
-            <em class="italic normal-case">{t(locale, 'home.line1Emphasis')}</em>.
+            <em class="italic">{t(locale, 'home.line1Emphasis')}</em>,
           </span>
-          <span class="block uppercase">{t(locale, 'home.line2')}</span>
+          <span class="block">
+            {t(locale, 'home.line2Lead')} <em class="italic">{t(locale, 'home.line2Emphasis')}</em>.
+          </span>
         </h1>
         <p class="mt-5 max-w-md font-sans text-sm leading-relaxed text-white/85 md:text-base">
           {t(locale, 'home.subhead')}

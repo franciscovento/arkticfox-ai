@@ -26,10 +26,10 @@ Update this table in the same task that creates or changes a component.
 | MobileMenu | — | — | — | planned |
 | WhatsAppButton | — | — | — | planned |
 | PageShell | `src/components/pages/PageShell.astro` | `locale`, `pageKey`, `titleKey`, `descriptionKey`, `headingKey` | every public route except home, EN and ES | built (shell only, no page design) |
-| HomeEntry | `src/components/home/HomeEntry.astro` | `locale` | `/` and `/es/` | built (V1: pinned stage, blue-hour field, glass cards, sector marquee, loader) |
+| HomeEntry | `src/components/home/HomeEntry.astro` | `locale` | `/` and `/es/` | built (V1: pinned stage, looping `hero-loop.mp4` background, glass cards, sector marquee, loader) |
 | WorkReel | `src/components/home/WorkReel.astro` | `closeLabel`, `note`, `moreLabel`, `moreHref`, `poster` | HomeEntry | built (glass card, bottom-right; mobile stacks note then CTA so the pill stays on one line) |
 | WorkCase | `src/components/home/WorkCase.astro` | `locale` | `/work` and `/es/trabajo` | built (frost field, glass process beats, large plates) |
 | HomePop | `src/components/home/HomePop.astro` | `locale` | `/v2` and `/es/v2` | parked (image grid only, noindex, unlinked from V1) |
-| SnowDive | `src/components/motion/SnowDive.astro` | none | HomeEntry | built (parallax drifts, staggered cards, head-on snow) |
-| FrostField | `src/components/motion/FrostField.astro` | `fixed`, `class` | HomeEntry | built (procedural blue-hour sky) |
+| SnowDive | `src/components/motion/SnowDive.astro` | none | HomeEntry | built (looping background video; snow direction is `data-snow-direction`: `fall` or `dive`) |
+| FrostField | `src/components/motion/FrostField.astro` | `fixed`, `class` | WorkCase | built (procedural blue-hour sky; off the home during the video look test) |
 | GlassSheen | `src/components/motion/GlassSheen.astro` | none | HomeEntry | built (pointer sheen on `[data-sheen]`) |

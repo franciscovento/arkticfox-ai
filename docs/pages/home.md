@@ -37,7 +37,7 @@ Dropdown items reuse the service page titles from block 4.
 | Slot | Key | EN | ES |
 |---|---|---|---|
 | Eyebrow | `home.hero.eyebrow` | `AI CREATIVE STUDIO` **PDF** | `ESTUDIO CREATIVO CON IA` **PROPOSED** |
-| Headline | `home.hero.line1Lead` + `line1Emphasis` + `line2` | `Ads that *blend in*. Results that stand out.` **PDF** | `Anuncios que se *camuflan*. Resultados que destacan.` **PDF** |
+| Headline | `home.line1Lead` + `line1Emphasis` + `line2Lead` + `line2Emphasis` | `We don't only make *cool creatives*, we make *winning ads*.` Client, 2026-10-14 | `No solo hacemos *creatividades chulas*, hacemos *anuncios que ganan*.` **PROPOSED** |
 | Subheadline | `home.hero.subhead` | `AI-crafted product images, ad films and hyperreal UGC videos for brands that need more creative, faster, without the cost of a shoot.` **PDF** | `Imágenes de producto, vídeos publicitarios y UGC hiperrealistas creados con IA, para marcas que necesitan más creatividades, más rápido y sin el coste de un rodaje.` **PDF** |
 | Primary CTA | `shared.cta.quote` | `Get a quote` **PDF** | `Pide presupuesto` **PDF** |
 | Secondary CTA | `shared.cta.work` | `See our work` **PDF** | `Ver nuestro trabajo` **PROPOSED** |
@@ -47,7 +47,7 @@ Three frosted-glass cards sit bottom right, one per service, each with a looping
 
 ### Headline alternatives
 
-Option 1 is the current preference. All five are approved copy; only one ships.
+The client set the hero sentence on 2026-10-14. These five PDF lines stay approved and unused.
 
 | # | EN | ES |
 |---|---|---|
@@ -57,7 +57,7 @@ Option 1 is the current preference. All five are approved copy; only one ships.
 | 4 | Blend into the feed. Stand out in the numbers. | Se funden con el feed. Destacan en los números. |
 | 5 | Native to the feed. Wild in performance. | Nativos del feed. Salvajes en resultados. |
 
-**OPEN** — final choice. Option 3 is the fallback if we want the AI to be more explicit up front.
+The hero sentence above is what ships. These five stay on file if we switch back.
 
 ### Media
 

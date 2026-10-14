@@ -84,6 +84,7 @@
 - Decision: Pin the hero and scrub a short dolly (scale 1.16 toward the horizon), a polar-night veil, and canvas flakes that grow toward the camera. Lenis runs only for this scene on fine pointers; touch and reduced motion use native scroll. The fox loop stays in the plate. A real path needs a new forward-moving clip.
 - Consequences: The scroll is feelable now. It is not a mountain trail. Replacing the plate with a traveling MP4 is the next asset, not another zoom.
 - Update: Each journey still pushes in on its own (scale about 1.05 to 1.6, origin toward the horizon) and crossfades into the next. The hero leaves upward. The three service cards then slide in from the right, staggered, and remain together. The last card keeps the ice border. Snow stays the small depth field. The stills remain the stand-in for a later frame scrub.
+- Update (2026-10-14, look test): The home field is `public/media/hero-loop.mp4` (1080p H.264, about 8.4 MB, 30 fps, no audio). The 8K master and the previous low-res loop were removed so they are not deployed. Scroll does not seek the film. The CSS drifts and `FrostField` stay off the home for this test. A flat ink wash (`--color-video-shade`, 26%) sits on the film and under the snow so white type and flakes stay readable. Snow on that canvas drops from the top (`data-snow-direction="fall"`). Set the same attribute to `dive` to restore the head-on rush. Reduced motion leaves the video paused on its first frame and turns the snow off.
 
 ## ADR-013 — Content lives in one spec per page, with provenance markers
 

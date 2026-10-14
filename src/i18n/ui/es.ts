@@ -67,9 +67,10 @@ export const es = {
   'styleguide.swatch.snowWhite': 'Snow White',
   'styleguide.swatch.ink': 'Ink',
   'home.eyebrow': 'Estudio creativo con IA',
-  'home.line1Lead': 'Anuncios que se',
-  'home.line1Emphasis': 'camuflan',
-  'home.line2': 'Resultados que destacan.',
+  'home.line1Lead': 'No solo hacemos',
+  'home.line1Emphasis': 'creatividades chulas',
+  'home.line2Lead': 'hacemos',
+  'home.line2Emphasis': 'anuncios que ganan',
   'home.subhead':
     'Imágenes de producto, vídeos publicitarios y UGC hiperrealistas creados con IA, para marcas que necesitan más creatividades, más rápido y sin el coste de un rodaje.',
   'home.loading': 'Cargando',

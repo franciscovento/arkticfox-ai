@@ -64,9 +64,10 @@ export const en = {
   'styleguide.swatch.snowWhite': 'Snow White',
   'styleguide.swatch.ink': 'Ink',
   'home.eyebrow': 'AI creative studio',
-  'home.line1Lead': 'Ads that',
-  'home.line1Emphasis': 'blend in',
-  'home.line2': 'Results that stand out.',
+  'home.line1Lead': "We don't only make",
+  'home.line1Emphasis': 'cool creatives',
+  'home.line2Lead': 'we make',
+  'home.line2Emphasis': 'winning ads',
   'home.subhead':
     'AI-crafted product images, ad films and hyperreal UGC videos for brands that need more creative, faster, without the cost of a shoot.',
   'home.loading': 'Loading',

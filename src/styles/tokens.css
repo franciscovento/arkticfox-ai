@@ -15,6 +15,8 @@
   --color-glass-deep: color-mix(in oklab, var(--color-ink) 78%, transparent);
   --color-glass-border: rgb(255 255 255 / 0.15);
   --color-scrim: rgb(11 15 26 / 0.7);
+  /* Flat wash over the home loop. Light enough to keep the film, dark enough for white type and snow. */
+  --color-video-shade: color-mix(in oklab, var(--color-ink) 26%, transparent);
 
   /*
    * Blue hour, not day and not polar-night black. Daylight washed the glass cards out; full
