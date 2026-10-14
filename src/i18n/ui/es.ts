@@ -90,6 +90,7 @@ export const es = {
   'home.ugcNote': 'Todos los creadores son avatares generados con IA.',
   'home.marquee.label': 'E-commerce · Moda · Belleza · Alimentación · Automoción',
   'home.marquee.services': 'Imágenes de producto · Vídeos publicitarios · UGC hiperrealista',
+  'home.marquee.hint': 'Pulsa una palabra para ver el trabajo',
   'home.why.eyebrow': 'Por qué Arktic Fox',
   'home.why.speedTitle': 'Velocidad',
   'home.why.speedBody': 'Del brief a las primeras propuestas en días, no semanas.',
@@ -113,22 +114,22 @@ export const es = {
   'home.v2.commerce': 'E-commerce',
   'home.v2.ugc': 'UGC',
   'home.reel.close': 'Cerrar',
-  'home.reel.note': 'Prueba. Cámbialo por una imagen o un reel del estudio de este sector.',
+  'home.reel.note': 'Drop de invierno. El pack en habitaciones nuevas y un film corto para el feed.',
   'home.reel.open': 'Ver trabajo: {name}',
-  'home.reel.more': 'Leer más',
-  'work.title': 'Arktic Fox | Proyecto de muestra',
+  'home.reel.more': 'Ver el caso',
+  'work.title': 'Arktic Fox | Drop de invierno',
   'work.description':
-    'Un caso de prueba: stills de producto, un film corto y UGC a partir de un brief. Medios de placeholder, no un trabajo de cliente.',
-  'work.eyebrow': 'Proyecto de muestra',
-  'work.heading': 'Un brief. Still, film y UGC.',
+    'Stills, un film corto y un UGC a cámara para un drop de moda de invierno, a partir de las fotos de producto que ya existían.',
+  'work.eyebrow': 'Moda · Invierno',
+  'work.heading': 'El mismo producto. Otro invierno.',
   'work.lead':
-    'Un caso de prueba para que veas cómo presentamos un trabajo. La marca, las fotos y estos textos son placeholders, no un cliente real.',
+    'Ya tenían las fotos de producto. Las metimos en habitaciones nuevas, cortamos un film corto para el feed y un UGC a cámara para el drop.',
   'work.briefTitle': 'El brief',
   'work.brief':
-    'Una marca mediana necesitaba un kit de lanzamiento: pack shots, un film corto para social y un UGC a cámara. Sin estudio y sin equipo.',
+    'El brief era un lanzamiento de invierno: stills nuevos para tienda y ads, un film corto para social y un UGC a cámara. Sin día de estudio.',
   'work.approachTitle': 'Cómo lo montamos',
   'work.approach':
-    'Partimos de las fotos de producto que ya tienes. Montamos las escenas, un film de 15 a 30 s y clips con avatares. Un editor cierra el corte.',
+    'Partimos de las fotos de producto que ya tienes. Montamos las escenas, un film corto y clips con avatares. Un editor cierra el corte.',
   'work.deliverTitle': 'Qué te llevas',
   'work.deliver':
     'Sets de stills para tienda y ads, un film para social y variantes UGC con hooks distintos. Formatos: 9:16, 4:5, 1:1 y 16:9.',
@@ -136,15 +137,15 @@ export const es = {
   'work.process': 'Cómo se hizo',
   'work.step2Title': 'Stills',
   'work.step2Body':
-    'Cogemos las fotos de producto que ya tienes y las metemos en escenas, luces y temporadas nuevas — tienda, ads, lookbook — sin un día de estudio.',
+    'Los pack shots pasaron a habitaciones, luces y climas nuevos — tienda, lookbook, ads — sin reservar un set.',
   'work.step3Title': 'El film',
   'work.step3Body':
-    'Un corte de 15 a 30 s para social, web y pre-roll. El mismo producto, grado de cine, cerrado por un editor. Sin equipo en set.',
+    'Un corte corto para social, web y pre-roll. El mismo producto, grado de cine, cerrado por un editor.',
   'work.step4Title': 'El corte',
   'work.step4Body':
-    'UGC a cámara con avatares de IA y hooks distintos. Luego cerramos stills, film y clips en 9:16, 4:5, 1:1 y 16:9.',
-  'work.card1Title': 'Kit de lanzamiento',
-  'work.card2Title': 'Escenas nuevas',
-  'work.card3Title': 'Para el feed',
-  'work.card4Title': 'Listo para publicar',
+    'UGC a cámara con avatares de IA y unos cuantos hooks distintos. Luego cerramos stills, film y clips en 9:16, 4:5, 1:1 y 16:9.',
+  'work.card1Title': 'Kit de invierno',
+  'work.card2Title': 'Otras habitaciones',
+  'work.card3Title': 'El film',
+  'work.card4Title': 'Corte cerrado',
 } as const satisfies Record<UiKey, string>;

@@ -327,6 +327,12 @@ html:not(.js) [data-loader] {
   background: transparent;
 }
 
+/* The reel fades in from opacity 0 in the same corner as the hint. Hide the hint
+   on `[open]` (set before the fade) so the ice label does not sit on the glass. */
+html:has([data-work-reel][open]) [data-marquee-hint] {
+  opacity: 0;
+}
+
 .work-reel__frame {
   display: flex;
   flex-direction: column;
@@ -363,20 +369,6 @@ html:not(.js) [data-loader] {
 
 .work-reel__note {
   margin: 0;
-}
-
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation-duration: var(--dur-reveal);
-  animation-timing-function: var(--ease-fox);
-}
-
-::view-transition-old(work-media),
-::view-transition-new(work-media) {
-  animation-duration: var(--dur-slow);
-  animation-timing-function: var(--ease-fox);
-  height: 100%;
-  object-fit: cover;
 }
 
 .work-snow {
@@ -634,13 +626,6 @@ html:not(.js) [data-loader] {
   .work-reel.is-open::backdrop {
     opacity: 1;
     transition: none;
-  }
-
-  ::view-transition-old(root),
-  ::view-transition-new(root),
-  ::view-transition-old(work-media),
-  ::view-transition-new(work-media) {
-    animation: none;
   }
 
   .pop-shot img,

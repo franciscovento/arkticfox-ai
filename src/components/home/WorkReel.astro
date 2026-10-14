@@ -16,7 +16,7 @@ const { closeLabel, note, moreLabel, moreHref, poster } = Astro.props;
       <h2 class="label text-white" id="work-reel-title" data-reel-heading>&nbsp;</h2>
       <button type="button" class="label hover-fox text-white" data-reel-close>{closeLabel}</button>
     </div>
-    <div class="work-reel__media" transition:name="work-media">
+    <div class="work-reel__media">
       <video
         class="work-reel__shot"
         data-reel-video
@@ -33,6 +33,7 @@ const { closeLabel, note, moreLabel, moreHref, poster } = Astro.props;
       <a
         class="hover-fox inline-flex items-center rounded-pill border border-white px-4 py-2 font-sans text-xs font-medium text-white"
         href={moreHref}
+        data-reel-more
       >
         {moreLabel}
       </a>
@@ -41,71 +42,106 @@ const { closeLabel, note, moreLabel, moreHref, poster } = Astro.props;
 </dialog>
 
 <script>
-  function bootWorkReel() {
+  import { onPageReady } from '../../motion/ready';
+
+  let bound = false;
+
+  function reelNodes() {
     const dialog = document.querySelector<HTMLDialogElement>('[data-work-reel]');
     const video = dialog?.querySelector<HTMLVideoElement>('[data-reel-video]');
     const image = dialog?.querySelector<HTMLImageElement>('[data-reel-image]');
     const heading = dialog?.querySelector<HTMLElement>('[data-reel-heading]');
-    const closeBtn = dialog?.querySelector<HTMLButtonElement>('[data-reel-close]');
-    if (!dialog || !video || !image || !heading || !closeBtn || dialog.dataset.booted === 'true') {
-      return;
-    }
-    dialog.dataset.booted = 'true';
+    return { dialog, video, image, heading };
+  }
 
-    const isVideo = (src: string) => /\.(mp4|webm|mov)(\?|$)/i.test(src);
-    const reduce = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function isVideo(src: string) {
+    return /\.(mp4|webm|mov)(\?|$)/i.test(src);
+  }
 
-    const clearMedia = () => {
+  function reduce() {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+
+  function clearMedia() {
+    const { video, image } = reelNodes();
+    if (video) {
       video.pause();
       video.removeAttribute('src');
       video.load();
       video.hidden = true;
+    }
+    if (image) {
       image.removeAttribute('src');
       image.alt = '';
       image.hidden = true;
-    };
+    }
+  }
 
-    const requestClose = () => {
-      if (!dialog.open) return;
-      dialog.classList.remove('is-open');
-      const finish = () => {
-        clearMedia();
-        if (dialog.open) dialog.close();
-      };
-      if (reduce()) {
-        finish();
-        return;
-      }
-      const onEnd = (event: TransitionEvent) => {
-        if (event.target !== dialog || event.propertyName !== 'opacity') return;
-        dialog.removeEventListener('transitionend', onEnd);
-        finish();
-      };
-      dialog.addEventListener('transitionend', onEnd);
-    };
+  function closeNow() {
+    const { dialog } = reelNodes();
+    if (!dialog) return;
+    dialog.classList.remove('is-open');
+    clearMedia();
+    if (dialog.open) dialog.close();
+  }
 
-    const open = (src: string, title: string) => {
-      heading.textContent = title;
-      if (isVideo(src)) {
-        image.hidden = true;
-        video.hidden = false;
-        video.src = src;
-      } else {
-        video.hidden = true;
-        image.hidden = false;
-        image.src = src;
-        image.alt = title;
-      }
-      dialog.showModal();
-      requestAnimationFrame(() => dialog.classList.add('is-open'));
-      if (isVideo(src) && !reduce()) {
-        video.loop = true;
-        void video.play();
-      }
+  function requestClose() {
+    const { dialog } = reelNodes();
+    if (!dialog?.open) return;
+    dialog.classList.remove('is-open');
+    const finish = () => {
+      clearMedia();
+      if (dialog.open) dialog.close();
     };
+    if (reduce()) {
+      finish();
+      return;
+    }
+    const onEnd = (event: TransitionEvent) => {
+      if (event.target !== dialog || event.propertyName !== 'opacity') return;
+      dialog.removeEventListener('transitionend', onEnd);
+      finish();
+    };
+    dialog.addEventListener('transitionend', onEnd);
+  }
+
+  function open(src: string, title: string) {
+    const { dialog, video, image, heading } = reelNodes();
+    if (!dialog || !video || !image || !heading) return;
+    heading.textContent = title;
+    if (isVideo(src)) {
+      image.hidden = true;
+      video.hidden = false;
+      video.src = src;
+    } else {
+      video.hidden = true;
+      image.hidden = false;
+      image.src = src;
+      image.alt = title;
+    }
+    dialog.showModal();
+    requestAnimationFrame(() => dialog.classList.add('is-open'));
+    if (isVideo(src) && !reduce()) {
+      video.loop = true;
+      void video.play();
+    }
+  }
+
+  function bootWorkReel() {
+    if (bound) return;
+    bound = true;
 
     document.addEventListener('click', (event) => {
-      const trigger = (event.target as HTMLElement | null)?.closest<HTMLElement>('[data-reel]');
+      const target = event.target as HTMLElement | null;
+      if (target?.closest('[data-reel-more]')) {
+        closeNow();
+        return;
+      }
+      if (target?.closest('[data-reel-close]')) {
+        requestClose();
+        return;
+      }
+      const trigger = target?.closest<HTMLElement>('[data-reel]');
       if (!trigger) return;
       event.preventDefault();
       const src = trigger.dataset.reelSrc;
@@ -113,17 +149,17 @@ const { closeLabel, note, moreLabel, moreHref, poster } = Astro.props;
       open(src, trigger.dataset.reelTitle ?? '');
     });
 
-    closeBtn.addEventListener('click', requestClose);
-
-    dialog.addEventListener('click', (event) => {
+    document.addEventListener('click', (event) => {
+      const { dialog } = reelNodes();
       if (event.target === dialog) requestClose();
     });
 
-    dialog.addEventListener('cancel', (event) => {
+    document.addEventListener('cancel', (event) => {
+      if (!(event.target instanceof HTMLDialogElement) || event.target !== reelNodes().dialog) return;
       event.preventDefault();
       requestClose();
     });
   }
 
-  document.addEventListener('astro:page-load', bootWorkReel);
+  onPageReady(bootWorkReel);
 </script>

@@ -27,6 +27,7 @@ const { fixed = false, class: className } = Astro.props;
 
 <script>
   import { onPointer } from '../../motion/pointer';
+  import { onPageReady } from '../../motion/ready';
 
   let stop: (() => void) | undefined;
 
@@ -44,5 +45,5 @@ const { fixed = false, class: className } = Astro.props;
     });
   }
 
-  document.addEventListener('astro:page-load', bootFrostField);
+  onPageReady(bootFrostField);
 </script>

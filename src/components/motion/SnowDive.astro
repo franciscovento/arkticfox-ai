@@ -1,11 +1,10 @@
 <script>
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
   import { runScrollScene } from '../../motion/gsap';
-  import { startSmoothScroll } from '../../motion/lenis';
+  import { startSmoothScroll, stopSmoothScroll } from '../../motion/lenis';
+  import { onPageReady } from '../../motion/ready';
   import { pointer } from '../../motion/pointer';
   import { prefersReducedMotion } from '../../motion/reduced';
-
-  startSmoothScroll();
 
   let diveTrigger: ScrollTrigger | undefined;
   let diveFrame = 0;
@@ -18,12 +17,15 @@
     diveFrame = 0;
     stopSnow?.();
     stopSnow = undefined;
+    stopSmoothScroll();
   }
 
   function bootDive() {
+    teardownDive();
     const root = document.querySelector<HTMLElement>('[data-snow-dive]');
-    if (!root || root.dataset.diveBound === 'true') return;
+    if (!root) return;
     root.dataset.diveBound = 'true';
+    startSmoothScroll();
 
     const canvas = root.querySelector<HTMLCanvasElement>('[data-dive-snow]');
     const layers = [...root.querySelectorAll<HTMLElement>('[data-drift-layer]')];
@@ -50,42 +52,45 @@
     };
 
     runScrollScene(() => {
+      const apply = (self: ScrollTrigger) => {
+        progress = self.progress;
+        diveTarget = Math.min(1, Math.abs(self.getVelocity()) / 2400);
+        place();
+        for (const beat of beats) {
+          const from = Number(beat.dataset.from);
+          const to = Number(beat.dataset.to);
+          const opacity = beatOpacity(progress, from, to);
+          const shown = opacity > 0.04;
+          const leaving = progress > from + (to - from) * 0.55;
+          beat.style.opacity = String(opacity);
+          beat.style.visibility = shown ? 'visible' : 'hidden';
+          beat.style.pointerEvents = shown ? 'auto' : 'none';
+          beat.style.transform = `translateY(${(1 - opacity) * (leaving ? -64 : 20)}px)`;
+        }
+        for (const piece of pieces) {
+          const opacity = pieceOpacity(
+            progress,
+            Number(piece.dataset.from),
+            Number(piece.dataset.to),
+            Number(piece.dataset.fade),
+          );
+          const shown = opacity > 0.04;
+          const rise = piece.dataset.enter === 'up';
+          piece.style.opacity = String(opacity);
+          piece.style.visibility = shown ? 'visible' : 'hidden';
+          piece.style.pointerEvents = shown ? 'auto' : 'none';
+          piece.style.transform = rise
+            ? `translateY(${(1 - opacity) * 28}px)`
+            : `translateX(${(1 - opacity) * 96}px)`;
+        }
+      };
+
       diveTrigger = ScrollTrigger.create({
         trigger: root,
         start: 'top top',
         end: 'bottom bottom',
-        onUpdate: (self) => {
-          progress = self.progress;
-          diveTarget = Math.min(1, Math.abs(self.getVelocity()) / 2400);
-          place();
-          for (const beat of beats) {
-            const from = Number(beat.dataset.from);
-            const to = Number(beat.dataset.to);
-            const opacity = beatOpacity(progress, from, to);
-            const shown = opacity > 0.04;
-            const leaving = progress > from + (to - from) * 0.55;
-            beat.style.opacity = String(opacity);
-            beat.style.visibility = shown ? 'visible' : 'hidden';
-            beat.style.pointerEvents = shown ? 'auto' : 'none';
-            beat.style.transform = `translateY(${(1 - opacity) * (leaving ? -64 : 20)}px)`;
-          }
-          for (const piece of pieces) {
-            const opacity = pieceOpacity(
-              progress,
-              Number(piece.dataset.from),
-              Number(piece.dataset.to),
-              Number(piece.dataset.fade),
-            );
-            const shown = opacity > 0.04;
-            const rise = piece.dataset.enter === 'up';
-            piece.style.opacity = String(opacity);
-            piece.style.visibility = shown ? 'visible' : 'hidden';
-            piece.style.pointerEvents = shown ? 'auto' : 'none';
-            piece.style.transform = rise
-              ? `translateY(${(1 - opacity) * 28}px)`
-              : `translateX(${(1 - opacity) * 96}px)`;
-          }
-        },
+        onUpdate: apply,
+        onRefresh: apply,
       });
 
       // Keeps running when the scroll is idle: the pointer still moves the scene, and `dive`
@@ -102,10 +107,14 @@
     if (!prefersReducedMotion() && canvas) {
       stopSnow = mountSnow(canvas, () => dive, mouse);
     }
+
+    window.requestAnimationFrame(() => {
+      ScrollTrigger.refresh();
+    });
   }
 
   document.addEventListener('astro:before-swap', teardownDive);
-  document.addEventListener('astro:page-load', bootDive);
+  onPageReady(bootDive);
 
   function pieceOpacity(progress: number, from: number, to: number, fade = 0.1): number {
     if (progress < from) return 0;

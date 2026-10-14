@@ -241,6 +241,12 @@ const serviceClips = [
             pauseOnHover={false}
           />
         </div>
+        <p
+          class="pointer-events-none absolute right-5 bottom-8 label text-ice-blue md:right-10 md:bottom-10"
+          data-marquee-hint
+        >
+          {t(locale, 'home.marquee.hint')}
+        </p>
       </div>
     </div>
   </div>
@@ -256,6 +262,8 @@ const serviceClips = [
 </BaseLayout>
 
 <script>
+  import { onPageReady } from '../../motion/ready';
+
   function bootHomeEntry() {
     const root = document.querySelector<HTMLElement>('[data-snow-dive]');
     if (!root || root.dataset.booted === 'true') return;
@@ -284,5 +292,5 @@ const serviceClips = [
     }
     firstLoad = false;
   };
-  document.addEventListener('astro:page-load', onPage);
+  onPageReady(onPage);
 </script>

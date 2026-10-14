@@ -1,6 +1,5 @@
 ---
 import '@/styles/global.css';
-import { ClientRouter } from 'astro:transitions';
 import Hreflang from '@/components/seo/Hreflang.astro';
 import Seo from '@/components/seo/Seo.astro';
 import type { Locale, PageKey } from '@/i18n/routes';
@@ -32,7 +31,6 @@ const { title, description, locale = 'en', pageKey, noindex = false, bodyClass =
       noindex={noindex}
     />
     {pageKey && <Hreflang pageKey={pageKey} />}
-    <ClientRouter />
     <script is:inline>
       document.documentElement.classList.add('js');
     </script>

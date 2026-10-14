@@ -131,15 +131,15 @@
 
 - Date: 2026-10-13
 - Context: A dimmed backdrop hid the dive. The reel needed to feel like a card in the scene, and a word click should lead to a project presentation — the same stand-in for every sector until real cases exist.
-- Decision: No backdrop scrim. The glass reel pins bottom-right and grows. `Read more` goes to `/work` · `/es/trabajo` (`WorkCase`): one mock brief, stills, no client name, no statistics, `noindex`.
+- Decision: No backdrop scrim. The glass reel pins bottom-right and grows. `See the case` goes to `/work` · `/es/trabajo` (`WorkCase`): one winter-drop story, no client name, no statistics, `noindex`. Page copy reads as a project, not as a labelled mock.
 - Consequences: Every marquee word opens the same case page. Swap the media and copy in place when a real job can be shown.
 
 ## ADR-020 — View transitions into a same-field work case
 
 - Date: 2026-10-13
 - Context: The sample case read as a different site: a text column and a grid. The jump from the reel was a hard cut.
-- Decision: `ClientRouter` in `BaseLayout`. The reel media and the first work plate share `transition:name="work-media"`. Durations use `--dur-reveal` / `--dur-slow` and `ease-fox`. The case is the same blue-hour field, large inset plates and glass cards as the dive, told as four process beats. Motion scripts re-bind on `astro:page-load` and the dive tears down on `astro:before-swap`.
-- Consequences: Reduced motion drops the view-transition animations and the looping film. Still no real client, logos or statistics.
+- Decision: Full page loads between home and `/work`. `ClientRouter` and `transition:name="work-media"` were removed — the swap left Lenis, ScrollTrigger and `dialog.showModal()` overflow stuck on return. The case stays the same blue-hour field, large inset plates and glass cards as the dive, told as four process beats.
+- Consequences: No morph from the reel into the first plate. Motion boots via `onPageReady` (full loads do not fire `astro:page-load`). Still no real client, logos or statistics.
 
 ## ADR-021 — Work case pins process titles; snow stays behind plates
 

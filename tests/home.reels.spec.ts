@@ -35,6 +35,45 @@ test('marquee word opens glass work and the strip keeps moving', async ({ page }
   await expect(dialog).toBeHidden();
 });
 
+test('returning from work restarts the home dive', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  await page.locator('h1').waitFor();
+  await expect
+    .poll(async () => page.locator('[data-loader]').evaluate((n) => getComputedStyle(n).opacity), {
+      timeout: 15_000,
+    })
+    .toBe('0');
+
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight - window.innerHeight));
+  await page.waitForTimeout(800);
+  await page.locator('[data-reel]').first().click();
+  await expect(page.locator('[data-work-reel]')).toHaveClass(/is-open/);
+  await page.locator('[data-reel-more]').click();
+  await page.waitForURL('**/work');
+  await expect(page.locator('h1')).toBeVisible();
+
+  await page.locator('a[href="/"]').first().click();
+  await page.waitForURL((url) => url.pathname === '/');
+
+  const state = await page.evaluate(() => ({
+    htmlOverflow: getComputedStyle(document.documentElement).overflow,
+    bodyOverflow: getComputedStyle(document.body).overflow,
+    dive: Boolean(document.querySelector('[data-snow-dive]')),
+    dialogOpen: Boolean(document.querySelector('dialog[open]')),
+    height: document.documentElement.scrollHeight,
+  }));
+  expect(state.htmlOverflow).not.toBe('hidden');
+  expect(state.bodyOverflow).not.toBe('hidden');
+  expect(state.dive).toBe(true);
+  expect(state.dialogOpen).toBe(false);
+  expect(state.height).toBeGreaterThan(2000);
+
+  await page.mouse.wheel(0, 1200);
+  await page.waitForTimeout(500);
+  expect(await page.evaluate(() => window.scrollY)).toBeGreaterThan(80);
+});
+
 test('sample work page presents the mock case', async ({ page }) => {
   await page.goto('/work');
   await expect(page.locator('h1')).toBeVisible();

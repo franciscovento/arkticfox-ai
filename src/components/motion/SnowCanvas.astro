@@ -14,6 +14,7 @@ const { class: className } = Astro.props;
 
 <script>
   import { pointer } from '../../motion/pointer';
+  import { onPageReady } from '../../motion/ready';
   import { prefersReducedMotion } from '../../motion/reduced';
 
   let frame = 0;
@@ -124,5 +125,5 @@ const { class: className } = Astro.props;
   }
 
   document.addEventListener('astro:before-swap', teardownSnow);
-  document.addEventListener('astro:page-load', bootSnow);
+  onPageReady(bootSnow);
 </script>

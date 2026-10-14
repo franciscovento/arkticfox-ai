@@ -147,10 +147,7 @@ const beats: {
             <span class="label not-italic text-ice-blue">{beat.index}</span>
             {t(locale, beat.title)}
           </h2>
-          <figure
-            class="work-beat__plate"
-            transition:name={beat.named ? 'work-media' : undefined}
-          >
+          <figure class="work-beat__plate">
             {beat.kind === 'video' ? (
               <video
                 class="work-beat__media"
@@ -201,6 +198,8 @@ const beats: {
 </BaseLayout>
 
 <script>
+  import { onPageReady } from '../../motion/ready';
+
   let pinObserver: IntersectionObserver | undefined;
 
   function bootWorkPins() {
@@ -233,7 +232,7 @@ const beats: {
   }
 
   document.addEventListener('astro:before-swap', () => pinObserver?.disconnect());
-  document.addEventListener('astro:page-load', () => {
+  onPageReady(() => {
     bootWorkPins();
     bootWorkLoops();
   });

@@ -87,6 +87,7 @@ export const en = {
   'home.ugcNote': 'All creators are AI-generated avatars.',
   'home.marquee.label': 'E-commerce · Fashion · Beauty · Food & beverage · Automotive',
   'home.marquee.services': 'Product images · Ad videos · Hyperreal UGC',
+  'home.marquee.hint': 'Click a word to see the work',
   'home.why.eyebrow': 'Why Arktic Fox',
   'home.why.speedTitle': 'Speed',
   'home.why.speedBody': 'From brief to first drafts in days, not weeks.',
@@ -110,22 +111,22 @@ export const en = {
   'home.v2.commerce': 'E-commerce',
   'home.v2.ugc': 'UGC',
   'home.reel.close': 'Close',
-  'home.reel.note': 'Mock work. Replace with a studio still or reel for this sector.',
+  'home.reel.note': 'Winter drop. New rooms for the pack, and a short film for the feed.',
   'home.reel.open': 'View work: {name}',
-  'home.reel.more': 'Read more',
-  'work.title': 'Arktic Fox | Sample project',
+  'home.reel.more': 'See the case',
+  'work.title': 'Arktic Fox | Winter drop',
   'work.description':
-    'A stand-in case: product stills, a short film and UGC from one brief. Placeholder media, not a client job.',
-  'work.eyebrow': 'Sample project',
-  'work.heading': 'One brief. Still, film and UGC.',
+    'Stills, a short film and a talk to camera for a winter fashion drop, built from existing pack shots.',
+  'work.eyebrow': 'Fashion · Winter',
+  'work.heading': 'Same product. A new winter.',
   'work.lead':
-    'A stand-in case so you can see how we present a job. The brand, the photos and this copy are placeholders — not a real client.',
+    'They already had the pack shots. We put the product in new rooms, cut a short film for the feed, and a talk to camera for the drop.',
   'work.briefTitle': 'The brief',
   'work.brief':
-    'A mid-size brand needed a launch kit: pack shots, a short film for social and a UGC-style talk to camera. No studio, no crew.',
+    'The brief was a winter launch: new stills for store and ads, a short film for social, and a talk to camera. No studio day.',
   'work.approachTitle': 'How we work it',
   'work.approach':
-    'We start from the product photos you already have. Then we build the scenes, a 15 to 30-second film and avatar-led clips. A human editor finishes the cut.',
+    'We start from the product photos you already have. Then we build the scenes, a short film and avatar-led clips. A human editor finishes the cut.',
   'work.deliverTitle': 'What you get',
   'work.deliver':
     'Still sets for store and ads, a social film, and UGC variants with alternate hooks. Formats: 9:16, 4:5, 1:1 and 16:9.',
@@ -133,17 +134,17 @@ export const en = {
   'work.process': 'How it was made',
   'work.step2Title': 'Stills',
   'work.step2Body':
-    'We take the pack shots you already have and drop them into new scenes, light and seasons — store, ads, lookbook — without a studio day.',
+    'The pack shots went into new rooms, light and weather — store, lookbook, ads — without booking a set.',
   'work.step3Title': 'The film',
   'work.step3Body':
-    'A 15 to 30-second cut for social, web and pre-roll. Same product, cinematic grade, finished by an editor. No crew on set.',
+    'A short cut for social, web and pre-roll. Same product, cinema grade, locked by an editor.',
   'work.step4Title': 'The cut',
   'work.step4Body':
-    'UGC-style talk-to-camera with AI avatars, plus alternate hooks. Then we lock stills, film and clips in 9:16, 4:5, 1:1 and 16:9.',
-  'work.card1Title': 'Launch kit',
-  'work.card2Title': 'New scenes',
-  'work.card3Title': 'For the feed',
-  'work.card4Title': 'Ready to run',
+    'Talk-to-camera with AI avatars and a few alternate hooks. Then we locked stills, film and clips in 9:16, 4:5, 1:1 and 16:9.',
+  'work.card1Title': 'Winter kit',
+  'work.card2Title': 'New rooms',
+  'work.card3Title': 'The film',
+  'work.card4Title': 'Locked cut',
 } as const;
 
 export type UiKey = keyof typeof en;

@@ -17,7 +17,8 @@ const { class: className, stagger = 0 } = Astro.props;
 </div>
 
 <script>
+  import { onPageReady } from '../../motion/ready';
   import { initReveal } from '../../motion/reveal';
 
-  document.addEventListener('astro:page-load', initReveal);
+  onPageReady(initReveal);
 </script>

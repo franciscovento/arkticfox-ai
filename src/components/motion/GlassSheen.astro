@@ -1,4 +1,5 @@
 <script>
+  import { onPageReady } from '../../motion/ready';
   import { prefersReducedMotion } from '../../motion/reduced';
 
   /**
@@ -41,5 +42,5 @@
     }
   }
 
-  document.addEventListener('astro:page-load', bootGlassSheen);
+  onPageReady(bootGlassSheen);
 </script>
