@@ -84,7 +84,7 @@
 - Decision: Pin the hero and scrub a short dolly (scale 1.16 toward the horizon), a polar-night veil, and canvas flakes that grow toward the camera. Lenis runs only for this scene on fine pointers; touch and reduced motion use native scroll. The fox loop stays in the plate. A real path needs a new forward-moving clip.
 - Consequences: The scroll is feelable now. It is not a mountain trail. Replacing the plate with a traveling MP4 is the next asset, not another zoom.
 - Update: Each journey still pushes in on its own (scale about 1.05 to 1.6, origin toward the horizon) and crossfades into the next. The hero leaves upward. The three service cards then slide in from the right, staggered, and remain together. The last card keeps the ice border. Snow stays the small depth field. The stills remain the stand-in for a later frame scrub.
-- Update (2026-10-14, look test): The home field is `public/media/hero-loop.mp4` (1080p H.264, about 8.4 MB, 30 fps, no audio). The 8K master and the previous low-res loop were removed so they are not deployed. Scroll does not seek the film. The CSS drifts and `FrostField` stay off the home for this test. A flat ink wash (`--color-video-shade`, 26%) sits on the film and under the snow so white type and flakes stay readable. Snow on that canvas drops from the top (`data-snow-direction="fall"`). Set the same attribute to `dive` to restore the head-on rush. Reduced motion leaves the video paused on its first frame and turns the snow off.
+- Update (2026-10-14, look test): `/` plays `public/media/hero-loop.mp4` on a loop. It is the same film as `/v2`, encoded from the scroll stills (1080p, about 25s, no audio) so the two cuts can be compared. `/v2` steps `public/media/scrub/` with scroll and stays `noindex`. The 8K masters are not deployed. The earlier snowfield film is kept as `public/media/hero-snowfield.mp4` (1080p, 36s) and is not wired to a page.
 
 ## ADR-013 — Content lives in one spec per page, with provenance markers
 
@@ -119,7 +119,7 @@
 - Date: 2026-10-13
 - Context: The blue-hour dive (V1) is cinematic but not locked. Nabil asked for a second cut closer to [Steven Popovich](https://www.stevenpopovich.com/): large, colourful plates, almost no chrome.
 - Decision: Keep V1 at `/` and `/es/`. Ship V2 at `/v2` and `/es/v2`, `noindex`, out of the sitemap. Colour comes from the photographs. UI stays on tokens. The plates in `public/media/mocks/` are Unsplash stand-ins, labelled as such, never as client work.
-- Consequences: V2 is parked at `/v2` (see ADR-018). Replace the mock files in place; keep the filenames.
+- Update (2026-10-14): The parked image grid is gone. `/v2` and `/es/v2` are the home again, `noindex`, with the second film as scroll-scrubbed 1080p stills in `public/media/scrub/`. `/` keeps the looping `hero-loop.mp4`.
 
 ## ADR-018 — Marquee words open glass work, V2 stays a parked grid
 

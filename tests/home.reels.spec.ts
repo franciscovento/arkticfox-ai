@@ -81,9 +81,26 @@ test('sample work page presents the mock case', async ({ page }) => {
   await expect(page.locator('.work-beat__card')).toHaveCount(4);
 });
 
-test('v2 is a parked image grid', async ({ page }) => {
+test('v2 scrubs film frames with scroll', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/v2');
-  await expect(page.locator('.pop-board .pop-shot')).toHaveCount(9);
-  await expect(page.locator('.pop-reel__title')).toHaveCount(0);
+  const frames = page.locator('[data-scrub-frames]');
+  await expect(frames).toHaveCount(1);
+  await expect
+    .poll(async () => page.locator('[data-loader]').evaluate((n) => getComputedStyle(n).opacity), {
+      timeout: 30_000,
+    })
+    .toBe('0');
+
+  await page.evaluate(() => {
+    window.scrollTo(0, (document.body.scrollHeight - window.innerHeight) * 0.55);
+  });
+  await expect
+    .poll(async () => Number(await frames.getAttribute('data-frame')), { timeout: 8_000 })
+    .toBeGreaterThan(20);
+
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expect
+    .poll(async () => Number(await frames.getAttribute('data-frame')), { timeout: 8_000 })
+    .toBeLessThan(3);
 });

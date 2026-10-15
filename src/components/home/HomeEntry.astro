@@ -7,12 +7,22 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import type { Locale, PageKey } from '@/i18n/routes';
 import type { UiKey } from '@/i18n/ui/en';
 import { getPath, t } from '@/i18n/utils';
+import { readdirSync } from 'node:fs';
+import { join } from 'node:path';
 
 interface Props {
   locale: Locale;
+  /** `loop` is the home film. `scrub` is the /v2 still sequence tied to scroll. */
+  variant?: 'loop' | 'scrub';
 }
 
-const { locale } = Astro.props;
+const { locale, variant = 'loop' } = Astro.props;
+const scrub = variant === 'scrub';
+const pageKey: PageKey = scrub ? 'homeV2' : 'home';
+
+const frameCount = scrub
+  ? readdirSync(join(process.cwd(), 'public/media/scrub')).filter((name) => name.endsWith('.webp')).length
+  : 0;
 
 const nav: { pageKey: PageKey; label: UiKey }[] = [
   { pageKey: 'productImages', label: 'page.productImages.heading' },
@@ -72,9 +82,10 @@ const serviceClips = [
 
 <BaseLayout
   locale={locale}
-  pageKey="home"
-  title={t(locale, 'meta.homeTitle')}
-  description={t(locale, 'meta.homeDescription')}
+  pageKey={pageKey}
+  title={t(locale, scrub ? 'home.v2.title' : 'meta.homeTitle')}
+  description={t(locale, scrub ? 'home.v2.description' : 'meta.homeDescription')}
+  noindex={scrub}
   bodyClass="bg-polar-night"
 >
   <div data-snow-dive class="relative">
@@ -102,14 +113,14 @@ const serviceClips = [
       </nav>
       <a
         class="label text-white lg:absolute lg:left-1/2 lg:-translate-x-1/2"
-        href={getPath(locale, 'home')}
+        href={getPath(locale, pageKey)}
       >
         {t(locale, 'meta.siteName')}
       </a>
       <div class="flex items-center gap-3 md:gap-5">
         <a
           class:list={['label hover-fox', locale === 'en' ? 'text-white' : 'text-white/70']}
-          href={getPath('en', 'home')}
+          href={getPath('en', pageKey)}
           hreflang="en"
           aria-current={locale === 'en' ? 'page' : undefined}
         >
@@ -117,7 +128,7 @@ const serviceClips = [
         </a>
         <a
           class:list={['label hover-fox', locale === 'es' ? 'text-white' : 'text-white/70']}
-          href={getPath('es', 'home')}
+          href={getPath('es', pageKey)}
           hreflang="es"
           aria-current={locale === 'es' ? 'page' : undefined}
         >
@@ -133,18 +144,30 @@ const serviceClips = [
     </header>
 
     <div class="relative z-20 min-h-svh" data-journey-stage>
-      <video
-        class="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover"
-        data-dive-video
-        src="/media/hero-loop.mp4"
-        poster="/media/hero-loop.jpg"
-        muted
-        loop
-        playsinline
-        preload="auto"
-        disablepictureinpicture
-        aria-hidden="true"
-      ></video>
+      {
+        scrub ? (
+          <canvas
+            class="pointer-events-none absolute inset-0 z-0 h-full w-full"
+            data-scrub-frames
+            data-frame-base="/media/scrub/frame-"
+            data-frame-count={frameCount}
+            aria-hidden="true"
+          />
+        ) : (
+          <video
+            class="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover"
+            data-dive-video
+            src="/media/hero-loop.mp4?v=2"
+            poster="/media/hero-loop.jpg?v=2"
+            muted
+            loop
+            playsinline
+            preload="auto"
+            disablepictureinpicture
+            aria-hidden="true"
+          />
+        )
+      }
       <div class="video-shade bg-video-shade" aria-hidden="true"></div>
       <div class="drift-veil bg-dive-veil" data-dive-veil aria-hidden="true"></div>
       {
@@ -274,6 +297,7 @@ const serviceClips = [
     const loader = root.querySelector<HTMLElement>('[data-loader]');
     const bar = root.querySelector<HTMLElement>('[data-loader-bar]');
     if (!loader || !bar) return;
+    if (root.querySelector('[data-scrub-frames]')) return;
 
     const finish = () => {
       loader.classList.add('is-done');

@@ -10,6 +10,7 @@
   let diveFrame = 0;
   let stopSnow: (() => void) | undefined;
   let stopVideo: (() => void) | undefined;
+  let stopFrames: (() => void) | undefined;
 
   function teardownDive() {
     diveTrigger?.kill();
@@ -20,6 +21,8 @@
     stopSnow = undefined;
     stopVideo?.();
     stopVideo = undefined;
+    stopFrames?.();
+    stopFrames = undefined;
     stopSmoothScroll();
   }
 
@@ -39,6 +42,9 @@
     const pieces = [...root.querySelectorAll<HTMLElement>('[data-journey-piece]')];
     const mouse = pointer();
     let progress = 0;
+    const scrubCanvas = root.querySelector<HTMLCanvasElement>('[data-scrub-frames]');
+    const frameScrub = bindScrubFrames(scrubCanvas, () => progress);
+    stopFrames = frameScrub.stop;
     // `dive` tracks scroll *speed*, not position: moving makes the snow come at the camera,
     // stopping lets it settle back into a calm fall. It decays on its own in the frame loop.
     let dive = 0;
@@ -61,6 +67,7 @@
         progress = self.progress;
         diveTarget = Math.min(1, Math.abs(self.getVelocity()) / 2400);
         place();
+        frameScrub.scrub();
         for (const beat of beats) {
           const from = Number(beat.dataset.from);
           const to = Number(beat.dataset.to);
@@ -162,6 +169,105 @@
     return () => {
       document.removeEventListener('visibilitychange', onVisibility);
       video.pause();
+    };
+  }
+
+  /**
+   * Scroll-scrubbed stills for the /v2 cut. Each frame is a full 1080p image, so the film
+   * advances with scroll position instead of playing on its own.
+   */
+  function bindScrubFrames(canvas: HTMLCanvasElement | null, readProgress: () => number) {
+    if (!canvas) return { scrub: () => {}, stop: () => {} };
+    const context = canvas.getContext('2d');
+    if (!context) return { scrub: () => {}, stop: () => {} };
+    const ctx = context;
+
+    const listed = Number(canvas.dataset.frameCount);
+    const count = Number.isFinite(listed) && listed > 0 ? Math.floor(listed) : 0;
+    if (!count) return { scrub: () => {}, stop: () => {} };
+    const total = prefersReducedMotion() ? 1 : count;
+    const base = canvas.dataset.frameBase || '/media/scrub/frame-';
+    const images: HTMLImageElement[] = [];
+    let drawn = -1;
+    let target = 0;
+    let ready = 0;
+    let disposed = false;
+
+    const loader = document.querySelector<HTMLElement>('[data-loader]');
+    const bar = document.querySelector<HTMLElement>('[data-loader-bar]');
+
+    const finishLoader = () => {
+      loader?.classList.add('is-done');
+      loader?.setAttribute('aria-hidden', 'true');
+    };
+
+    const paint = (index: number) => {
+      target = index;
+      const img = images[index];
+      if (!img || !img.complete || img.naturalWidth === 0) return;
+      const { width, height } = canvas.getBoundingClientRect();
+      const imageRatio = img.naturalWidth / img.naturalHeight;
+      const viewRatio = width / height;
+      let dw = width;
+      let dh = height;
+      let dx = 0;
+      let dy = 0;
+      if (imageRatio > viewRatio) {
+        dw = height * imageRatio;
+        dx = (width - dw) / 2;
+      } else {
+        dh = width / imageRatio;
+        dy = (height - dh) / 2;
+      }
+      ctx.clearRect(0, 0, width, height);
+      ctx.drawImage(img, dx, dy, dw, dh);
+      drawn = index;
+      canvas.dataset.frame = String(index);
+    };
+
+    const resize = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const { width, height } = canvas.getBoundingClientRect();
+      canvas.width = Math.max(1, Math.floor(width * dpr));
+      canvas.height = Math.max(1, Math.floor(height * dpr));
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const show = drawn >= 0 ? drawn : target;
+      drawn = -1;
+      paint(show);
+    };
+
+    const noteReady = () => {
+      ready += 1;
+      if (bar) bar.style.transform = `scaleX(${Math.min(1, ready / total)})`;
+      paint(target);
+      if (ready >= total) finishLoader();
+    };
+
+    for (let index = 0; index < total; index += 1) {
+      const img = new Image();
+      img.decoding = 'async';
+      img.src = `${base}${String(index + 1).padStart(3, '0')}.webp`;
+      img.onload = () => {
+        if (!disposed) noteReady();
+      };
+      img.onerror = () => {
+        if (!disposed) noteReady();
+      };
+      images[index] = img;
+    }
+
+    resize();
+    window.addEventListener('resize', resize, { passive: true });
+
+    return {
+      scrub: () => {
+        const index = Math.min(total - 1, Math.max(0, Math.round(readProgress() * (total - 1))));
+        if (index !== drawn) paint(index);
+      },
+      stop: () => {
+        disposed = true;
+        window.removeEventListener('resize', resize);
+      },
     };
   }
 
