@@ -29,7 +29,7 @@ Update this table in the same task that creates or changes a component.
 | HomeEntry | `src/components/home/HomeEntry.astro` | `locale`, `variant` (`loop` or `scrub`) | `/`, `/es/`, `/v2`, `/es/v2` | built (`loop` plays `hero-loop.mp4`; `scrub` steps `public/media/scrub/` with scroll; v2 is noindex) |
 | WorkReel | `src/components/home/WorkReel.astro` | `closeLabel`, `note`, `moreLabel`, `moreHref`, `poster` | HomeEntry | built (glass card, bottom-right; mobile stacks note then CTA so the pill stays on one line) |
 | WorkCase | `src/components/home/WorkCase.astro` | `locale` | `/work` and `/es/trabajo` | built (frost field, glass process beats, large plates) |
-| ProjectsGallery | `src/components/pages/ProjectsGallery.astro` | `locale` | `/projects` and `/es/proyectos` | built (frost field, case groups, lazy muted videos with posters) |
+| ProjectsGallery | `src/components/pages/ProjectsGallery.astro` | `locale` | `/projects` and `/es/proyectos` | built (frost field, case cards, even rows capped at half the native pixel width, lazy muted videos with posters) |
 | SnowDive | `src/components/motion/SnowDive.astro` | none | HomeEntry | built (looping video on `/`; scroll-scrubbed frames on `/v2`; snow direction is `data-snow-direction`: `fall` or `dive`) |
 | FrostField | `src/components/motion/FrostField.astro` | `fixed`, `class` | WorkCase, ProjectsGallery | built (procedural blue-hour sky; off the home during the video look test) |
 | GlassSheen | `src/components/motion/GlassSheen.astro` | none | HomeEntry, WorkCase, ProjectsGallery | built (pointer sheen on `[data-sheen]`) |

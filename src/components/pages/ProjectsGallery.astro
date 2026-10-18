@@ -28,11 +28,22 @@ type Piece = {
   poster?: string;
   kind: 'image' | 'video';
   ratio: 'story' | 'square';
-  /** Span two columns so baked-in type and 1:1 frames stay readable. */
-  wide?: boolean;
+  width: number;
+  height: number;
   label: UiKey;
   title: UiKey;
   alt: UiKey;
+};
+
+/**
+ * CSS cap for one frame so width × 2 stays inside the file's native pixels.
+ * hd 1080→540, tight 1072→536, uhd 2160→1080, selfie 1024→512.
+ */
+type Cap = 'hd' | 'tight' | 'uhd' | 'selfie';
+
+type Row = {
+  cap: Cap;
+  pieces: Piece[];
 };
 
 type Case = {
@@ -41,7 +52,27 @@ type Case = {
   title: UiKey;
   body: UiKey;
   note?: UiKey;
-  pieces: Piece[];
+  rows: Row[];
+};
+
+/** One column below md. From md, a pair is two of those columns plus the 1.25rem gap. */
+const rowClass: Record<Cap, { single: string; pair: string }> = {
+  hd: {
+    single: 'max-w-[33.75rem]',
+    pair: 'max-w-[33.75rem] md:max-w-[68.75rem]',
+  },
+  tight: {
+    single: 'max-w-[33.5rem]',
+    pair: 'max-w-[33.5rem] md:max-w-[68.25rem]',
+  },
+  uhd: {
+    single: 'max-w-[67.5rem]',
+    pair: 'max-w-[67.5rem] md:max-w-[136.25rem]',
+  },
+  selfie: {
+    single: 'max-w-[32rem]',
+    pair: 'max-w-[32rem] md:max-w-[65.25rem]',
+  },
 };
 
 const cases: Case[] = [
@@ -51,67 +82,99 @@ const cases: Case[] = [
     title: 'projects.cadillac.title',
     body: 'projects.cadillac.body',
     note: 'projects.ugcNote',
-    pieces: [
+    rows: [
       {
-        src: `${media}/cadillac-1.mp4`,
-        poster: `${media}/cadillac-1.jpg`,
-        kind: 'video',
-        ratio: 'square',
-        wide: true,
-        label: 'projects.kind.ad',
-        title: 'projects.piece.lyriq',
-        alt: 'projects.piece.lyriqAlt',
+        cap: 'hd',
+        pieces: [
+          {
+            src: `${media}/cadillac-1.mp4`,
+            poster: `${media}/cadillac-1.jpg`,
+            kind: 'video',
+            ratio: 'square',
+            width: 1080,
+            height: 1080,
+            label: 'projects.kind.ad',
+            title: 'projects.piece.lyriq',
+            alt: 'projects.piece.lyriqAlt',
+          },
+        ],
       },
       {
-        src: `${media}/cadillac-2.mp4`,
-        poster: `${media}/cadillac-2.jpg`,
-        kind: 'video',
-        ratio: 'story',
-        label: 'projects.kind.ad',
-        title: 'projects.piece.deals',
-        alt: 'projects.piece.dealsAlt',
+        cap: 'hd',
+        pieces: [
+          {
+            src: `${media}/cadillac-2.mp4`,
+            poster: `${media}/cadillac-2.jpg`,
+            kind: 'video',
+            ratio: 'story',
+            width: 1080,
+            height: 1920,
+            label: 'projects.kind.ad',
+            title: 'projects.piece.deals',
+            alt: 'projects.piece.dealsAlt',
+          },
+          {
+            src: `${media}/cadillac-ugc.mp4`,
+            poster: `${media}/cadillac-ugc.jpg`,
+            kind: 'video',
+            ratio: 'story',
+            width: 1080,
+            height: 1920,
+            label: 'projects.kind.ugc',
+            title: 'projects.piece.driver',
+            alt: 'projects.piece.driverAlt',
+          },
+        ],
       },
       {
-        src: `${media}/cadillac-ugc.mp4`,
-        poster: `${media}/cadillac-ugc.jpg`,
-        kind: 'video',
-        ratio: 'story',
-        label: 'projects.kind.ugc',
-        title: 'projects.piece.driver',
-        alt: 'projects.piece.driverAlt',
+        cap: 'tight',
+        pieces: [
+          {
+            src: `${media}/autos-9x16-2.webp`,
+            kind: 'image',
+            ratio: 'story',
+            width: 1080,
+            height: 1920,
+            label: 'projects.kind.ad',
+            title: 'projects.piece.cadillacOffer',
+            alt: 'projects.piece.cadillacOfferAlt',
+          },
+          {
+            src: `${media}/cadillac-image-9.webp`,
+            kind: 'image',
+            ratio: 'story',
+            width: 1072,
+            height: 1920,
+            label: 'projects.kind.still',
+            title: 'projects.piece.fogA',
+            alt: 'projects.piece.fogAAlt',
+          },
+        ],
       },
       {
-        src: `${media}/autos-9x16-2.webp`,
-        kind: 'image',
-        ratio: 'story',
-        wide: true,
-        label: 'projects.kind.ad',
-        title: 'projects.piece.cadillacOffer',
-        alt: 'projects.piece.cadillacOfferAlt',
-      },
-      {
-        src: `${media}/cadillac-image-9.webp`,
-        kind: 'image',
-        ratio: 'story',
-        label: 'projects.kind.still',
-        title: 'projects.piece.fogA',
-        alt: 'projects.piece.fogAAlt',
-      },
-      {
-        src: `${media}/cadillac-image-12.webp`,
-        kind: 'image',
-        ratio: 'story',
-        label: 'projects.kind.still',
-        title: 'projects.piece.fogB',
-        alt: 'projects.piece.fogBAlt',
-      },
-      {
-        src: `${media}/cadillac-image-14.webp`,
-        kind: 'image',
-        ratio: 'story',
-        label: 'projects.kind.still',
-        title: 'projects.piece.fogC',
-        alt: 'projects.piece.fogCAlt',
+        cap: 'uhd',
+        pieces: [
+          {
+            src: `${media}/cadillac-image-12.webp`,
+            kind: 'image',
+            ratio: 'story',
+            width: 2160,
+            height: 3840,
+            label: 'projects.kind.still',
+            title: 'projects.piece.fogB',
+            alt: 'projects.piece.fogBAlt',
+          },
+          {
+            src: `${media}/cadillac-image-14.webp`,
+            kind: 'image',
+            ratio: 'story',
+            width: 2160,
+            height: 3840,
+            label: 'projects.kind.still',
+            title: 'projects.piece.fogC',
+            alt: 'projects.piece.fogCAlt',
+          },
+        ],
       },
     ],
   },
@@ -120,24 +183,31 @@ const cases: Case[] = [
     eyebrow: 'projects.kia.eyebrow',
     title: 'projects.kia.title',
     body: 'projects.kia.body',
-    pieces: [
+    rows: [
       {
-        src: `${media}/kia-image-7.webp`,
-        kind: 'image',
-        ratio: 'story',
-        wide: true,
-        label: 'projects.kind.still',
-        title: 'projects.piece.kiaA',
-        alt: 'projects.piece.kiaAAlt',
-      },
-      {
-        src: `${media}/kia-image-9.webp`,
-        kind: 'image',
-        ratio: 'story',
-        wide: true,
-        label: 'projects.kind.still',
-        title: 'projects.piece.kiaB',
-        alt: 'projects.piece.kiaBAlt',
+        cap: 'uhd',
+        pieces: [
+          {
+            src: `${media}/kia-image-7.webp`,
+            kind: 'image',
+            ratio: 'story',
+            width: 2160,
+            height: 3840,
+            label: 'projects.kind.still',
+            title: 'projects.piece.kiaA',
+            alt: 'projects.piece.kiaAAlt',
+          },
+          {
+            src: `${media}/kia-image-9.webp`,
+            kind: 'image',
+            ratio: 'story',
+            width: 2160,
+            height: 3840,
+            label: 'projects.kind.still',
+            title: 'projects.piece.kiaB',
+            alt: 'projects.piece.kiaBAlt',
+          },
+        ],
       },
     ],
   },
@@ -146,15 +216,21 @@ const cases: Case[] = [
     eyebrow: 'projects.nissan.eyebrow',
     title: 'projects.nissan.title',
     body: 'projects.nissan.body',
-    pieces: [
+    rows: [
       {
-        src: `${media}/autos-9x16-1.webp`,
-        kind: 'image',
-        ratio: 'story',
-        wide: true,
-        label: 'projects.kind.ad',
-        title: 'projects.piece.nissan',
-        alt: 'projects.piece.nissanAlt',
+        cap: 'hd',
+        pieces: [
+          {
+            src: `${media}/autos-9x16-1.webp`,
+            kind: 'image',
+            ratio: 'story',
+            width: 1080,
+            height: 1920,
+            label: 'projects.kind.ad',
+            title: 'projects.piece.nissan',
+            alt: 'projects.piece.nissanAlt',
+          },
+        ],
       },
     ],
   },
@@ -164,25 +240,32 @@ const cases: Case[] = [
     title: 'projects.jeep.title',
     body: 'projects.jeep.body',
     note: 'projects.ugcNote',
-    pieces: [
+    rows: [
       {
-        src: `${media}/jeep-ugc.mp4`,
-        poster: `${media}/jeep-ugc.jpg`,
-        kind: 'video',
-        ratio: 'story',
-        wide: true,
-        label: 'projects.kind.ugc',
-        title: 'projects.piece.jeep',
-        alt: 'projects.piece.jeepAlt',
-      },
-      {
-        src: `${media}/selfie-mirror.webp`,
-        kind: 'image',
-        ratio: 'square',
-        wide: true,
-        label: 'projects.kind.ugc',
-        title: 'projects.piece.selfie',
-        alt: 'projects.piece.selfieAlt',
+        cap: 'selfie',
+        pieces: [
+          {
+            src: `${media}/jeep-ugc.mp4`,
+            poster: `${media}/jeep-ugc.jpg`,
+            kind: 'video',
+            ratio: 'story',
+            width: 1080,
+            height: 1920,
+            label: 'projects.kind.ugc',
+            title: 'projects.piece.jeep',
+            alt: 'projects.piece.jeepAlt',
+          },
+          {
+            src: `${media}/selfie-mirror.webp`,
+            kind: 'image',
+            ratio: 'square',
+            width: 1024,
+            height: 1024,
+            label: 'projects.kind.ugc',
+            title: 'projects.piece.selfie',
+            alt: 'projects.piece.selfieAlt',
+          },
+        ],
       },
     ],
   },
@@ -306,56 +389,67 @@ const cases: Case[] = [
             )}
           </article>
         </Reveal>
-        <div class="mt-8 grid grid-cols-2 items-start gap-4 md:grid-cols-4 md:gap-5">
-          {item.pieces.map((piece) => (
-            <figure
-              class:list={[
-                'flex min-w-0 flex-col gap-3',
-                piece.wide && 'col-span-2',
-              ]}
-            >
+        <div class="mt-8 flex flex-col gap-8 md:gap-10">
+          {item.rows.map((row) => (
+            <Reveal>
               <div
                 class:list={[
-                  'overflow-hidden rounded-card-sm border border-glass-border bg-ink',
-                  piece.ratio === 'square' ? 'aspect-square' : 'aspect-[9/16]',
+                  'mx-auto grid w-full grid-cols-1 items-start gap-4',
+                  row.pieces.length > 1 && 'md:grid-cols-2 md:gap-5',
+                  row.pieces.length > 1
+                    ? rowClass[row.cap].pair
+                    : rowClass[row.cap].single,
                 ]}
               >
-                {piece.kind === 'video' ? (
-                  <video
-                    class="h-full w-full object-contain"
-                    poster={piece.poster}
-                    muted
-                    playsinline
-                    loop
-                    preload="none"
-                    controls
-                    data-project-video
-                    aria-label={t(locale, piece.alt)}
-                    width={piece.ratio === 'square' ? 1080 : 1080}
-                    height={piece.ratio === 'square' ? 1080 : 1920}
-                  >
-                    <source src={piece.src} type="video/mp4" />
-                    {t(locale, piece.title)}
-                  </video>
-                ) : (
-                  <img
-                    class="h-full w-full object-contain"
-                    src={piece.src}
-                    alt={t(locale, piece.alt)}
-                    width={piece.ratio === 'square' ? 1080 : 1080}
-                    height={piece.ratio === 'square' ? 1080 : 1920}
-                    loading="lazy"
-                    decoding="async"
-                  />
-                )}
+                {row.pieces.map((piece) => (
+                  <figure class="flex min-w-0 flex-col gap-3">
+                    <div
+                      class:list={[
+                        'overflow-hidden rounded-card-sm border border-glass-border bg-ink',
+                        piece.ratio === 'square'
+                          ? 'aspect-square'
+                          : 'aspect-[9/16]',
+                      ]}
+                    >
+                      {piece.kind === 'video' ? (
+                        <video
+                          class="h-full w-full object-contain"
+                          poster={piece.poster}
+                          muted
+                          playsinline
+                          loop
+                          preload="none"
+                          controls
+                          data-project-video
+                          aria-label={t(locale, piece.alt)}
+                          width={piece.width}
+                          height={piece.height}
+                        >
+                          <source src={piece.src} type="video/mp4" />
+                          {t(locale, piece.title)}
+                        </video>
+                      ) : (
+                        <img
+                          class="h-full w-full object-contain"
+                          src={piece.src}
+                          alt={t(locale, piece.alt)}
+                          width={piece.width}
+                          height={piece.height}
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      )}
+                    </div>
+                    <figcaption class="flex flex-col gap-1">
+                      <p class="label text-ice-blue">{t(locale, piece.label)}</p>
+                      <p class="font-sans text-sm text-white">
+                        {t(locale, piece.title)}
+                      </p>
+                    </figcaption>
+                  </figure>
+                ))}
               </div>
-              <figcaption class="flex flex-col gap-1">
-                <p class="label text-ice-blue">{t(locale, piece.label)}</p>
-                <p class="font-sans text-sm text-white">
-                  {t(locale, piece.title)}
-                </p>
-              </figcaption>
-            </figure>
+            </Reveal>
           ))}
         </div>
       </section>

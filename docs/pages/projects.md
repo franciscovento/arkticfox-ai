@@ -113,3 +113,5 @@ Outline button. The header quote button is the only brand gradient on the page.
 ## Media
 
 Files live in `public/media/projects/`. Videos are muted, `playsinline`, with a poster, `preload="none"`, and play only when most of the frame is in view. Reduced motion leaves them paused on the poster. Controls stay so the film can still be started by hand.
+
+Frames sit in even rows, never in a leftover cell. A single piece (the square Lyriq film, the Nissan still) is centered at its cap. Pairs share one row from the `md` breakpoint: two 1080-wide 9:16s, the 4K stills as a wider pair, and the Jeep film beside the mirror selfie at the selfie's stricter cap. CSS width stays at or under half the native pixel width (540, 536, 1080, or 512).
