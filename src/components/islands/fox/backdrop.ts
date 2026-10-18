@@ -5,7 +5,7 @@ import { TRAVEL_MPS } from './path';
  * Maps travelled meters to a video clock.
  * While the fox cruises, this advances one second per second and wraps the
  * clip. While the fox sits, distance holds, so the clock holds too.
- * The filmed route is `/hero-3d-video`, not a query string.
+ * `?bg=video` on `/hero-3d` plays this clock. `?bg=3d` keeps the drawn woods.
  */
 export const BACKDROP_LOOP_S = 8;
 

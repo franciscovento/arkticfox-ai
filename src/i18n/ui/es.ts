@@ -122,8 +122,9 @@ export const es = {
   'hero3d.hint': 'Haz scroll para seguirlo',
   'hero3d.scene':
     'Un zorro ártico en un camino recto de nieve, con pinos redondeados y colinas suaves a la izquierda. Está sentado mirándote y la cola se mueve con el clip de sentado. Al hacer scroll se gira y camina a un ritmo fijo mientras el bosque se desplaza. Si paras, se gira hacia ti y se sienta.',
-  'hero3d.toVideo': 'Fondo de vídeo',
+  'hero3d.toVideo': 'Vídeo',
   'hero3d.toScene': 'Bosque dibujado',
+  'hero3d.plateLabel': 'Fondo',
   'hero3dVideo.title': 'Arktic Fox | Zorro sobre el vídeo',
   'hero3dVideo.description':
     'Prototipo: el mismo zorro en 3D, con un campo de nieve filmado detrás.',

@@ -1,7 +1,71 @@
 import { expect, test, type Page } from '@playwright/test';
+import { readFileSync } from 'node:fs';
 import { mkdir } from 'node:fs/promises';
+import { inflateSync } from 'node:zlib';
 
 const outDir = '/opt/cursor/artifacts/hero-3d';
+
+/** One RGB sample from a non-interlaced PNG, so a blank canvas fails the shot. */
+function pngPixel(path: string, x: number, y: number): [number, number, number] {
+  const buf = readFileSync(path);
+  let offset = 8;
+  let width = 0;
+  let height = 0;
+  let colorType = 0;
+  const idat: Buffer[] = [];
+  while (offset + 8 < buf.length) {
+    const length = buf.readUInt32BE(offset);
+    const type = buf.toString('ascii', offset + 4, offset + 8);
+    const data = buf.subarray(offset + 8, offset + 8 + length);
+    if (type === 'IHDR') {
+      width = data.readUInt32BE(0);
+      height = data.readUInt32BE(4);
+      colorType = data[9] ?? 0;
+    } else if (type === 'IDAT') idat.push(data);
+    else if (type === 'IEND') break;
+    offset += 12 + length;
+  }
+  const channels = colorType === 6 ? 4 : 3;
+  const raw = inflateSync(Buffer.concat(idat));
+  const stride = width * channels;
+  const row = Buffer.alloc(stride);
+  const prev = Buffer.alloc(stride);
+  let src = 0;
+  for (let rowIndex = 0; rowIndex < height; rowIndex += 1) {
+    const filter = raw[src] ?? 0;
+    src += 1;
+    for (let i = 0; i < stride; i += 1) {
+      const left = i >= channels ? (row[i - channels] ?? 0) : 0;
+      const up = prev[i] ?? 0;
+      const ul = i >= channels ? (prev[i - channels] ?? 0) : 0;
+      const value = raw[src + i] ?? 0;
+      const predictor =
+        filter === 1
+          ? left
+          : filter === 2
+            ? up
+            : filter === 3
+              ? (left + up) >> 1
+              : filter === 4
+                ? (() => {
+                    const p = left + up - ul;
+                    const pa = Math.abs(p - left);
+                    const pb = Math.abs(p - up);
+                    const pc = Math.abs(p - ul);
+                    return pa <= pb && pa <= pc ? left : pb <= pc ? up : ul;
+                  })()
+                : 0;
+      row[i] = (value + predictor) & 255;
+    }
+    src += stride;
+    if (rowIndex === y) {
+      const index = x * channels;
+      return [row[index] ?? 0, row[index + 1] ?? 0, row[index + 2] ?? 0];
+    }
+    prev.set(row);
+  }
+  throw new Error(`pixel ${x},${y} is outside ${path}`);
+}
 
 async function attr(page: Page, name: string) {
   return page.locator('[data-fox-stage]').getAttribute(name);
@@ -157,13 +221,13 @@ test('scroll down walks forward, idle faces the camera, scroll up walks back', a
     .poll(async () => attr(page, 'data-fox-state'), { timeout: 5_000 })
     .toBe('sit');
   expect(await attr(page, 'data-fox-plate')).toBe('scene');
-  expect(await page.locator('[data-fox-video]').count()).toBe(0);
-  expect(await page.locator('[data-fox-plate-link]').getAttribute('href')).toBe(
-    '/hero-3d-video',
-  );
+  await expect(page.locator('[data-fox-video]')).toBeHidden();
+  await expect(page.locator('[data-fox-plate-toggle]')).toBeVisible();
   await expectClipOnly(page);
   await expectStill(page);
   await page.screenshot({ path: `${outDir}/desktop-start-idle.png` });
+  const woods = pngPixel(`${outDir}/desktop-start-idle.png`, 1100, 150);
+  expect(woods[0]).toBeGreaterThan(200);
 
   const beforeJump = Number(await attr(page, 'data-fox-progress'));
   await page.evaluate(() => window.scrollTo(0, 2200));
@@ -243,38 +307,79 @@ test('reduced motion holds a still frame', async ({ page }) => {
   expect(await attr(page, 'data-fox-progress')).toBe(before);
   expect(await attr(page, 'data-fox-facing')).toBe('camera');
   await page.screenshot({ path: `${outDir}/desktop-reduced.png` });
+
+  await page.goto('/hero-3d?bg=video');
+  await ready(page);
+  const video = page.locator('[data-fox-video]');
+  await expect(video).toBeVisible();
+  await expect
+    .poll(async () => video.evaluate((el: HTMLVideoElement) => el.readyState), {
+      timeout: 15_000,
+    })
+    .toBeGreaterThanOrEqual(1);
+  await page.evaluate(() => window.scrollTo(0, 4000));
+  await page.waitForTimeout(600);
+  const still = await video.evaluate((el: HTMLVideoElement) => ({
+    time: el.currentTime,
+    paused: el.paused,
+  }));
+  expect(still.paused).toBe(true);
+  expect(still.time).toBeLessThan(0.05);
+  await page.screenshot({ path: `${outDir}/desktop-video-reduced.png` });
 });
 
-test('plates are routes, and a query string does not switch them', async ({ page }) => {
+test('query param picks the plate, and the toggle needs dev or debug', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto('/hero-3d?bg=video&debug=1');
+  await page.goto('/hero-3d?bg=3d');
   await expect(page.locator('[data-fox-stage]')).toHaveAttribute('data-fox-plate', 'scene');
-  await expect(page.locator('[data-fox-video]')).toHaveCount(0);
+  await expect(page.locator('[data-fox-video]')).toBeHidden();
+  await expect(page.locator('[data-fox-plate-toggle]')).toBeVisible();
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
+
+  await page.locator('[data-fox-bg="video"]').click();
+  await expect(page.locator('[data-fox-stage]')).toHaveAttribute('data-fox-plate', 'video');
   expect(new URL(page.url()).searchParams.get('bg')).toBe('video');
-  expect(await page.locator('[data-fox-plate-link]').getAttribute('href')).toBe('/hero-3d-video');
+  await expect(page.locator('[data-fox-video]')).toBeVisible();
+  await expect(page.locator('[data-fox-video]')).toHaveAttribute(
+    'src',
+    '/media/snow-path-foggy-1.mp4',
+  );
+  await expect(page.locator('[data-fox-bg="video"]')).toHaveAttribute('aria-pressed', 'true');
 
-  await page.goto('/hero-3d-video?bg=scene');
-  await expect(page.locator('[data-fox-stage]')).toHaveAttribute('data-fox-plate', 'video');
-  await expect(page.locator('[data-fox-video]')).toHaveAttribute('src', '/media/hero-snowfield.mp4');
-  await expect(page.locator('[data-fox-plate-link]')).toHaveAttribute('href', '/hero-3d');
-  expect(new URL(page.url()).pathname).toBe('/hero-3d-video');
+  await page.evaluate(() => {
+    const stage = document.querySelector<HTMLElement>('[data-fox-stage]');
+    if (stage) stage.dataset.foxDev = '0';
+    const url = new URL(window.location.href);
+    url.searchParams.delete('debug');
+    history.replaceState(null, '', url);
+    window.dispatchEvent(new Event('fox-plate'));
+  });
+  await expect(page.locator('[data-fox-plate-toggle]')).toBeHidden();
 
-  await page.goto('/es/hero-3d-video');
+  await page.evaluate(() => {
+    const url = new URL(window.location.href);
+    url.searchParams.set('debug', '1');
+    history.replaceState(null, '', url);
+    window.dispatchEvent(new Event('fox-plate'));
+  });
+  await expect(page.locator('[data-fox-plate-toggle]')).toBeVisible();
+
+  await page.goto('/es/hero-3d?bg=video');
   await expect(page.locator('[data-fox-stage]')).toHaveAttribute('data-fox-plate', 'video');
+  await expect(page.locator('[data-fox-video]')).toHaveAttribute(
+    'src',
+    '/media/snow-path-foggy-1.mp4',
+  );
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
-  await expect(page.locator('[data-fox-plate-link]')).toHaveAttribute('href', '/es/hero-3d');
-  expect(new URL(page.url()).search).toBe('');
 
-  await page.goto('/es/hero-3d');
+  await page.goto('/es/hero-3d?bg=3d');
   await expect(page.locator('[data-fox-stage]')).toHaveAttribute('data-fox-plate', 'scene');
-  await expect(page.locator('[data-fox-video]')).toHaveCount(0);
-  await expect(page.locator('[data-fox-plate-link]')).toHaveAttribute('href', '/es/hero-3d-video');
+  await expect(page.locator('[data-fox-video]')).toBeHidden();
 });
 
-test('video route plays the film with the fox and holds it when sitting', async ({ page }) => {
+test('video query plays the film with the fox and holds it when sitting', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto('/hero-3d-video');
+  await page.goto('/hero-3d?bg=video');
   await ready(page);
   expect(await attr(page, 'data-fox-plate')).toBe('video');
   await expect
@@ -297,11 +402,22 @@ test('video route plays the film with the fox and holds it when sitting', async 
   await waitWalk(page, 'forward');
   await holdScroll(page, 1);
   await expect
-    .poll(async () => video.evaluate((el: HTMLVideoElement) => el.currentTime), {
-      timeout: 4_000,
-    })
-    .toBeGreaterThan(0.2);
+    .poll(
+      async () =>
+        video.evaluate((el: HTMLVideoElement) => ({
+          time: el.currentTime,
+          rate: el.playbackRate,
+          paused: el.paused,
+        })),
+      { timeout: 4_000 },
+    )
+    .toMatchObject({ paused: false, rate: 1 });
+  expect(
+    await video.evaluate((el: HTMLVideoElement) => el.currentTime),
+  ).toBeGreaterThan(0.2);
   await page.screenshot({ path: `${outDir}/desktop-video-walk.png` });
+  const film = pngPixel(`${outDir}/desktop-video-walk.png`, 1200, 420);
+  expect(film[0] + film[1] + film[2]).toBeGreaterThan(280);
   await releaseScroll(page);
 
   await waitSit(page);

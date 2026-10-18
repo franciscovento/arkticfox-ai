@@ -40,7 +40,7 @@ import { prefersReducedMotion } from '@/motion/reduced';
 import { dur } from '@/motion/tokens';
 import { readFoxPalette, type FoxPalette } from './fox/palette';
 import { backdropTime } from './fox/backdrop';
-import type { FoxPlate } from './fox/plate';
+import { applyFoxPlateDom, readFoxPlate, type FoxPlate } from './fox/plate';
 import {
   FOX_SCALE,
   FOX_URL,
@@ -751,17 +751,22 @@ function CameraRig({
   );
 }
 
-/** Keeps the filmed plate on the cruise clock and pauses it with the fox. */
+/** Cruise clock. Rate stays at 1 while the fox moves, and the frame holds when it sits. */
 function VideoClock({ ride }: { ride: RideRef }) {
   useFrame(() => {
     const video = document.querySelector<HTMLVideoElement>('[data-fox-video]');
-    if (!video) return;
+    if (!video || video.hidden) return;
     const duration = video.duration;
     if (!Number.isFinite(duration) || duration <= 0) return;
+    video.playbackRate = 1;
+    if (ride.current.reduced) {
+      video.pause();
+      if (video.currentTime > 0.001) video.currentTime = 0;
+      return;
+    }
     const target = backdropTime(ride.current.distance, duration);
-    const moving = ride.current.moving && !ride.current.reduced;
-    if (!moving) {
-      if (!video.paused) video.pause();
+    if (!ride.current.moving) {
+      video.pause();
       if (Math.abs(video.currentTime - target) > 0.04) video.currentTime = target;
       return;
     }
@@ -770,9 +775,38 @@ function VideoClock({ ride }: { ride: RideRef }) {
       void video.play().catch(() => undefined);
       return;
     }
-    if (Math.abs(video.currentTime - target) > 0.35) video.currentTime = target;
+    if (Math.abs(video.currentTime - target) > 0.25) video.currentTime = target;
   });
 
+  return null;
+}
+
+function PlateClear({ plate, palette }: { plate: FoxPlate; palette: FoxPalette }) {
+  const gl = useThree((state) => state.gl);
+  const scene = useThree((state) => state.scene);
+
+  useLayoutEffect(() => {
+    if (plate === 'video') {
+      scene.background = null;
+      scene.fog = null;
+      gl.setClearColor(palette.night, 0);
+      return;
+    }
+    scene.background = palette.skyMid;
+    gl.setClearColor(palette.skyMid, 1);
+  }, [gl, palette.night, palette.skyMid, plate, scene]);
+
+  return null;
+}
+
+/**
+ * A useFrame with priority above 0 turns off R3F's automatic render.
+ * The fox reads bones at priority 1, after the mixer. This presents last.
+ */
+function Present() {
+  useFrame((state) => {
+    state.gl.render(state.scene, state.camera);
+  }, 2);
   return null;
 }
 
@@ -780,26 +814,20 @@ function World({ reduced, plate }: { reduced: boolean; plate: FoxPlate }) {
   const palette = useMemo(() => readFoxPalette(), []);
   const ride = useRide(reduced);
   ride.current.reduced = reduced;
-
-  if (plate === 'video') {
-    return (
-      <>
-        <Fox ride={ride} reduced={reduced} palette={palette} />
-        <CameraRig ride={ride} reduced={reduced} palette={palette} />
-        <VideoClock ride={ride} />
-      </>
-    );
-  }
+  const filmed = plate === 'video';
 
   return (
     <>
-      <color attach="background" args={[palette.skyMid]} />
-      <fogExp2 attach="fog" args={[palette.horizon, 0.04]} />
-      <Sky palette={palette} />
+      <PlateClear plate={plate} palette={palette} />
+      <Present />
+      {filmed ? null : <color attach="background" args={[palette.skyMid]} />}
+      {filmed ? null : <fogExp2 attach="fog" args={[palette.horizon, 0.04]} />}
+      {filmed ? null : <Sky palette={palette} />}
       <Fox ride={ride} reduced={reduced} palette={palette} />
       <CameraRig ride={ride} reduced={reduced} palette={palette} />
-      <LoopField palette={palette} />
-      {reduced ? null : <Snow palette={palette} />}
+      {filmed ? null : <LoopField palette={palette} />}
+      {filmed ? <VideoClock ride={ride} /> : null}
+      {filmed || reduced ? null : <Snow palette={palette} />}
     </>
   );
 }
@@ -848,7 +876,22 @@ class WebglBoundary extends Component<BoundaryProps, BoundaryState> {
 
 export default function FoxHeroScene({ plate = 'scene' }: { plate?: FoxPlate }) {
   const reduced = useReducedFlag();
-  const filmed = plate === 'video';
+  const [active, setActive] = useState<FoxPlate>(() => readFoxPlate(plate));
+
+  useEffect(() => {
+    const sync = () => setActive(readFoxPlate(plate));
+    sync();
+    window.addEventListener('fox-plate', sync);
+    window.addEventListener('popstate', sync);
+    return () => {
+      window.removeEventListener('fox-plate', sync);
+      window.removeEventListener('popstate', sync);
+    };
+  }, [plate]);
+
+  useEffect(() => {
+    applyFoxPlateDom(active);
+  }, [active]);
 
   return (
     <>
@@ -862,21 +905,17 @@ export default function FoxHeroScene({ plate = 'scene' }: { plate?: FoxPlate }) 
             camera={{ fov: 32, near: 0.08, far: 90, position: [-1.65, 1.12, 8.65] }}
             gl={{
               antialias: true,
-              alpha: filmed,
+              alpha: true,
               powerPreference: 'high-performance',
               stencil: false,
             }}
-            onCreated={({ gl, scene, invalidate }) => {
+            onCreated={({ gl, invalidate }) => {
               gl.toneMapping = ACESFilmicToneMapping;
               gl.toneMappingExposure = 1;
-              if (filmed) {
-                scene.background = null;
-                gl.setClearColor(0x000000, 0);
-              }
               if (reduced) invalidate();
             }}
           >
-            <World reduced={reduced} plate={plate} />
+            <World reduced={reduced} plate={active} />
           </Canvas>
         </WebglBoundary>
       </div>

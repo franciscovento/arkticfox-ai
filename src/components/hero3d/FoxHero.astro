@@ -12,6 +12,7 @@ interface Props {
 
 const { locale, plate = 'scene' } = Astro.props;
 const pageKey = plate === 'video' ? 'hero3dVideo' : 'hero3d';
+const dev = import.meta.env.DEV;
 ---
 
 <BaseLayout
@@ -26,6 +27,8 @@ const pageKey = plate === 'video' ? 'hero3dVideo' : 'hero3d';
     class="relative min-h-svh"
     data-fox-stage
     data-fox-plate={plate}
+    data-fox-plate-default={plate}
+    data-fox-dev={dev ? '1' : '0'}
     data-fox-offset="off"
     data-fox-state="loading"
     data-fox-progress="0"
@@ -51,20 +54,45 @@ const pageKey = plate === 'video' ? 'hero3dVideo' : 'hero3d';
         <p class="sr-only">{t(locale, 'home.loading')}</p>
       </div>
 
-      {
-        plate === 'video' && (
-          <video
-            data-fox-video
-            class="absolute inset-0 z-0 h-full w-full object-cover"
-            src={FOX_VIDEO_URL}
-            poster={FOX_VIDEO_POSTER}
-            muted
-            playsinline
-            loop
-            preload="auto"
-          />
-        )
-      }
+      <video
+        data-fox-video
+        class:list={[
+          'absolute inset-0 z-0 h-full w-full object-cover',
+          plate === 'scene' && 'hidden',
+        ]}
+        hidden={plate === 'scene'}
+        src={FOX_VIDEO_URL}
+        poster={FOX_VIDEO_POSTER}
+        muted
+        playsinline
+        loop
+        preload={plate === 'video' ? 'auto' : 'none'}
+      >
+      </video>
+
+      <script>
+        import { applyFoxPlateDom, readFoxPlate } from '@/components/islands/fox/plate';
+
+        const fallback =
+          document.querySelector('[data-fox-stage]')?.getAttribute('data-fox-plate-default') ===
+          'video'
+            ? 'video'
+            : 'scene';
+        const paint = () => applyFoxPlateDom(readFoxPlate(fallback));
+        paint();
+        window.addEventListener('fox-plate', paint);
+        document.addEventListener('click', (event) => {
+          const target = event.target;
+          if (!(target instanceof Element)) return;
+          const button = target.closest('[data-fox-bg]');
+          if (!(button instanceof HTMLButtonElement)) return;
+          event.preventDefault();
+          const url = new URL(window.location.href);
+          url.searchParams.set('bg', button.dataset.foxBg === 'video' ? 'video' : '3d');
+          history.replaceState(null, '', url);
+          window.dispatchEvent(new Event('fox-plate'));
+        });
+      </script>
 
       <FoxHeroScene client:only="react" plate={plate} />
 
@@ -147,17 +175,20 @@ const pageKey = plate === 'video' ? 'hero3dVideo' : 'hero3d';
       <p class="label pointer-events-none absolute inset-x-0 bottom-6 z-20 text-center text-white">
         {t(locale, 'hero3d.hint')}
       </p>
-      {
-        import.meta.env.DEV && (
-          <a
-            data-fox-plate-link
-            class="label pointer-events-auto absolute end-5 bottom-6 z-30 text-white/80"
-            href={getPath(locale, plate === 'video' ? 'hero3d' : 'hero3dVideo')}
-          >
-            {t(locale, plate === 'video' ? 'hero3d.toScene' : 'hero3d.toVideo')}
-          </a>
-        )
-      }
+      <div
+        data-fox-plate-toggle
+        hidden
+        class="pointer-events-auto absolute end-5 bottom-6 z-30 flex gap-3"
+        role="group"
+        aria-label={t(locale, 'hero3d.plateLabel')}
+      >
+        <button type="button" data-fox-bg="3d" class="label text-white/80" aria-pressed="false">
+          {t(locale, 'hero3d.toScene')}
+        </button>
+        <button type="button" data-fox-bg="video" class="label text-white/80" aria-pressed="false">
+          {t(locale, 'hero3d.toVideo')}
+        </button>
+      </div>
       <p class="sr-only">
         {t(locale, plate === 'video' ? 'hero3dVideo.scene' : 'hero3d.scene')}
       </p>

@@ -116,8 +116,9 @@ export const en = {
   'hero3d.hint': 'Scroll to follow the fox',
   'hero3d.scene':
     'An arctic fox on a straight snow path, with rounded pines and soft hills to the left. It sits looking at you and the tail moves with the sit clip. Scroll and it turns and walks at one steady pace while the woods drift past. Stop, and it turns back and sits.',
-  'hero3d.toVideo': 'Film background',
+  'hero3d.toVideo': 'Film',
   'hero3d.toScene': 'Drawn woods',
+  'hero3d.plateLabel': 'Background',
   'hero3dVideo.title': 'Arktic Fox | Fox on film',
   'hero3dVideo.description':
     'Prototype: the same 3D fox, with a filmed snowfield behind it.',
