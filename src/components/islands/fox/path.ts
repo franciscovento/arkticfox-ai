@@ -15,6 +15,15 @@ export const STRIDE = 0.36 * FOX_SCALE;
 export const IDLE_AFTER_MS = 400;
 
 /**
+ * Cruise speed. Scroll is a switch: while it is recent, or a fast scroll has
+ * queued distance, the world advances at this many meters per second.
+ */
+export const TRAVEL_MPS = 1.7;
+
+/** A fast scroll queues at most this much travel. The surplus is dropped. */
+export const TRAVEL_BANK_MAX = TRAVEL_MPS * 1.8;
+
+/**
  * Straight run. Scroll down moves along PATH_FORWARD. The rig's visual
  * forward is local +Z (three r186 lookAt aims +Z at the target).
  */

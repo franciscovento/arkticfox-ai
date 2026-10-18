@@ -25,24 +25,33 @@ function cssColor(name: string): Color {
   return color;
 }
 
-/** Scene colors mixed from the token palette. No raw colors live in this file. */
+/**
+ * Overcast field for the 3D fox only. Mixes stay inside the token set.
+ * Ice is pulled toward snow gray and ink so the sky reads as gray-lavender
+ * and muted blue, not a bright pastel. The fox fur stays the light shape.
+ */
 export function readFoxPalette(): FoxPalette {
   const ice = cssColor('--color-ice-blue');
   const ink = cssColor('--color-ink');
   const white = cssColor('--color-white');
-  const snow = cssColor('--color-snow-white');
-  const snowShade = cssColor('--color-snow-gray');
+  const snowWhite = cssColor('--color-snow-white');
+  const gray = cssColor('--color-snow-gray');
   const coral = cssColor('--color-fox-coral');
   const pink = cssColor('--color-fox-pink');
   const night = cssColor('--color-polar-night');
-  const skyHigh = ink.clone().lerp(ice, 0.22);
-  const skyMid = ink.clone().lerp(ice, 0.38);
-  const skyLow = ink.clone().lerp(ice, 0.54);
+
+  const cloud = ice.clone().lerp(gray, 0.58).lerp(ink, 0.28);
+  const skyHigh = gray.clone().lerp(ink, 0.3).lerp(ice, 0.2);
+  const skyMid = skyHigh.clone().lerp(gray, 0.12).lerp(pink, 0.06);
+  const skyLow = skyMid.clone().lerp(gray, 0.16);
+  const snow = snowWhite.clone().lerp(gray, 0.5).lerp(ink, 0.14).lerp(ice, 0.04);
+  const snowShade = snow.clone().lerp(ink, 0.08).lerp(cloud, 0.1);
+  const mist = ice.clone().lerp(gray, 0.55).lerp(ink, 0.22);
 
   return {
     snow,
     snowShade,
-    ice,
+    ice: mist,
     ink,
     coral,
     pink,
@@ -51,7 +60,7 @@ export function readFoxPalette(): FoxPalette {
     skyHigh,
     skyMid,
     skyLow,
-    horizon: coral.clone().lerp(pink, 0.45),
-    trail: snow.clone().lerp(ice, 0.22).lerp(snowShade, 0.2),
+    horizon: gray.clone().lerp(cloud, 0.4).lerp(ink, 0.22),
+    trail: snow.clone().lerp(snowShade, 0.55),
   };
 }

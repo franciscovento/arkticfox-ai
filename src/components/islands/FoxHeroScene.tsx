@@ -38,6 +38,11 @@ import { prefersReducedMotion } from '@/motion/reduced';
 import { dur } from '@/motion/tokens';
 import { readFoxPalette, type FoxPalette } from './fox/palette';
 import {
+  BACKDROP_URL,
+  backdropTime,
+  createBackdropMaterial,
+} from './fox/backdrop';
+import {
   DRIFTS,
   FOX_SCALE,
   FOX_URL,
@@ -45,10 +50,19 @@ import {
   PATH_FORWARD,
   PATH_LENGTH,
   STRIDE,
+  TRAVEL_BANK_MAX,
+  TRAVEL_MPS,
   buildTrail,
   frameFor,
   pointOnPath,
 } from './fox/path';
+import {
+  SIT_CLIP_HAS_HEAD,
+  SIT_CLIP_HAS_TAIL,
+  applyHeadLife,
+  applyTailLife,
+  sitLifeLabel,
+} from './fox/sitLife';
 import { makeSnowTexture } from './fox/snowTexture';
 
 useGLTF.preload(FOX_URL, false, false);
@@ -76,6 +90,8 @@ type Ride = {
   reduced: boolean;
   /** +1 scroll down (advance), -1 scroll up (retreat). */
   direction: 1 | -1;
+  /** Meters travelled at the cruise speed. Drives the walk cycle and the plate. */
+  distance: number;
   point: Vector3;
 };
 
@@ -101,6 +117,8 @@ function publish(
   facing: Facing,
   align: number,
   nose: string,
+  life: string,
+  head: string,
 ) {
   const stage = document.querySelector<HTMLElement>('[data-fox-stage]');
   if (!stage) return;
@@ -111,6 +129,8 @@ function publish(
   const alignText = align.toFixed(2);
   if (stage.dataset.foxAlign !== alignText) stage.dataset.foxAlign = alignText;
   if (stage.dataset.foxNose !== nose) stage.dataset.foxNose = nose;
+  if (stage.dataset.foxLife !== life) stage.dataset.foxLife = life;
+  if (stage.dataset.foxHead !== head) stage.dataset.foxHead = head;
 }
 
 function hideLoader() {
@@ -123,6 +143,7 @@ function useRide(reduced: boolean): RideRef {
     moving: false,
     reduced,
     direction: 1,
+    distance: 0,
     point: pointOnPath(reduced ? 0.12 : 0, new Vector3()),
   });
 
@@ -133,15 +154,20 @@ function useRide(reduced: boolean): RideRef {
   useEffect(() => {
     const stage = document.querySelector<HTMLElement>('[data-fox-stage]');
     let frame = 0;
-    let last = ride.current.progress;
+    let scrollPos = ride.current.progress;
     let primed = false;
-    let lastChange = performance.now();
+    let lastScrollAt = 0;
+    let lastTick = performance.now();
+    let bank = 0;
 
-    const tick = () => {
+    const tick = (now: number) => {
       const rideNow = ride.current;
+      const dt = Math.min(0.1, Math.max(0, (now - lastTick) / 1000));
+      lastTick = now;
       if (!stage || rideNow.reduced) {
         rideNow.progress = 0.12;
         rideNow.moving = false;
+        bank = 0;
       } else {
         const total = stage.offsetHeight - window.innerHeight;
         const top = stage.getBoundingClientRect().top + window.scrollY;
@@ -150,17 +176,40 @@ function useRide(reduced: boolean): RideRef {
           total <= 0 ? 0 : Math.min(1, Math.max(0, scrolled / total));
         if (!primed) {
           primed = true;
-          last = next;
+          scrollPos = next;
           rideNow.moving = false;
-        } else if (Math.abs(next - last) > 0.00012) {
-          rideNow.direction = next > last ? 1 : -1;
-          last = next;
-          lastChange = performance.now();
+        } else if (Math.abs(next - scrollPos) > 0.00012) {
+          const dir: 1 | -1 = next > scrollPos ? 1 : -1;
+          if (dir !== rideNow.direction) bank = 0;
+          rideNow.direction = dir;
+          bank = Math.min(
+            TRAVEL_BANK_MAX,
+            bank + Math.abs(next - scrollPos) * PATH_LENGTH,
+          );
+          scrollPos = next;
+          lastScrollAt = now;
+        }
+        const recent = now - lastScrollAt < IDLE_AFTER_MS;
+        const room =
+          rideNow.direction > 0
+            ? (1 - rideNow.progress) * PATH_LENGTH
+            : rideNow.progress * PATH_LENGTH;
+        const cruising = recent || bank > 0.0005;
+        if (cruising && room > 0.0005) {
+          const step = Math.min(TRAVEL_MPS * dt, room);
+          rideNow.progress += (rideNow.direction * step) / PATH_LENGTH;
+          bank = Math.max(0, bank - step);
+          rideNow.distance += step;
           rideNow.moving = true;
-        } else if (performance.now() - lastChange > IDLE_AFTER_MS) {
+        } else if (cruising && recent) {
+          bank = 0;
+          rideNow.distance += TRAVEL_MPS * dt;
+          rideNow.moving = true;
+        } else {
+          bank = 0;
           rideNow.moving = false;
         }
-        rideNow.progress = next;
+        rideNow.progress = Math.min(1, Math.max(0, rideNow.progress));
       }
       frame = requestAnimationFrame(tick);
     };
@@ -271,8 +320,8 @@ function Sky({ palette }: { palette: FoxPalette }) {
             float h = clamp(vHeight, 0.0, 1.0);
             vec3 color = mix(lowColor, midColor, smoothstep(0.0, 0.42, h));
             color = mix(color, highColor, smoothstep(0.35, 1.0, h));
-            float band = exp(-pow((h - 0.38) * 7.0, 2.0));
-            color = mix(color, glowColor, band * 0.28);
+            float band = exp(-pow((h - 0.46) * 3.2, 2.0));
+            color = mix(color, glowColor, band * 0.06);
             gl_FragColor = vec4(color, 1.0);
           }
         `,
@@ -325,7 +374,7 @@ function SnowField({ palette }: { palette: FoxPalette }) {
         <planeGeometry args={[140, 140]} />
         <meshStandardMaterial
           map={ground}
-          color={palette.snow}
+          color={palette.white}
           roughness={1}
           metalness={0}
         />
@@ -425,8 +474,9 @@ function Fox({
   }, [gltf.scene]);
   const { actions, mixer } = useAnimations(gltf.animations, group);
   const active = useRef<ClipName>(CLIP_SIT);
-  const progressPrev = useRef(ride.current.progress);
   const turned = useRef(false);
+  const head = useMemo(() => model.getObjectByName('Head') ?? null, [model]);
+  const tail = useMemo(() => model.getObjectByName('Tail_Base') ?? null, [model]);
   const narrow = useThree((state) => state.size.width < 768);
   const blob = useMemo(
     () =>
@@ -444,17 +494,32 @@ function Fox({
   useEffect(() => () => blob.dispose(), [blob]);
 
   useLayoutEffect(() => {
+    model.traverse((node) => {
+      const mesh = node as Mesh;
+      if (!mesh.isMesh) return;
+      const list = (
+        Array.isArray(mesh.material) ? mesh.material : [mesh.material]
+      ) as MeshStandardMaterial[];
+      for (const material of list) {
+        if (!material.emissive) continue;
+        material.emissive.copy(palette.white);
+        material.emissiveIntensity = 0.16;
+      }
+    });
+  }, [model, palette.white]);
+
+  useLayoutEffect(() => {
     const rig = group.current;
     const sit = actions[CLIP_SIT];
     const walk = actions[CLIP_WALK];
     if (!rig || !sit || !walk) {
-      publish('error', 0, 'camera', 0, '0,0');
+      publish('error', 0, 'camera', 0, '0,0', 'off', '0.00');
       hideLoader();
       return;
     }
     sit.reset().fadeIn(0).play();
     sit.setLoop(LoopRepeat, Infinity);
-    sit.paused = true;
+    sit.paused = reduced || !SIT_CLIP_HAS_TAIL;
     mixer.update(0);
     pointOnPath(ride.current.progress, ride.current.point);
     rig.position.copy(ride.current.point);
@@ -468,12 +533,14 @@ function Fox({
       'camera',
       1,
       `${_nose.x.toFixed(3)},${_nose.z.toFixed(3)}`,
+      reduced ? 'off' : sitLifeLabel(),
+      '0.00',
     );
     hideLoader();
     invalidate();
   }, [actions, invalidate, mixer, narrow, reduced, ride]);
 
-  useFrame((_, delta) => {
+  useFrame((state, delta) => {
     const rig = group.current;
     if (!rig) return;
     const rideNow = ride.current;
@@ -484,20 +551,29 @@ function Fox({
       fadeTo(actions, active.current, clip);
       active.current = clip;
     }
-    const deltaProgress = rideNow.progress - progressPrev.current;
-    progressPrev.current = rideNow.progress;
+    let life = 'off';
+    let headText = '0.00';
     if (clip === CLIP_WALK) {
       const walk = actions[CLIP_WALK];
       if (walk) {
         const duration = walk.getClip().duration || 1;
         walk.paused = true;
-        walk.time =
-          (walk.time + (Math.abs(deltaProgress) * PATH_LENGTH) / STRIDE) %
-          duration;
+        walk.time = (rideNow.distance / STRIDE) % duration;
       }
     } else {
       const sit = actions[CLIP_SIT];
-      if (sit) sit.paused = true;
+      if (sit) {
+        sit.paused = rideNow.reduced || !SIT_CLIP_HAS_TAIL;
+        if (rideNow.reduced) sit.time = 0;
+      }
+      if (!rideNow.reduced) {
+        life = sitLifeLabel();
+        if (!SIT_CLIP_HAS_HEAD && head) {
+          const yaw = applyHeadLife(head, state.clock.elapsedTime);
+          headText = ((yaw * 180) / Math.PI).toFixed(2);
+        }
+        if (!SIT_CLIP_HAS_TAIL && tail) applyTailLife(tail, state.clock.elapsedTime);
+      }
     }
     pointOnPath(rideNow.progress, rideNow.point);
     rig.position.copy(rideNow.point);
@@ -518,6 +594,8 @@ function Fox({
       facing,
       _nose.dot(_want),
       `${_nose.x.toFixed(3)},${_nose.z.toFixed(3)}`,
+      life,
+      headText,
     );
   });
 
@@ -551,10 +629,12 @@ function CameraRig({
   const primed = useRef(false);
   const key = useRef<DirectionalLight>(null);
   const rim = useRef<DirectionalLight>(null);
+  const fill = useRef<DirectionalLight>(null);
 
   useLayoutEffect(() => {
     if (key.current) scene.add(key.current.target);
     if (rim.current) scene.add(rim.current.target);
+    if (fill.current) scene.add(fill.current.target);
   }, [scene]);
 
   const aim = (snap: boolean, delta: number) => {
@@ -590,6 +670,12 @@ function CameraRig({
       rimLight.target.position.copy(point).addScaledVector(UP, 0.4);
       rimLight.target.updateMatrixWorld();
     }
+    const fillLight = fill.current;
+    if (fillLight) {
+      fillLight.position.copy(camera.position);
+      fillLight.target.position.copy(point).addScaledVector(UP, 0.35);
+      fillLight.target.updateMatrixWorld();
+    }
   };
 
   useLayoutEffect(() => {
@@ -597,15 +683,58 @@ function CameraRig({
   }, [size.width, size.height, reduced]);
 
   useFrame((_, delta) => {
-    aim(false, Math.min(delta, 0.05));
+    aim(false, Math.min(delta, 0.1));
   });
 
   return (
     <>
-      <hemisphereLight args={[palette.skyLow, palette.snowShade, 0.85]} />
-      <directionalLight ref={key} color={palette.white} intensity={1.45} />
-      <directionalLight ref={rim} color={palette.coral} intensity={0.72} />
+      <hemisphereLight args={[palette.skyMid, palette.snowShade, 0.62]} />
+      <directionalLight ref={key} color={palette.white} intensity={1.05} />
+      <directionalLight ref={fill} color={palette.white} intensity={0.85} />
+      <directionalLight ref={rim} color={palette.coral} intensity={0.32} />
     </>
+  );
+}
+
+function TravelPlate({
+  ride,
+  palette,
+}: {
+  ride: RideRef;
+  palette: FoxPalette;
+}) {
+  const camera = useThree((state) => state.camera);
+  const plate = useRef<Mesh>(null);
+  const material = useMemo(
+    () =>
+      createBackdropMaterial({
+        skyHigh: palette.skyHigh,
+        skyMid: palette.skyMid,
+        skyLow: palette.skyLow,
+        snow: palette.snow,
+        ice: palette.ice,
+      }),
+    [palette],
+  );
+
+  useEffect(() => () => material.dispose(), [material]);
+
+  useFrame(() => {
+    const mesh = plate.current;
+    if (!mesh) return;
+    const travelled = ride.current.distance;
+    material.uniforms.offset.value = travelled;
+    // Future video: element.currentTime = mesh.userData.clipTime, and pause when sitting.
+    mesh.userData.clipTime = BACKDROP_URL ? backdropTime(travelled) : 0;
+    camera.getWorldDirection(_look);
+    mesh.position.copy(camera.position).addScaledVector(_look, 10);
+    mesh.quaternion.copy(camera.quaternion);
+  });
+
+  return (
+    <mesh ref={plate} frustumCulled={false} material={material}>
+      <planeGeometry args={[36, 14]} />
+    </mesh>
   );
 }
 
@@ -617,8 +746,9 @@ function World({ reduced }: { reduced: boolean }) {
   return (
     <>
       <color attach="background" args={[palette.skyMid]} />
-      <fogExp2 attach="fog" args={[palette.skyLow, 0.04]} />
+      <fogExp2 attach="fog" args={[palette.skyLow, 0.082]} />
       <Sky palette={palette} />
+      <TravelPlate ride={ride} palette={palette} />
       <SnowField palette={palette} />
       <Fox ride={ride} reduced={reduced} palette={palette} />
       <CameraRig ride={ride} reduced={reduced} palette={palette} />
@@ -690,7 +820,7 @@ export default function FoxHeroScene() {
             }}
             onCreated={({ gl, invalidate }) => {
               gl.toneMapping = ACESFilmicToneMapping;
-              gl.toneMappingExposure = 1.06;
+              gl.toneMappingExposure = 1;
               if (reduced) invalidate();
             }}
           >

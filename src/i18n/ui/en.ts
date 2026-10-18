@@ -112,10 +112,10 @@ export const en = {
     'The same home, with the film stepped through as you scroll.',
   'hero3d.title': 'Arktic Fox | Fox in the snow',
   'hero3d.description':
-    'Prototype: a 3D fox sits in the snow, then turns and walks as you scroll.',
+    'Prototype: a 3D fox sits in the snow, then walks at a steady pace as you scroll.',
   'hero3d.hint': 'Scroll to follow the fox',
   'hero3d.scene':
-    'An arctic fox in the snow. It sits looking at you. Scroll and it turns and walks ahead. Stop, and it turns back, sits, and stays still.',
+    'An arctic fox in the snow. It sits looking at you, tail moving, head tilting a little. Scroll and it turns and walks at one steady pace. Stop, and it turns back and sits.',
   'home.reel.close': 'Close',
   'home.reel.note':
     'Winter drop. New rooms for the pack, and a short film for the feed.',

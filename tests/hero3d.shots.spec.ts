@@ -85,6 +85,20 @@ async function releaseScroll(page: Page) {
   });
 }
 
+async function expectLife(page: Page) {
+  await expect
+    .poll(async () => attr(page, 'data-fox-life'), { timeout: 4_000 })
+    .toBe('clip');
+  const samples = new Set<string>();
+  for (let i = 0; i < 5; i += 1) {
+    const head = await attr(page, 'data-fox-head');
+    expect(Math.abs(Number(head))).toBeLessThanOrEqual(6);
+    samples.add(head ?? '');
+    await page.waitForTimeout(280);
+  }
+  expect(samples.size).toBeGreaterThan(1);
+}
+
 async function expectStill(page: Page) {
   await expect
     .poll(async () => attr(page, 'data-fox-facing'), { timeout: 4_000 })
@@ -119,20 +133,31 @@ test('scroll down walks forward, idle faces the camera, scroll up walks back', a
   await expect
     .poll(async () => attr(page, 'data-fox-state'), { timeout: 5_000 })
     .toBe('sit');
+  await expectLife(page);
   await expectStill(page);
   await page.screenshot({ path: `${outDir}/desktop-start-idle.png` });
 
-  await scrubTo(page, 0.2);
+  const beforeJump = Number(await attr(page, 'data-fox-progress'));
+  await page.evaluate(() => window.scrollTo(0, 2200));
+  await expect
+    .poll(async () => Number(await attr(page, 'data-fox-progress')), {
+      timeout: 2_500,
+    })
+    .toBeGreaterThan(beforeJump);
+  const afterJump = Number(await attr(page, 'data-fox-progress'));
+  expect(afterJump - beforeJump).toBeLessThan(0.3);
+
   const forward = await waitWalk(page, 'forward');
-  expect(forward).toBeGreaterThan(0.2);
+  expect(forward).toBeGreaterThan(0.02);
   await holdScroll(page, 1);
   await page.screenshot({ path: `${outDir}/desktop-scroll-down-walk.png` });
   await releaseScroll(page);
 
   await expect
-    .poll(async () => attr(page, 'data-fox-state'), { timeout: 3_000 })
+    .poll(async () => attr(page, 'data-fox-state'), { timeout: 7_000 })
     .toBe('sit');
   await expectStill(page);
+  await expectLife(page);
   await page.screenshot({ path: `${outDir}/desktop-scroll-down-idle.png` });
 
   const beforeBack = Number(await attr(page, 'data-fox-progress'));
@@ -143,7 +168,7 @@ test('scroll down walks forward, idle faces the camera, scroll up walks back', a
   await releaseScroll(page);
 
   await expect
-    .poll(async () => attr(page, 'data-fox-state'), { timeout: 3_000 })
+    .poll(async () => attr(page, 'data-fox-state'), { timeout: 7_000 })
     .toBe('sit');
   await expectStill(page);
   await page.screenshot({ path: `${outDir}/desktop-scroll-up-idle.png` });
@@ -161,12 +186,12 @@ test('mobile scroll and idle', async ({ page }) => {
 
   await scrubTo(page, 0.15);
   const mobileForward = await waitWalk(page, 'forward');
-  expect(mobileForward).toBeGreaterThan(0.15);
+  expect(mobileForward).toBeGreaterThan(0.02);
   await holdScroll(page, 1);
   await page.screenshot({ path: `${outDir}/mobile-scroll-05-walk.png` });
   await releaseScroll(page);
   await expect
-    .poll(async () => attr(page, 'data-fox-state'), { timeout: 3_000 })
+    .poll(async () => attr(page, 'data-fox-state'), { timeout: 7_000 })
     .toBe('sit');
   await expectStill(page);
   await page.screenshot({ path: `${outDir}/mobile-scroll-05-idle.png` });
@@ -180,6 +205,10 @@ test('reduced motion holds a still frame', async ({ page }) => {
   await expect
     .poll(async () => attr(page, 'data-fox-state'), { timeout: 5_000 })
     .toBe('reduced');
+  expect(await attr(page, 'data-fox-life')).toBe('off');
+  const head = await attr(page, 'data-fox-head');
+  await page.waitForTimeout(400);
+  expect(await attr(page, 'data-fox-head')).toBe(head);
   await expectStill(page);
   const before = await attr(page, 'data-fox-progress');
   await page.evaluate(() => window.scrollTo(0, 4000));

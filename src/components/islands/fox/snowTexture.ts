@@ -24,8 +24,8 @@ export function makeSnowTexture(
     for (let x = 0; x < size; x++) {
       const n = hash(x, y);
       const broad = hash(Math.floor(x / 8), Math.floor(y / 8));
-      mixed.copy(snow).lerp(shade, n * 0.28 + broad * 0.12);
-      if (n > 0.94) mixed.lerp(ice, 0.35);
+      mixed.copy(snow).lerp(shade, n * 0.1 + broad * 0.05);
+      if (n > 0.97) mixed.lerp(ice, 0.08);
       const i = (y * size + x) * 4;
       image.data[i] = Math.round(mixed.r * 255);
       image.data[i + 1] = Math.round(mixed.g * 255);

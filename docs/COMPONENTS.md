@@ -31,6 +31,6 @@ Update this table in the same task that creates or changes a component.
 | WorkCase | `src/components/home/WorkCase.astro` | `locale` | `/work` and `/es/trabajo` | built (frost field, glass process beats, large plates) |
 | SnowDive | `src/components/motion/SnowDive.astro` | none | HomeEntry | built (looping video on `/`; scroll-scrubbed frames on `/v2`; snow direction is `data-snow-direction`: `fall` or `dive`) |
 | FoxHero | `src/components/hero3d/FoxHero.astro` | `locale` | `/hero-3d`, `/es/hero-3d` | prototype (noindex; pinned scroll stage, copy from the home hero, one brand-gradient CTA) |
-| FoxHeroScene | `src/components/islands/FoxHeroScene.tsx` | none | FoxHero | prototype (`client:only`; R3F fox, straight snow path, scroll walk, turn to camera and static sit) |
+| FoxHeroScene | `src/components/islands/FoxHeroScene.tsx` | none | FoxHero | prototype (`client:only`; R3F fox, cruise-speed straight path, Sit tail plus capped head, travelling plate placeholder) |
 | FrostField | `src/components/motion/FrostField.astro` | `fixed`, `class` | WorkCase | built (procedural blue-hour sky; off the home during the video look test) |
 | GlassSheen | `src/components/motion/GlassSheen.astro` | none | HomeEntry | built (pointer sheen on `[data-sheen]`) |
