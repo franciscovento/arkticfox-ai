@@ -20,8 +20,8 @@ export const FOX_SCALE = 1.45;
 export const STRIDE = 0.36 * FOX_SCALE;
 
 /**
- * The rig faces +Z. Object3D.lookAt aims -Z at the target, so the aim point
- * sits behind the travel direction.
+ * three r186 Object3D.lookAt aims local +Z at the target. The skinned head
+ * leads along -Z, so the aim sits behind the travel direction and +Z trails.
  */
 export const MODEL_LOOK_SIGN = -1;
 
