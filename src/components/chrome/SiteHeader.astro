@@ -1,0 +1,256 @@
+---
+import type { Locale, PageKey } from '@/i18n/routes';
+import type { UiKey } from '@/i18n/ui/en';
+import { getPath, t } from '@/i18n/utils';
+
+interface Props {
+  locale: Locale;
+  pageKey: PageKey;
+  /** Overlay sits on a dark hero and turns solid on scroll. Solid is always polar night. */
+  tone?: 'overlay' | 'solid';
+}
+
+const { locale, pageKey, tone = 'overlay' } = Astro.props;
+const other: Locale = locale === 'en' ? 'es' : 'en';
+const home = getPath(locale, 'home');
+const services: { pageKey: PageKey; label: UiKey }[] = [
+  { pageKey: 'productImages', label: 'page.productImages.heading' },
+  { pageKey: 'adVideos', label: 'page.adVideos.heading' },
+  { pageKey: 'ugcVideos', label: 'page.ugcVideos.heading' },
+];
+const menuId = `site-menu-${locale}`;
+---
+
+<a class="skip-link" href="#content">
+  {t(locale, 'nav.skip')}
+</a>
+<header
+  class:list={[
+    'site-header fixed inset-x-0 top-0 z-30 px-5 py-4 md:px-10',
+    tone === 'solid' && 'is-solid',
+  ]}
+  data-site-header
+  data-tone={tone}
+>
+  <div class="grid grid-cols-[auto_1fr_auto] items-center gap-3 lg:grid-cols-[1fr_auto_1fr]">
+    <nav
+      class="hidden items-center gap-6 lg:flex"
+      aria-label={t(locale, 'home.navLabel')}
+    >
+      <details class="site-services relative">
+        <summary class="label hover-fox cursor-pointer list-none text-white">
+          {t(locale, 'nav.services')}
+        </summary>
+        <div class="glass absolute top-full left-0 z-10 mt-3 flex min-w-56 flex-col gap-3 p-4">
+          {services.map((item) => (
+            <a
+              class="label hover-fox text-white"
+              href={getPath(locale, item.pageKey)}
+            >
+              {t(locale, item.label)}
+            </a>
+          ))}
+        </div>
+      </details>
+      <a class="label hover-fox text-white" href={`${home}#work`}>
+        {t(locale, 'nav.work')}
+      </a>
+      <a class="label hover-fox text-white" href={`${home}#process`}>
+        {t(locale, 'nav.process')}
+      </a>
+    </nav>
+
+    <a
+      class="justify-self-start lg:justify-self-center"
+      href={home}
+      aria-label={t(locale, 'meta.siteName')}
+    >
+      <img
+        class="h-8 w-auto lg:hidden"
+        src="/media/brand/logo-mark-white.png"
+        alt=""
+        width="788"
+        height="396"
+      />
+      <img
+        class="hidden h-9 w-auto lg:block"
+        src="/media/brand/logo-lockup-white.png"
+        alt=""
+        width="978"
+        height="389"
+      />
+    </a>
+
+    <div class="flex items-center justify-end gap-3 md:gap-5">
+      <a
+        class="label hover-fox hidden text-white lg:inline"
+        href={getPath(locale, 'pricing')}
+      >
+        {t(locale, 'nav.pricing')}
+      </a>
+      <a
+        class:list={[
+          'label hover-fox',
+          locale === 'en' ? 'text-white' : 'text-white/70',
+        ]}
+        href={getPath('en', pageKey)}
+        hreflang="en"
+        aria-current={locale === 'en' ? 'page' : undefined}
+      >
+        {t(locale, 'nav.languageEn')}
+      </a>
+      <a
+        class:list={[
+          'label hover-fox',
+          locale === 'es' ? 'text-white' : 'text-white/70',
+        ]}
+        href={getPath('es', pageKey)}
+        hreflang="es"
+        aria-current={locale === 'es' ? 'page' : undefined}
+      >
+        {t(locale, 'nav.languageEs')}
+      </a>
+      <a
+        class="hover-fox inline-flex items-center rounded-pill border border-white px-4 py-2.5 font-sans text-xs font-medium whitespace-nowrap text-white md:px-5 md:text-sm"
+        href={getPath(locale, 'quote')}
+      >
+        {t(locale, 'nav.quote')}
+      </a>
+      <button
+        class="label hover-fox text-white lg:hidden"
+        type="button"
+        aria-expanded="false"
+        aria-controls={menuId}
+        data-menu-open
+      >
+        {t(locale, 'nav.menuOpen')}
+      </button>
+    </div>
+  </div>
+</header>
+
+<dialog
+  id={menuId}
+  class="site-menu m-0 h-full max-h-none w-full max-w-none border-0 bg-polar-night p-0 text-white"
+  data-site-menu
+>
+  <div class="flex items-center justify-between px-5 py-4">
+    <img
+      src="/media/brand/logo-mark-white.png"
+      alt=""
+      class="h-8 w-auto"
+      width="788"
+      height="396"
+    />
+    <button class="label hover-fox text-white" type="button" data-menu-close>
+      {t(locale, 'nav.menuClose')}
+    </button>
+  </div>
+  <nav
+    class="flex flex-col gap-6 px-6 py-10"
+    aria-label={t(locale, 'home.navLabel')}
+  >
+    <p class="label text-ice-blue">{t(locale, 'nav.services')}</p>
+    {services.map((item) => (
+      <a
+        class="font-serif text-4xl text-white"
+        href={getPath(locale, item.pageKey)}
+      >
+        {t(locale, item.label)}
+      </a>
+    ))}
+    <a class="font-serif text-4xl text-white" href={`${home}#work`}>
+      {t(locale, 'nav.work')}
+    </a>
+    <a class="font-serif text-4xl text-white" href={`${home}#process`}>
+      {t(locale, 'nav.process')}
+    </a>
+    <a class="font-serif text-4xl text-white" href={getPath(locale, 'pricing')}>
+      {t(locale, 'nav.pricing')}
+    </a>
+    <a
+      class="label text-ice-blue"
+      href={getPath(other, pageKey)}
+      hreflang={other}
+    >
+      {t(locale, other === 'es' ? 'nav.languageEs' : 'nav.languageEn')}
+    </a>
+  </nav>
+</dialog>
+
+<style>
+  .skip-link {
+    position: absolute;
+    left: 1rem;
+    top: -4rem;
+    z-index: 80;
+    border-radius: var(--radius-pill);
+    background: var(--color-snow-white);
+    color: var(--color-ink);
+    padding: 0.75rem 1rem;
+  }
+
+  .skip-link:focus {
+    top: 1rem;
+  }
+
+  .site-header.is-solid,
+  .site-header[data-tone='solid'] {
+    background-color: var(--color-polar-night);
+  }
+
+  .site-services summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .site-menu::backdrop {
+    background: transparent;
+  }
+</style>
+
+<script>
+  import { onPageReady } from '../../motion/ready';
+
+  function bootHeader() {
+    document
+      .querySelectorAll<HTMLElement>('[data-site-header]')
+      .forEach((header) => {
+        if (header.dataset.booted === 'true') return;
+        header.dataset.booted = 'true';
+        const menu =
+          header.parentElement?.querySelector<HTMLDialogElement>(
+            '[data-site-menu]',
+          );
+        const open =
+          header.querySelector<HTMLButtonElement>('[data-menu-open]');
+        const close =
+          menu?.querySelector<HTMLButtonElement>('[data-menu-close]');
+        const solid = () => {
+          if (header.dataset.tone !== 'overlay') return;
+          header.classList.toggle('is-solid', window.scrollY > 24);
+        };
+        solid();
+        window.addEventListener('scroll', solid, { passive: true });
+        open?.addEventListener('click', () => {
+          menu?.showModal();
+          open.setAttribute('aria-expanded', 'true');
+        });
+        const shut = () => {
+          menu?.close();
+          open?.setAttribute('aria-expanded', 'false');
+          open?.focus();
+        };
+        close?.addEventListener('click', shut);
+        menu?.addEventListener('close', () =>
+          open?.setAttribute('aria-expanded', 'false'),
+        );
+        menu
+          ?.querySelectorAll('a')
+          .forEach((link) =>
+            link.addEventListener('click', () => menu.close()),
+          );
+      });
+  }
+
+  onPageReady(bootHeader);
+</script>

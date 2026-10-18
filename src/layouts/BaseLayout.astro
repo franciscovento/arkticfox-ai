@@ -1,5 +1,7 @@
 ---
 import '@/styles/global.css';
+import CookieBanner from '@/components/chrome/CookieBanner.astro';
+import WhatsAppButton from '@/components/chrome/WhatsAppButton.astro';
 import Hreflang from '@/components/seo/Hreflang.astro';
 import Seo from '@/components/seo/Seo.astro';
 import type { Locale, PageKey } from '@/i18n/routes';
@@ -11,10 +13,25 @@ interface Props {
   locale?: Locale;
   pageKey?: PageKey;
   noindex?: boolean;
+  /** When set, replaces the noindex default. Thanks uses `noindex, follow`. */
+  robots?: string;
+  image?: string;
   bodyClass?: string;
+  /** Thanks hides WhatsApp so it does not compete with the call. */
+  whatsapp?: boolean;
 }
 
-const { title, description, locale = 'en', pageKey, noindex = false, bodyClass = '' } = Astro.props;
+const {
+  title,
+  description,
+  locale = 'en',
+  pageKey,
+  noindex = false,
+  robots,
+  image = '/media/brand/og.jpg',
+  bodyClass = '',
+  whatsapp = true,
+} = Astro.props;
 ---
 
 <!doctype html>
@@ -22,13 +39,18 @@ const { title, description, locale = 'en', pageKey, noindex = false, bodyClass =
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="/favicon-512.png" sizes="512x512" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />
     <meta name="generator" content={Astro.generator} />
     <Seo
       title={title}
       description={description}
       siteName={t(locale, 'meta.siteName')}
       noindex={noindex}
+      robots={robots}
+      image={image}
     />
     {pageKey && <Hreflang pageKey={pageKey} />}
     <script is:inline>
@@ -37,5 +59,7 @@ const { title, description, locale = 'en', pageKey, noindex = false, bodyClass =
   </head>
   <body class={bodyClass}>
     <slot />
+    <CookieBanner locale={locale} />
+    {whatsapp && <WhatsAppButton locale={locale} />}
   </body>
 </html>

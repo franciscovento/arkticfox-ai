@@ -1,0 +1,109 @@
+---
+import type { Locale } from '@/i18n/routes';
+import { getPath, t } from '@/i18n/utils';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+
+<div
+  class="fixed inset-x-4 bottom-4 z-40 hidden max-w-md rounded-card border border-glass-border bg-polar-night p-4 text-white shadow-none md:left-6 md:bottom-6"
+  data-cookie-banner
+  role="region"
+  aria-label={t(locale, 'cookieBanner.link')}
+  hidden
+>
+  <p class="font-sans text-sm leading-relaxed">
+    {t(locale, 'cookieBanner.body')}
+  </p>
+  <p
+    class="mt-3 hidden font-sans text-sm leading-relaxed text-white/80"
+    data-cookie-settings
+  >
+    {t(locale, 'cookieBanner.settingsBody')}
+  </p>
+  <div class="mt-4 flex flex-wrap items-center gap-2">
+    <button
+      class="hover-fox inline-flex items-center rounded-pill border border-white px-4 py-2 font-sans text-sm font-medium text-white"
+      type="button"
+      data-cookie-accept
+    >
+      {t(locale, 'cookieBanner.accept')}
+    </button>
+    <button
+      class="hover-fox inline-flex items-center rounded-pill border border-white px-4 py-2 font-sans text-sm font-medium text-white"
+      type="button"
+      data-cookie-reject
+    >
+      {t(locale, 'cookieBanner.reject')}
+    </button>
+    <button
+      class="label hover-fox text-ice-blue"
+      type="button"
+      data-cookie-toggle
+      data-show={t(locale, 'cookieBanner.settings')}
+      data-hide={t(locale, 'cookieBanner.hide')}
+    >
+      {t(locale, 'cookieBanner.settings')}
+    </button>
+    <a class="label hover-fox text-ice-blue" href={getPath(locale, 'cookies')}>
+      {t(locale, 'cookieBanner.link')}
+    </a>
+  </div>
+</div>
+
+<script>
+  import { onPageReady } from '../../motion/ready';
+
+  const storageKey = 'arkticfox-cookies';
+
+  function bootCookies() {
+    const banner = document.querySelector<HTMLElement>('[data-cookie-banner]');
+    if (!banner || banner.dataset.booted === 'true') return;
+    banner.dataset.booted = 'true';
+    let stored = '';
+    try {
+      stored = localStorage.getItem(storageKey) ?? '';
+    } catch {
+      /* Storage can be blocked. The banner still shows. */
+    }
+    if (stored === 'accept' || stored === 'reject') return;
+    banner.hidden = false;
+    banner.classList.remove('hidden');
+    const settings = banner.querySelector<HTMLElement>(
+      '[data-cookie-settings]',
+    );
+    const toggle = banner.querySelector<HTMLButtonElement>(
+      '[data-cookie-toggle]',
+    );
+    toggle?.addEventListener('click', () => {
+      if (!settings) return;
+      const willOpen = settings.classList.contains('hidden');
+      settings.classList.toggle('hidden', !willOpen);
+      settings.hidden = !willOpen;
+      toggle.textContent = willOpen
+        ? (toggle.dataset.hide ?? '')
+        : (toggle.dataset.show ?? '');
+    });
+    const finish = (value: 'accept' | 'reject') => {
+      try {
+        localStorage.setItem(storageKey, value);
+      } catch {
+        /* storage can be blocked; the banner still closes */
+      }
+      banner.hidden = true;
+      banner.classList.add('hidden');
+    };
+    banner
+      .querySelector('[data-cookie-accept]')
+      ?.addEventListener('click', () => finish('accept'));
+    banner
+      .querySelector('[data-cookie-reject]')
+      ?.addEventListener('click', () => finish('reject'));
+  }
+
+  onPageReady(bootCookies);
+</script>

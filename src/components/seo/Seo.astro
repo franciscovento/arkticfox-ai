@@ -4,18 +4,39 @@ interface Props {
   description: string;
   siteName: string;
   noindex?: boolean;
+  /** Overrides the default robots directive when set. */
+  robots?: string;
+  image?: string;
 }
 
-const { title, description, siteName, noindex = false } = Astro.props;
+const {
+  title,
+  description,
+  siteName,
+  noindex = false,
+  robots,
+  image,
+} = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
+const robotsContent = robots ?? (noindex ? 'noindex, nofollow' : undefined);
+const imageUrl = image ? new URL(image, Astro.site) : undefined;
 ---
 
 <title>{title}</title>
 <meta name="description" content={description} />
 <link rel="canonical" href={canonical.href} />
-{noindex && <meta name="robots" content="noindex, nofollow" />}
+{robotsContent && <meta name="robots" content={robotsContent} />}
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
 <meta property="og:url" content={canonical.href} />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content={siteName} />
+{imageUrl && (
+  <>
+    <meta property="og:image" content={imageUrl.href} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={imageUrl.href} />
+  </>
+)}

@@ -1,0 +1,125 @@
+---
+import FoxDivider from '@/components/chrome/FoxDivider.astro';
+import type { Locale, PageKey } from '@/i18n/routes';
+import type { UiKey } from '@/i18n/ui/en';
+import { getPath, t } from '@/i18n/utils';
+
+interface Props {
+  locale: Locale;
+  pageKey: PageKey;
+}
+
+const { locale, pageKey } = Astro.props;
+const home = getPath(locale, 'home');
+const pages: { href: string; label: UiKey }[] = [
+  {
+    href: getPath(locale, 'productImages'),
+    label: 'page.productImages.heading',
+  },
+  { href: getPath(locale, 'adVideos'), label: 'page.adVideos.heading' },
+  { href: getPath(locale, 'ugcVideos'), label: 'page.ugcVideos.heading' },
+  { href: `${home}#work`, label: 'nav.work' },
+  { href: `${home}#process`, label: 'nav.process' },
+  { href: getPath(locale, 'pricing'), label: 'nav.pricing' },
+  { href: getPath(locale, 'quote'), label: 'nav.quote' },
+];
+const legal: { pageKey: PageKey; label: UiKey }[] = [
+  { pageKey: 'legalNotice', label: 'legal.notice.heading' },
+  { pageKey: 'privacy', label: 'legal.privacy.heading' },
+  { pageKey: 'cookies', label: 'legal.cookies.heading' },
+];
+---
+
+<footer class="bg-polar-night px-5 py-16 text-white md:px-10">
+  <div class="mx-auto flex max-w-6xl flex-col gap-10">
+    <FoxDivider />
+    <a href={home} aria-label={t(locale, 'meta.siteName')}>
+      <img
+        src="/media/brand/logo-lockup-white.png"
+        alt=""
+        width="978"
+        height="389"
+        class="h-12 w-auto"
+      />
+    </a>
+    <div class="grid gap-10 sm:grid-cols-3">
+      <nav aria-label={t(locale, 'footer.sitemap')}>
+        <p class="label text-ice-blue">{t(locale, 'footer.sitemap')}</p>
+        <ul class="mt-4 flex flex-col gap-2">
+          {pages.map((item) => (
+            <li>
+              <a
+                class="hover-fox font-sans text-sm text-white"
+                href={item.href}
+              >
+                {t(locale, item.label)}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+      <nav aria-label={t(locale, 'footer.legal')}>
+        <p class="label text-ice-blue">{t(locale, 'footer.legal')}</p>
+        <ul class="mt-4 flex flex-col gap-2">
+          {legal.map((item) => (
+            <li>
+              <a
+                class="hover-fox font-sans text-sm text-white"
+                href={getPath(locale, item.pageKey)}
+              >
+                {t(locale, item.label)}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+      <div>
+        <p class="label text-ice-blue">{t(locale, 'footer.contact')}</p>
+        <ul class="mt-4 flex flex-col gap-2">
+          <li>
+            <a
+              class="hover-fox font-sans text-sm text-white"
+              href={`mailto:${t(locale, 'shared.email')}`}
+            >
+              {t(locale, 'shared.email')}
+            </a>
+          </li>
+          <li>
+            <a
+              class="hover-fox font-sans text-sm text-white"
+              href={t(locale, 'shared.instagramUrl')}
+              rel="noopener noreferrer"
+            >
+              {t(locale, 'shared.instagram')}
+            </a>
+          </li>
+          <li class="flex gap-3 pt-2">
+            <a
+              class:list={[
+                'label hover-fox',
+                locale === 'en' ? 'text-white' : 'text-white/70',
+              ]}
+              href={getPath('en', pageKey)}
+              hreflang="en"
+            >
+              {t(locale, 'nav.languageEn')}
+            </a>
+            <a
+              class:list={[
+                'label hover-fox',
+                locale === 'es' ? 'text-white' : 'text-white/70',
+              ]}
+              href={getPath('es', pageKey)}
+              hreflang="es"
+            >
+              {t(locale, 'nav.languageEs')}
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <p class="font-sans text-xs text-white/70">
+      {t(locale, 'footer.copyright')}
+    </p>
+  </div>
+</footer>
