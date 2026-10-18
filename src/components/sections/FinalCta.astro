@@ -1,0 +1,40 @@
+---
+import type { Locale } from '@/i18n/routes';
+import { getPath, t } from '@/i18n/utils';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+
+<section class="relative isolate overflow-hidden bg-polar-night px-5 py-28 text-white md:px-10 md:py-36">
+  <img
+    class="absolute inset-0 -z-20 h-full w-full object-cover"
+    src="/media/brand/fox-peeking-snow-wide.webp"
+    alt=""
+    width="1118"
+    height="690"
+  />
+  <div class="absolute inset-0 -z-10 bg-scrim"></div>
+  <div class="relative mx-auto flex max-w-6xl flex-col items-start gap-6">
+    <img
+      src="/media/brand/logo-mark-white.png"
+      alt=""
+      width="788"
+      height="396"
+      class="h-10 w-auto opacity-80"
+    />
+    <h2 class="max-w-xl font-serif text-5xl leading-tight md:text-7xl">
+      {t(locale, 'shared.cta.headlineLead')}{' '}
+      <em class="italic">{t(locale, 'shared.cta.headlineEmphasis')}</em>?
+    </h2>
+    <a
+      class="hover-fox inline-flex items-center rounded-pill bg-brand-gradient px-6 py-3 font-sans text-sm font-medium text-white"
+      href={getPath(locale, 'quote')}
+    >
+      {t(locale, 'shared.cta.quote')}
+    </a>
+  </div>
+</section>

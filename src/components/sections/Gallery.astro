@@ -1,0 +1,267 @@
+---
+import LazyVideo from '@/components/sections/LazyVideo.astro';
+import type { Locale } from '@/i18n/routes';
+import type { UiKey } from '@/i18n/ui/en';
+import { t } from '@/i18n/utils';
+
+interface Item {
+  src: string;
+  poster?: string;
+  kind: 'image' | 'video';
+  alt: UiKey;
+  sector: 'studio';
+  service: 'product' | 'ads' | 'ugc';
+  caption: UiKey;
+}
+
+interface Props {
+  locale: Locale;
+  items: Item[];
+  showServiceFilters?: boolean;
+  eyebrow?: UiKey;
+  note?: UiKey;
+}
+
+const {
+  locale,
+  items,
+  showServiceFilters = false,
+  eyebrow = 'shared.gallery.eyebrow',
+  note,
+} = Astro.props;
+const uid = `gallery-${showServiceFilters ? 'home' : 'service'}-${locale}`;
+const sectors: { value: string; label: UiKey }[] = [
+  { value: 'all', label: 'shared.gallery.filterAll' },
+  { value: 'studio', label: 'shared.gallery.filterStudio' },
+  { value: 'ecommerce', label: 'shared.sectors.ecommerce' },
+  { value: 'fashion', label: 'shared.sectors.fashion' },
+  { value: 'beauty', label: 'shared.sectors.beauty' },
+  { value: 'food', label: 'shared.sectors.food' },
+  { value: 'automotive', label: 'shared.sectors.automotive' },
+];
+const services: { value: string; label: UiKey }[] = [
+  { value: 'all', label: 'home.work.filterAll' },
+  { value: 'product', label: 'home.work.filterProduct' },
+  { value: 'ads', label: 'home.work.filterAds' },
+  { value: 'ugc', label: 'home.work.filterUgc' },
+];
+---
+
+<section
+  id="work"
+  class:list={[
+    'gallery bg-polar-night px-5 py-20 text-white md:px-10 md:py-28',
+  ]}
+  data-gallery
+>
+  <div class="mx-auto max-w-6xl">
+    <p class="label text-ice-blue">{t(locale, eyebrow)}</p>
+    {note && (
+      <p class="mt-4 max-w-2xl font-sans text-sm leading-relaxed text-white/80">
+        {t(locale, note)}
+      </p>
+    )}
+    <div class="mt-8 flex flex-col gap-4">
+      <fieldset class="flex flex-wrap gap-2 border-0 p-0">
+        <legend class="sr-only">{t(locale, 'shared.gallery.filterAll')}</legend>
+        {sectors.map((sector, index) => (
+          <label class="chip">
+            <input
+              class="sr-only"
+              type="radio"
+              name={`${uid}-sector`}
+              value={sector.value}
+              checked={index === 0}
+            />
+            <span class="label">{t(locale, sector.label)}</span>
+          </label>
+        ))}
+      </fieldset>
+      {showServiceFilters && (
+        <fieldset class="flex flex-wrap gap-2 border-0 p-0">
+          <legend class="sr-only">{t(locale, 'home.work.filterAll')}</legend>
+          {services.map((service, index) => (
+            <label class="chip">
+              <input
+                class="sr-only"
+                type="radio"
+                name={`${uid}-service`}
+                value={service.value}
+                checked={index === 0}
+              />
+              <span class="label">{t(locale, service.label)}</span>
+            </label>
+          ))}
+        </fieldset>
+      )}
+    </div>
+    <p
+      class="gallery-empty mt-8 hidden font-sans text-sm text-white/80"
+      data-empty
+    >
+      {t(locale, 'shared.gallery.empty')}
+    </p>
+    <ul class="mt-8 columns-1 gap-4 sm:columns-2 lg:columns-3">
+      {items.map((item) => (
+        <li
+          class="mb-4 break-inside-avoid"
+          data-sector={item.sector}
+          data-service={item.service}
+        >
+          <div class="relative overflow-hidden rounded-card">
+            {item.kind === 'image' ? (
+              <img
+                class="aspect-[4/5] w-full object-cover"
+                src={item.src}
+                alt={t(locale, item.alt)}
+              />
+            ) : (
+              <span class="relative block aspect-video">
+                <LazyVideo
+                  src={item.src}
+                  poster={item.poster ?? ''}
+                  label={t(locale, item.alt)}
+                />
+              </span>
+            )}
+            <button
+              class="absolute inset-0"
+              type="button"
+              data-lightbox-open
+              data-kind={item.kind}
+              data-src={item.src}
+              data-poster={item.poster ?? ''}
+              data-alt={t(locale, item.alt)}
+            >
+              <span class="sr-only">
+                {t(locale, 'shared.gallery.open')} {t(locale, item.caption)}
+              </span>
+            </button>
+          </div>
+          <p class="mt-3 font-sans text-sm">{t(locale, item.caption)}</p>
+          <p class="mt-1 font-sans text-xs text-white/70">
+            {t(locale, 'shared.standIn')}
+          </p>
+        </li>
+      ))}
+    </ul>
+  </div>
+  <dialog
+    class="lightbox m-auto w-[min(960px,calc(100%-2rem))] border-0 bg-polar-night p-4 text-white"
+    data-lightbox
+  >
+    <div class="flex justify-end">
+      <button class="label text-white" type="button" data-lightbox-close>
+        {t(locale, 'shared.gallery.close')}
+      </button>
+    </div>
+    <div class="mt-3" data-lightbox-stage></div>
+  </dialog>
+</section>
+
+<style>
+  .chip span {
+    display: inline-flex;
+    cursor: pointer;
+    border: 1px solid var(--color-glass-border);
+    border-radius: var(--radius-pill);
+    padding: 0.45rem 0.8rem;
+  }
+
+  .chip input:checked + span {
+    background: var(--color-white);
+    color: var(--color-ink);
+  }
+
+  .chip input:focus-visible + span {
+    outline: 2px solid var(--color-fox-coral);
+    outline-offset: 3px;
+  }
+
+  .gallery:has(input[value='ecommerce']:checked) [data-empty],
+  .gallery:has(input[value='fashion']:checked) [data-empty],
+  .gallery:has(input[value='beauty']:checked) [data-empty],
+  .gallery:has(input[value='food']:checked) [data-empty],
+  .gallery:has(input[value='automotive']:checked) [data-empty] {
+    display: block;
+  }
+
+  .gallery:has(input[value='ecommerce']:checked) [data-sector],
+  .gallery:has(input[value='fashion']:checked) [data-sector],
+  .gallery:has(input[value='beauty']:checked) [data-sector],
+  .gallery:has(input[value='food']:checked) [data-sector],
+  .gallery:has(input[value='automotive']:checked) [data-sector],
+  .gallery:has(input[value='studio']:checked)
+    [data-sector]:not([data-sector='studio']) {
+    display: none;
+  }
+
+  .gallery:has(input[value='product']:checked)
+    [data-service]:not([data-service='product']),
+  .gallery:has(input[value='ads']:checked)
+    [data-service]:not([data-service='ads']),
+  .gallery:has(input[value='ugc']:checked)
+    [data-service]:not([data-service='ugc']) {
+    display: none;
+  }
+</style>
+
+<script>
+  import { prefersReducedMotion } from '../../motion/reduced';
+  import { onPageReady } from '../../motion/ready';
+
+  function bootGallery() {
+    document.querySelectorAll<HTMLElement>('[data-gallery]').forEach((root) => {
+      if (root.dataset.booted === 'true') return;
+      root.dataset.booted = 'true';
+      const dialog = root.querySelector<HTMLDialogElement>('[data-lightbox]');
+      const stage = root.querySelector<HTMLElement>('[data-lightbox-stage]');
+      if (!dialog || !stage) return;
+      root
+        .querySelectorAll<HTMLButtonElement>('[data-lightbox-open]')
+        .forEach((button) => {
+          button.addEventListener('click', () => {
+            stage.replaceChildren();
+            const kind = button.dataset.kind;
+            const src = button.dataset.src ?? '';
+            const alt = button.dataset.alt ?? '';
+            if (kind === 'video') {
+              const video = document.createElement('video');
+              video.controls = true;
+              video.playsInline = true;
+              video.poster = button.dataset.poster ?? '';
+              video.setAttribute('aria-label', alt);
+              const source = document.createElement('source');
+              source.src = src;
+              source.type = 'video/mp4';
+              video.append(source);
+              if (!prefersReducedMotion())
+                void video.play().catch(() => undefined);
+              stage.append(video);
+              video.className =
+                'aspect-video w-full rounded-card bg-polar-night';
+            } else {
+              const img = document.createElement('img');
+              img.src = src;
+              img.alt = alt;
+              img.className = 'max-h-[70vh] w-full rounded-card object-contain';
+              stage.append(img);
+            }
+            dialog.showModal();
+          });
+        });
+      const shut = () => {
+        stage.querySelectorAll('video').forEach((video) => video.pause());
+        dialog.close();
+      };
+      root
+        .querySelector('[data-lightbox-close]')
+        ?.addEventListener('click', shut);
+      dialog.addEventListener('close', () => {
+        stage.querySelectorAll('video').forEach((video) => video.pause());
+      });
+    });
+  }
+
+  onPageReady(bootGallery);
+</script>

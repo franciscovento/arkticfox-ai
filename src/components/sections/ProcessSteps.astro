@@ -1,0 +1,66 @@
+---
+import type { Locale } from '@/i18n/routes';
+import { t } from '@/i18n/utils';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const steps = [
+  {
+    n: '01',
+    title: 'shared.process.step1Title',
+    body: 'shared.process.step1Body',
+    poster: '/media/clips/tunnel-fox-ref-a-poster.jpg',
+    alt: 'media.clipTunnelAAlt',
+  },
+  {
+    n: '02',
+    title: 'shared.process.step2Title',
+    body: 'shared.process.step2Body',
+    poster: '/media/clips/tunnel-cloud-reveal-poster.jpg',
+    alt: 'media.clipCloudAlt',
+  },
+  {
+    n: '03',
+    title: 'shared.process.step3Title',
+    body: 'shared.process.step3Body',
+    poster: '/media/clips/tunnel-fox-ref-b-poster.jpg',
+    alt: 'media.clipTunnelBAlt',
+  },
+  {
+    n: '04',
+    title: 'shared.process.step4Title',
+    body: 'shared.process.step4Body',
+    poster: '/media/clips/clip-fox-on-snowdrift-poster.jpg',
+    alt: 'media.clipDriftAlt',
+  },
+] as const;
+---
+
+<section id="process" class="bg-snow-white px-5 py-20 md:px-10 md:py-28">
+  <div class="mx-auto max-w-6xl">
+    <h2 class="font-serif text-4xl text-ink md:text-6xl">
+      {t(locale, 'shared.process.headline')}
+    </h2>
+    <ol class="mt-10 grid gap-8 md:grid-cols-4">
+      {steps.map((step) => (
+        <li class="flex flex-col gap-4">
+          <img
+            class="aspect-video w-full rounded-card object-cover"
+            src={step.poster}
+            alt={t(locale, step.alt)}
+            width="1280"
+            height="720"
+          />
+          <p class="label text-fox-coral">{step.n}</p>
+          <h3 class="font-serif text-2xl text-ink">{t(locale, step.title)}</h3>
+          <p class="font-sans text-sm leading-relaxed text-ink">
+            {t(locale, step.body)}
+          </p>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>

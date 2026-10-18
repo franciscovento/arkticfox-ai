@@ -1,0 +1,58 @@
+---
+interface Props {
+  src: string;
+  poster: string;
+  label: string;
+  class?: string;
+}
+
+const { src, poster, label, class: className } = Astro.props;
+---
+
+<video
+  class:list={['h-full w-full object-cover', className]}
+  data-lazy-video
+  muted
+  playsinline
+  loop
+  poster={poster}
+  preload="none"
+  aria-label={label}
+>
+  <source src={src} type="video/mp4" />
+</video>
+
+<script>
+  import { prefersReducedMotion } from '../../motion/reduced';
+  import { onPageReady } from '../../motion/ready';
+
+  function bootLazyVideo() {
+    const videos = document.querySelectorAll<HTMLVideoElement>(
+      'video[data-lazy-video]',
+    );
+    if (videos.length === 0) return;
+    const root = document.documentElement;
+    if (root.dataset.lazyVideo === 'true') return;
+    root.dataset.lazyVideo = 'true';
+    if (prefersReducedMotion()) {
+      videos.forEach((video) => video.pause());
+      return;
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const video = entry.target as HTMLVideoElement;
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.45) {
+            void video.play().catch(() => undefined);
+          } else {
+            video.pause();
+          }
+        });
+      },
+      { threshold: [0, 0.45] },
+    );
+    videos.forEach((video) => observer.observe(video));
+  }
+
+  onPageReady(bootLazyVideo);
+</script>

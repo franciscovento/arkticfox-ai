@@ -1,0 +1,83 @@
+---
+import type { FaqEntry } from '@/lib/catalog';
+import type { Locale } from '@/i18n/routes';
+import { t } from '@/i18n/utils';
+
+interface Props {
+  locale: Locale;
+  items: FaqEntry[];
+  heading?: string;
+  tone?: 'light' | 'dark';
+}
+
+const { locale, items, heading, tone = 'light' } = Astro.props;
+const ink = tone === 'dark' ? 'text-white' : 'text-ink';
+const line = tone === 'dark' ? 'border-white/15' : 'border-snow-gray';
+---
+
+<section
+  class:list={[
+    'px-5 py-20 md:px-10 md:py-28',
+    tone === 'dark' ? 'bg-polar-night' : 'bg-snow-white',
+  ]}
+>
+  <div class="mx-auto max-w-3xl">
+    {heading && (
+      <h2 class:list={['font-serif text-4xl md:text-5xl', ink]}>{heading}</h2>
+    )}
+    <div class:list={['mt-8 border-t', line]}>
+      {items.map((item) => (
+        <details id={item.id} class:list={['group border-b', line]}>
+          <summary
+            class:list={[
+              'cursor-pointer list-none py-5 font-serif text-2xl',
+              ink,
+            ]}
+          >
+            <span class="flex items-start justify-between gap-6">
+              {t(locale, item.q)}
+              <span
+                class="mark-closed label pt-2 text-fox-coral"
+                aria-hidden="true"
+              >
+                +
+              </span>
+              <span
+                class="mark-open label pt-2 text-fox-coral"
+                aria-hidden="true"
+              >
+                –
+              </span>
+            </span>
+          </summary>
+          <p
+            class:list={[
+              'max-w-2xl pb-6 font-sans text-sm leading-relaxed',
+              ink,
+            ]}
+          >
+            {t(locale, item.a)}
+          </p>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .mark-open {
+    display: none;
+  }
+
+  details[open] .mark-closed {
+    display: none;
+  }
+
+  details[open] .mark-open {
+    display: inline;
+  }
+</style>

@@ -1,0 +1,106 @@
+---
+import type { Locale } from '@/i18n/routes';
+import type { UiKey } from '@/i18n/ui/en';
+import { t } from '@/i18n/utils';
+
+interface Props {
+  locale: Locale;
+  before: string;
+  after: string;
+  beforeAlt: string;
+  afterAlt: string;
+  headlineLead: UiKey;
+  headlineEmphasis: UiKey;
+}
+
+const {
+  locale,
+  before,
+  after,
+  beforeAlt,
+  afterAlt,
+  headlineLead,
+  headlineEmphasis,
+} = Astro.props;
+const id = 'compare-range';
+---
+
+<div data-compare>
+  <h2 class="font-serif text-4xl leading-tight text-ink md:text-6xl">
+    {t(locale, headlineLead)}{' '}
+    <em class="italic">{t(locale, headlineEmphasis)}</em>
+  </h2>
+  <div class="relative mt-8 aspect-video overflow-hidden rounded-card bg-snow-gray @container">
+    <img
+      class="absolute inset-0 h-full w-full object-cover"
+      src={after}
+      alt={afterAlt}
+    />
+    <div
+      class="absolute inset-y-0 left-0 overflow-hidden"
+      data-compare-top
+      style="width: 50%"
+    >
+      <img
+        class="h-full w-[100cqi] max-w-none object-cover"
+        src={before}
+        alt={beforeAlt}
+        data-compare-before
+      />
+    </div>
+    <div
+      class="pointer-events-none absolute inset-y-0 left-1/2 w-px bg-white"
+      data-compare-line
+    ></div>
+    <p class="label absolute top-4 left-4 rounded-pill bg-polar-night px-3 py-2 text-white">
+      {t(locale, 'shared.compare.before')}
+    </p>
+    <p class="label absolute top-4 right-4 rounded-pill bg-polar-night px-3 py-2 text-white">
+      {t(locale, 'shared.compare.after')}
+    </p>
+  </div>
+  <label
+    class="mt-4 flex items-center gap-4 font-sans text-sm text-ink"
+    for={id}
+  >
+    <span>{t(locale, 'shared.compare.hint')}</span>
+    <input
+      id={id}
+      class="accent-fox-coral w-full"
+      type="range"
+      min="0"
+      max="100"
+      value="50"
+      data-compare-range
+    />
+  </label>
+  <p class="mt-3 max-w-xl font-sans text-sm text-ink">
+    {t(locale, 'shared.compare.note')}
+  </p>
+</div>
+
+<script>
+  import { onPageReady } from '../../motion/ready';
+
+  function bootCompare() {
+    document.querySelectorAll<HTMLElement>('[data-compare]').forEach((root) => {
+      if (root.dataset.booted === 'true') return;
+      root.dataset.booted = 'true';
+      const range = root.querySelector<HTMLInputElement>(
+        '[data-compare-range]',
+      );
+      const top = root.querySelector<HTMLElement>('[data-compare-top]');
+      const line = root.querySelector<HTMLElement>('[data-compare-line]');
+      if (!range || !top || !line) return;
+      const paint = () => {
+        const value = Number(range.value);
+        top.style.width = `${value}%`;
+        line.style.left = `${value}%`;
+      };
+      paint();
+      range.addEventListener('input', paint);
+    });
+  }
+
+  onPageReady(bootCompare);
+</script>

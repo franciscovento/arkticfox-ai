@@ -1,0 +1,90 @@
+---
+import { packageCopy, packageOrder } from '@/lib/catalog';
+import type { Locale } from '@/i18n/routes';
+import type { UiKey } from '@/i18n/ui/en';
+import { getPath, t } from '@/i18n/utils';
+
+interface Props {
+  locale: Locale;
+  headline?: UiKey;
+  tone?: 'light' | 'dark';
+  showCustom?: boolean;
+  showPricingLink?: boolean;
+}
+
+const {
+  locale,
+  headline,
+  tone = 'light',
+  showCustom = false,
+  showPricingLink = false,
+} = Astro.props;
+const ink = tone === 'dark' ? 'text-white' : 'text-ink';
+const card =
+  tone === 'dark'
+    ? 'glass flex h-full flex-col gap-4 p-6 text-white'
+    : 'flex h-full flex-col gap-4 rounded-card border border-snow-gray bg-white p-6 text-ink';
+const button =
+  tone === 'dark'
+    ? 'hover-fox mt-auto inline-flex w-fit items-center rounded-pill border border-white px-5 py-2.5 font-sans text-sm font-medium text-white'
+    : 'hover-fox mt-auto inline-flex w-fit items-center rounded-pill border border-ink px-5 py-2.5 font-sans text-sm font-medium text-ink';
+---
+
+<section
+  id="packages"
+  class:list={[
+    'px-5 py-20 md:px-10 md:py-28',
+    tone === 'dark' ? 'bg-polar-night' : 'bg-snow-white',
+  ]}
+>
+  <div class="mx-auto max-w-6xl">
+    {headline && (
+      <h2 class:list={['max-w-xl font-serif text-4xl md:text-6xl', ink]}>
+        {t(locale, headline)}
+      </h2>
+    )}
+    <ul class="mt-10 grid gap-4 lg:grid-cols-3">
+      {packageOrder.map((id) => {
+        const pack = packageCopy[id];
+        return (
+          <li class={card}>
+            <p class="label text-fox-coral">{t(locale, pack.type)}</p>
+            <h3 class="font-serif text-4xl">{t(locale, pack.name)}</h3>
+            <p class="font-serif text-2xl">{t(locale, pack.price)}</p>
+            <p class="font-sans text-sm">{t(locale, pack.tagline)}</p>
+            <p class="font-sans text-sm leading-relaxed">
+              {t(locale, pack.pitch)}
+            </p>
+            <ul class="flex flex-col gap-2 font-sans text-sm leading-relaxed">
+              {pack.items.map((item) => (
+                <li>{t(locale, item)}</li>
+              ))}
+            </ul>
+            <a class={button} href={getPath(locale, 'quote')}>
+              {t(locale, 'shared.cta.quote')}
+            </a>
+          </li>
+        );
+      })}
+    </ul>
+    <p class:list={['mt-6 max-w-2xl font-sans text-sm', ink]}>
+      {t(locale, 'shared.pricing.vat')}
+    </p>
+    {showCustom && (
+      <a
+        class:list={['mt-4 inline-flex font-sans text-sm underline', ink]}
+        href={`${getPath(locale, 'pricing')}#a-la-carte`}
+      >
+        {t(locale, 'home.packages.custom')}
+      </a>
+    )}
+    {showPricingLink && (
+      <a
+        class:list={['mt-4 inline-flex font-sans text-sm underline', ink]}
+        href={getPath(locale, 'pricing')}
+      >
+        {t(locale, 'shared.packages.link')}
+      </a>
+    )}
+  </div>
+</section>

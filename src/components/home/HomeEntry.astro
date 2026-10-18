@@ -1,4 +1,6 @@
 ---
+import SiteHeader from '@/components/chrome/SiteHeader.astro';
+import HomeRest from '@/components/home/HomeRest.astro';
 import GlassSheen from '@/components/motion/GlassSheen.astro';
 import WorkReel from '@/components/home/WorkReel.astro';
 import Marquee from '@/components/motion/Marquee.astro';
@@ -21,14 +23,10 @@ const scrub = variant === 'scrub';
 const pageKey: PageKey = scrub ? 'homeV2' : 'home';
 
 const frameCount = scrub
-  ? readdirSync(join(process.cwd(), 'public/media/scrub')).filter((name) => name.endsWith('.webp')).length
+  ? readdirSync(join(process.cwd(), 'public/media/scrub')).filter((name) =>
+      name.endsWith('.webp'),
+    ).length
   : 0;
-
-const nav: { pageKey: PageKey; label: UiKey }[] = [
-  { pageKey: 'productImages', label: 'page.productImages.heading' },
-  { pageKey: 'adVideos', label: 'page.adVideos.heading' },
-  { pageKey: 'ugcVideos', label: 'page.ugcVideos.heading' },
-];
 
 const cards: {
   from: string;
@@ -77,18 +75,21 @@ const serviceClips = [
   '/media/mocks/reel-01.mp4',
   '/media/mocks/ugc-01.jpg',
 ];
-
 ---
 
 <BaseLayout
   locale={locale}
   pageKey={pageKey}
   title={t(locale, scrub ? 'home.v2.title' : 'meta.homeTitle')}
-  description={t(locale, scrub ? 'home.v2.description' : 'meta.homeDescription')}
+  description={t(
+    locale,
+    scrub ? 'home.v2.description' : 'meta.homeDescription',
+  )}
   noindex={scrub}
   bodyClass="bg-polar-night"
 >
-  <div data-snow-dive class="relative">
+  <div id="content" data-snow-dive class="relative">
+    <SiteHeader locale={locale} pageKey={pageKey} />
     <div
       class="fixed inset-0 z-50 flex flex-col items-center justify-center gap-8 bg-polar-night"
       data-loader
@@ -101,78 +102,36 @@ const serviceClips = [
       <p class="sr-only">{t(locale, 'home.loading')}</p>
     </div>
 
-    <header class="fixed inset-x-0 top-0 z-30 flex items-center justify-between px-5 py-5 md:px-10">
-      <nav class="hidden items-center gap-6 lg:flex" aria-label={t(locale, 'home.navLabel')}>
-        {
-          nav.map((item) => (
-            <a class="label hover-fox text-white" href={getPath(locale, item.pageKey)}>
-              {t(locale, item.label)}
-            </a>
-          ))
-        }
-      </nav>
-      <a
-        class="label text-white lg:absolute lg:left-1/2 lg:-translate-x-1/2"
-        href={getPath(locale, pageKey)}
-      >
-        {t(locale, 'meta.siteName')}
-      </a>
-      <div class="flex items-center gap-3 md:gap-5">
-        <a
-          class:list={['label hover-fox', locale === 'en' ? 'text-white' : 'text-white/70']}
-          href={getPath('en', pageKey)}
-          hreflang="en"
-          aria-current={locale === 'en' ? 'page' : undefined}
-        >
-          {t(locale, 'nav.languageEn')}
-        </a>
-        <a
-          class:list={['label hover-fox', locale === 'es' ? 'text-white' : 'text-white/70']}
-          href={getPath('es', pageKey)}
-          hreflang="es"
-          aria-current={locale === 'es' ? 'page' : undefined}
-        >
-          {t(locale, 'nav.languageEs')}
-        </a>
-        <a
-          class="hover-fox inline-flex items-center rounded-pill border border-white px-4 py-2.5 font-sans text-xs font-medium whitespace-nowrap text-white md:px-5 md:py-3 md:text-sm"
-          href={getPath(locale, 'quote')}
-        >
-          {t(locale, 'nav.quote')}
-        </a>
-      </div>
-    </header>
-
     <div class="relative z-20 min-h-svh" data-journey-stage>
-      {
-        scrub ? (
-          <canvas
-            class="pointer-events-none absolute inset-0 z-0 h-full w-full"
-            data-scrub-frames
-            data-frame-base="/media/scrub/frame-"
-            data-frame-count={frameCount}
-            aria-hidden="true"
-          />
-        ) : (
-          <video
-            class="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover"
-            data-dive-video
-            src="/media/hero-loop.mp4?v=2"
-            poster="/media/hero-loop.jpg?v=2"
-            muted
-            loop
-            playsinline
-            preload="auto"
-            disablepictureinpicture
-            aria-hidden="true"
-          />
-        )
-      }
+      {scrub ? (
+        <canvas
+          class="pointer-events-none absolute inset-0 z-0 h-full w-full"
+          data-scrub-frames
+          data-frame-base="/media/scrub/frame-"
+          data-frame-count={frameCount}
+          aria-hidden="true"
+        />
+      ) : (
+        <video
+          class="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover"
+          data-dive-video
+          src="/media/hero-loop.mp4?v=2"
+          poster="/media/hero-loop.jpg?v=2"
+          muted
+          loop
+          playsinline
+          preload="auto"
+          disablepictureinpicture
+          aria-hidden="true"
+        />
+      )}
       <div class="video-shade bg-video-shade" aria-hidden="true"></div>
-      <div class="drift-veil bg-dive-veil" data-dive-veil aria-hidden="true"></div>
-      {
-        /* Snow direction: "fall" drops from the top. "dive" restores the head-on rush. */
-      }
+      <div
+        class="drift-veil bg-dive-veil"
+        data-dive-veil
+        aria-hidden="true"
+      ></div>
+      {/* Snow direction: "fall" drops from the top. "dive" restores the head-on rush. */}
       <canvas
         class="pointer-events-none absolute inset-0 z-10 h-full w-full"
         data-dive-snow
@@ -192,7 +151,8 @@ const serviceClips = [
             <em class="italic">{t(locale, 'home.line1Emphasis')}</em>,
           </span>
           <span class="block">
-            {t(locale, 'home.line2Lead')} <em class="italic">{t(locale, 'home.line2Emphasis')}</em>.
+            {t(locale, 'home.line2Lead')}{' '}
+            <em class="italic">{t(locale, 'home.line2Emphasis')}</em>.
           </span>
         </h1>
         <p class="mt-5 max-w-md font-sans text-sm leading-relaxed text-white/85 md:text-base">
@@ -207,16 +167,18 @@ const serviceClips = [
           </a>
           <a
             class="hover-fox inline-flex items-center rounded-pill border border-white px-6 py-3 font-sans text-sm font-medium text-white"
-            href={getPath(locale, 'pricing')}
+            href={`${getPath(locale, 'home')}#work`}
           >
-            {t(locale, 'nav.pricing')}
+            {t(locale, 'shared.cta.work')}
           </a>
         </div>
       </div>
-      <div class="z-20 flex items-center justify-center px-4 pt-28 pb-8 md:px-10" data-journey-row>
+      <div
+        class="z-20 flex items-center justify-center px-4 pt-28 pb-8 md:px-10"
+        data-journey-row
+      >
         <div class="flex w-full flex-col items-stretch justify-center gap-3 md:w-auto md:flex-row md:gap-5">
-        {
-          cards.map((card) => (
+          {cards.map((card) => (
             <article
               class="glass sheen journey-piece flex flex-col gap-3 p-4 md:p-5"
               data-journey-piece
@@ -239,8 +201,7 @@ const serviceClips = [
                 {t(locale, card.eyebrow)}
               </a>
             </article>
-          ))
-        }
+          ))}
         </div>
       </div>
       <div
@@ -275,6 +236,7 @@ const serviceClips = [
       </div>
     </div>
   </div>
+  <HomeRest locale={locale} pageKey={pageKey} />
   <WorkReel
     closeLabel={t(locale, 'home.reel.close')}
     note={t(locale, 'home.reel.note')}
@@ -305,7 +267,10 @@ const serviceClips = [
     };
 
     bar.style.transform = 'scaleX(1)';
-    window.setTimeout(finish, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 280);
+    window.setTimeout(
+      finish,
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 280,
+    );
   }
 
   let firstLoad = true;
