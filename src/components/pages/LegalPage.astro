@@ -1,0 +1,123 @@
+---
+import SiteFooter from '@/components/chrome/SiteFooter.astro';
+import SiteHeader from '@/components/chrome/SiteHeader.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import type { Locale, PageKey } from '@/i18n/routes';
+import type { UiKey } from '@/i18n/ui/en';
+import { t } from '@/i18n/utils';
+
+interface Props {
+  locale: Locale;
+  page: 'legalNotice' | 'privacy' | 'cookies';
+}
+
+const { locale, page } = Astro.props;
+
+const meta: Record<
+  Props['page'],
+  { pageKey: PageKey; title: UiKey; description: UiKey; heading: UiKey }
+> = {
+  legalNotice: {
+    pageKey: 'legalNotice',
+    title: 'meta.legalNoticeTitle',
+    description: 'meta.legalNoticeDescription',
+    heading: 'legal.notice.heading',
+  },
+  privacy: {
+    pageKey: 'privacy',
+    title: 'meta.privacyTitle',
+    description: 'meta.privacyDescription',
+    heading: 'legal.privacy.heading',
+  },
+  cookies: {
+    pageKey: 'cookies',
+    title: 'meta.cookiesTitle',
+    description: 'meta.cookiesDescription',
+    heading: 'legal.cookies.heading',
+  },
+};
+
+const sections: Record<Props['page'], UiKey[]> = {
+  legalNotice: [
+    'legal.notice.owner',
+    'legal.notice.tax',
+    'legal.notice.address',
+    'legal.notice.email',
+    'legal.notice.registry',
+  ],
+  privacy: [
+    'legal.privacy.collected',
+    'legal.privacy.purpose',
+    'legal.privacy.basis',
+    'legal.privacy.retention',
+    'legal.privacy.rights',
+    'legal.privacy.processors',
+  ],
+  cookies: [
+    'legal.cookies.necessary',
+    'legal.cookies.analytics',
+    'legal.cookies.choice',
+  ],
+};
+
+const current = meta[page];
+const updated = t(locale, 'legal.lastUpdated').replace(
+  '{date}',
+  t(locale, 'legal.dateValue'),
+);
+---
+
+<BaseLayout
+  locale={locale}
+  pageKey={current.pageKey}
+  title={t(locale, current.title)}
+  description={t(locale, current.description)}
+  bodyClass="bg-snow-white"
+>
+  <SiteHeader locale={locale} pageKey={current.pageKey} tone="solid" />
+  <main id="content" class="px-5 pt-28 pb-20 md:px-10">
+    <div class="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[16rem_minmax(0,42rem)]">
+      <nav
+        class="lg:sticky lg:top-28 lg:self-start"
+        aria-label={t(locale, 'legal.toc')}
+      >
+        <p class="label text-fox-coral">{t(locale, 'legal.toc')}</p>
+        <ol class="mt-4 flex flex-col gap-2">
+          {sections[page].map((heading, index) => (
+            <li>
+              <a
+                class="font-sans text-sm text-ink underline-offset-4 hover:underline"
+                href={`#section-${index + 1}`}
+              >
+                {t(locale, heading)}
+              </a>
+            </li>
+          ))}
+        </ol>
+      </nav>
+      <article class="max-w-[720px]">
+        <h1 class="font-serif text-5xl text-ink">
+          {t(locale, current.heading)}
+        </h1>
+        <p class="mt-4 font-sans text-sm text-ink">{updated}</p>
+        <p class="mt-6 font-sans text-sm leading-relaxed text-ink">
+          {t(locale, 'legal.pending')}
+        </p>
+        {sections[page].map((heading, index) => (
+          <section id={`section-${index + 1}`} class="mt-10">
+            <h2 class="font-serif text-3xl text-ink">{t(locale, heading)}</h2>
+            <p class="mt-3 font-sans text-base text-ink">
+              {t(locale, 'legal.placeholder')}
+            </p>
+          </section>
+        ))}
+        <p class="mt-12 font-sans text-sm text-ink">
+          <a class="underline" href={`mailto:${t(locale, 'shared.email')}`}>
+            {t(locale, 'legal.contact')}
+          </a>
+        </p>
+      </article>
+    </div>
+  </main>
+  <SiteFooter locale={locale} pageKey={current.pageKey} />
+</BaseLayout>

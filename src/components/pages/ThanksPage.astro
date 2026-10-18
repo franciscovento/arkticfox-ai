@@ -1,0 +1,70 @@
+---
+import SiteFooter from '@/components/chrome/SiteFooter.astro';
+import SiteHeader from '@/components/chrome/SiteHeader.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import type { Locale } from '@/i18n/routes';
+import { getPath, t } from '@/i18n/utils';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+
+<BaseLayout
+  locale={locale}
+  pageKey="thanks"
+  title={t(locale, 'meta.thanksTitle')}
+  description={t(locale, 'meta.thanksDescription')}
+  robots="noindex, follow"
+  whatsapp={false}
+  bodyClass="bg-polar-night"
+>
+  <SiteHeader locale={locale} pageKey="thanks" />
+  <main
+    id="content"
+    class="relative isolate flex min-h-svh items-end px-5 pt-32 pb-40 text-white md:px-10"
+  >
+    <img
+      class="absolute inset-0 -z-20 h-full w-full object-cover"
+      src="/media/brand/fox-peeking-snow-wide.webp"
+      alt={t(locale, 'media.foxPeekWideAlt')}
+    />
+    <div class="absolute inset-0 -z-10 bg-scrim"></div>
+    <div class="relative max-w-2xl">
+      <img
+        src="/media/brand/logo-lockup-white.png"
+        alt=""
+        width="978"
+        height="389"
+        class="mb-8 h-12 w-auto"
+      />
+      <h1 class="font-serif text-5xl leading-tight md:text-7xl">
+        {t(locale, 'thanks.headline')}
+      </h1>
+      <p class="mt-5 font-sans text-base text-white/85">
+        {t(locale, 'thanks.subhead')}
+      </p>
+      <p class="mt-4 max-w-md font-sans text-sm text-white/70">
+        {t(locale, 'thanks.bookMissing')}
+      </p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a
+          class="hover-fox inline-flex items-center rounded-pill bg-brand-gradient px-6 py-3 font-sans text-sm font-medium text-white"
+          href={t(locale, 'shared.instagramUrl')}
+          rel="noopener noreferrer"
+        >
+          {t(locale, 'thanks.instagram')}
+        </a>
+        <a
+          class="hover-fox inline-flex items-center rounded-pill border border-white px-6 py-3 font-sans text-sm font-medium text-white"
+          href={getPath(locale, 'home')}
+        >
+          {t(locale, 'thanks.backHome')}
+        </a>
+      </div>
+    </div>
+  </main>
+  <SiteFooter locale={locale} pageKey="thanks" />
+</BaseLayout>

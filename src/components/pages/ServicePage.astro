@@ -1,0 +1,412 @@
+---
+import SiteFooter from '@/components/chrome/SiteFooter.astro';
+import SiteHeader from '@/components/chrome/SiteHeader.astro';
+import CompareSlider from '@/components/sections/CompareSlider.astro';
+import FaqList from '@/components/sections/FaqList.astro';
+import FinalCta from '@/components/sections/FinalCta.astro';
+import FormatRow from '@/components/sections/FormatRow.astro';
+import Gallery from '@/components/sections/Gallery.astro';
+import LazyVideo from '@/components/sections/LazyVideo.astro';
+import PackageCards from '@/components/sections/PackageCards.astro';
+import ProcessSteps from '@/components/sections/ProcessSteps.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import type { FaqEntry } from '@/lib/catalog';
+import type { Locale, PageKey } from '@/i18n/routes';
+import type { UiKey } from '@/i18n/ui/en';
+import { getPath, t } from '@/i18n/utils';
+
+interface Props {
+  locale: Locale;
+  service: 'productImages' | 'adVideos' | 'ugcVideos';
+}
+
+const { locale, service } = Astro.props;
+
+const pageKey: PageKey = service;
+const titleKey = {
+  productImages: 'meta.productImagesTitle',
+  adVideos: 'meta.adVideosTitle',
+  ugcVideos: 'meta.ugcVideosTitle',
+} as const satisfies Record<Props['service'], UiKey>;
+const descriptionKey = {
+  productImages: 'meta.productImagesDescription',
+  adVideos: 'meta.adVideosDescription',
+  ugcVideos: 'meta.ugcVideosDescription',
+} as const satisfies Record<Props['service'], UiKey>;
+
+const deliverables: Record<Props['service'], { title: UiKey; body: UiKey }[]> =
+  {
+    productImages: [1, 2, 3, 4, 5].map((n) => ({
+      title: `productImages.get.${n}Title` as UiKey,
+      body: `productImages.get.${n}Body` as UiKey,
+    })),
+    adVideos: [1, 2, 3, 4, 5].map((n) => ({
+      title: `adVideos.get.${n}Title` as UiKey,
+      body: `adVideos.get.${n}Body` as UiKey,
+    })),
+    ugcVideos: [1, 2, 3, 4, 5].map((n) => ({
+      title: `ugcVideos.get.${n}Title` as UiKey,
+      body: `ugcVideos.get.${n}Body` as UiKey,
+    })),
+  };
+
+const faqs: Record<Props['service'], FaqEntry[]> = {
+  productImages: [
+    { q: 'productImages.faq.photosQ', a: 'shared.faq.needs' },
+    { q: 'productImages.faq.likenessQ', a: 'productImages.faq.likeness' },
+    { q: 'productImages.faq.rightsQ', a: 'shared.faq.rights' },
+    { q: 'shared.faq.revisionsQ', a: 'shared.faq.revisions' },
+    { q: 'productImages.faq.formatsQ', a: 'shared.faq.formats' },
+  ],
+  adVideos: [
+    { q: 'adVideos.faq.lengthQ', a: 'adVideos.faq.length' },
+    { q: 'adVideos.faq.scriptQ', a: 'adVideos.faq.script' },
+    { q: 'adVideos.faq.photosQ', a: 'adVideos.faq.photos' },
+    { q: 'adVideos.faq.audioQ', a: 'adVideos.faq.audio' },
+    { q: 'adVideos.faq.rightsQ', a: 'shared.faq.rights' },
+  ],
+  ugcVideos: [
+    { id: 'ugc-real', q: 'ugcVideos.faq.realQ', a: 'ugcVideos.faq.real' },
+    { q: 'ugcVideos.faq.discloseQ', a: 'ugcVideos.faq.disclose' },
+    { q: 'ugcVideos.faq.reuseQ', a: 'ugcVideos.faq.reuse' },
+    { q: 'ugcVideos.faq.hooksQ', a: 'ugcVideos.faq.hooks' },
+    { q: 'ugcVideos.faq.rightsQ', a: 'shared.faq.rights' },
+  ],
+};
+
+const hero = {
+  productImages: {
+    still: '/media/brand/fox-leaping-tunnel.webp',
+    video: '',
+    poster: '',
+    label: 'media.foxLeapingAlt' as UiKey,
+  },
+  adVideos: {
+    still: '',
+    video: '/media/clips/tunnel-fox-ref-a.mp4',
+    poster: '/media/clips/tunnel-fox-ref-a-poster.jpg',
+    label: 'media.clipTunnelAAlt' as UiKey,
+  },
+  ugcVideos: {
+    still: '',
+    video: '/media/clips/clip-fox-peek-closeup.mp4',
+    poster: '/media/clips/clip-fox-peek-closeup-poster.jpg',
+    label: 'media.clipPeekAlt' as UiKey,
+  },
+}[service];
+
+const galleryItems = [
+  {
+    src: '/media/brand/fox-in-snow-tunnel.webp',
+    kind: 'image' as const,
+    alt: 'media.foxInTunnelAlt' as UiKey,
+    sector: 'studio' as const,
+    service: 'product' as const,
+    caption: 'media.foxInTunnelAlt' as UiKey,
+  },
+  {
+    src: '/media/brand/fox-peeking-snow-4x3.webp',
+    kind: 'image' as const,
+    alt: 'media.foxPeek43Alt' as UiKey,
+    sector: 'studio' as const,
+    service: 'product' as const,
+    caption: 'media.foxPeek43Alt' as UiKey,
+  },
+  {
+    src: '/media/clips/tunnel-cloud-reveal.mp4',
+    poster: '/media/clips/tunnel-cloud-reveal-poster.jpg',
+    kind: 'video' as const,
+    alt: 'media.clipCloudAlt' as UiKey,
+    sector: 'studio' as const,
+    service: 'ads' as const,
+    caption: 'media.clipCloudAlt' as UiKey,
+  },
+  {
+    src: '/media/clips/clip-fox-back-view.mp4',
+    poster: '/media/clips/clip-fox-back-view-poster.jpg',
+    kind: 'video' as const,
+    alt: 'media.clipBackAlt' as UiKey,
+    sector: 'studio' as const,
+    service: 'ugc' as const,
+    caption: 'media.clipBackAlt' as UiKey,
+  },
+];
+
+const eyebrow = `${service}.hero.eyebrow` as UiKey;
+const lead = `${service}.hero.headlineLead` as UiKey;
+const emphasis = `${service}.hero.headlineEmphasis` as UiKey;
+const subhead = `${service}.hero.subhead` as UiKey;
+const getEyebrow = `${service}.get.eyebrow` as UiKey;
+---
+
+<BaseLayout
+  locale={locale}
+  pageKey={pageKey}
+  title={t(locale, titleKey[service])}
+  description={t(locale, descriptionKey[service])}
+  bodyClass="bg-polar-night"
+>
+  <SiteHeader locale={locale} pageKey={pageKey} />
+  <main id="content">
+    <section class="relative isolate flex min-h-svh items-end overflow-hidden px-5 pt-28 pb-16 md:px-10">
+      {hero.video ? (
+        <div class="absolute inset-0 -z-20">
+          <LazyVideo
+            src={hero.video}
+            poster={hero.poster}
+            label={t(locale, hero.label)}
+          />
+        </div>
+      ) : (
+        <img
+          class="absolute inset-0 -z-20 h-full w-full object-cover"
+          src={hero.still}
+          alt={t(locale, hero.label)}
+        />
+      )}
+      <div class="absolute inset-0 -z-10 bg-scrim"></div>
+      <div class="relative max-w-3xl text-white">
+        <p class="label text-ice-blue">{t(locale, eyebrow)}</p>
+        <h1 class="mt-4 font-serif text-5xl leading-tight md:text-7xl">
+          <span class="block">{t(locale, lead)}</span>
+          <em class="mt-1 block italic">{t(locale, emphasis)}</em>
+        </h1>
+        <p class="mt-5 max-w-xl font-sans text-sm leading-relaxed text-white/85 md:text-base">
+          {t(locale, subhead)}
+        </p>
+        <a
+          class="hover-fox mt-8 inline-flex items-center rounded-pill bg-brand-gradient px-6 py-3 font-sans text-sm font-medium text-white"
+          href={getPath(locale, 'quote')}
+        >
+          {t(locale, 'shared.cta.quote')}
+        </a>
+      </div>
+    </section>
+
+    <section class="bg-snow-white px-5 py-20 md:px-10 md:py-28">
+      <div class="mx-auto max-w-6xl">
+        <h2 class="font-serif text-4xl text-ink md:text-5xl">
+          {t(locale, getEyebrow)}
+        </h2>
+        <ul class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {deliverables[service].map((item) => (
+            <li class="rounded-card border border-snow-gray bg-white p-6">
+              <h3 class="font-serif text-2xl text-ink">
+                {t(locale, item.title)}
+              </h3>
+              <p class="mt-3 font-sans text-sm leading-relaxed text-ink">
+                {t(locale, item.body)}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <Gallery
+      locale={locale}
+      items={galleryItems}
+      note="shared.gallery.studioNote"
+    />
+
+    {service === 'productImages' && (
+      <section class="bg-snow-white px-5 py-20 md:px-10 md:py-28">
+        <div class="mx-auto max-w-6xl">
+          <CompareSlider
+            locale={locale}
+            before="/media/brand/snow-tunnel-empty.webp"
+            after="/media/brand/fox-in-snow-tunnel.webp"
+            beforeAlt={t(locale, 'media.tunnelEmptyAlt')}
+            afterAlt={t(locale, 'media.foxInTunnelAlt')}
+            headlineLead="productImages.compare.headlineLead"
+            headlineEmphasis="productImages.compare.headlineEmphasis"
+          />
+        </div>
+      </section>
+    )}
+
+    {service === 'adVideos' && (
+      <section class="bg-snow-white px-5 py-20 text-ink md:px-10 md:py-28">
+        <div class="mx-auto flex max-w-6xl flex-col gap-16">
+          <div>
+            <h2 class="font-serif text-4xl md:text-6xl">
+              {t(locale, 'adVideos.reel.headline')}
+            </h2>
+            <div class="mt-8 grid gap-4 lg:grid-cols-3">
+              <div class="aspect-video overflow-hidden rounded-card lg:col-span-2">
+                <LazyVideo
+                  src="/media/clips/tunnel-fox-ref-b.mp4"
+                  poster="/media/clips/tunnel-fox-ref-b-poster.jpg"
+                  label={t(locale, 'media.clipTunnelBAlt')}
+                />
+              </div>
+              <div class="grid gap-4">
+                <div class="aspect-video overflow-hidden rounded-card">
+                  <LazyVideo
+                    src="/media/clips/tunnel-cloud-reveal.mp4"
+                    poster="/media/clips/tunnel-cloud-reveal-poster.jpg"
+                    label={t(locale, 'media.clipCloudAlt')}
+                  />
+                </div>
+                <div class="aspect-video overflow-hidden rounded-card">
+                  <LazyVideo
+                    src="/media/clips/clip-sunrise-snow.mp4"
+                    poster="/media/clips/clip-sunrise-snow-poster.jpg"
+                    label={t(locale, 'media.clipSunriseAlt')}
+                  />
+                </div>
+              </div>
+            </div>
+            <p class="mt-4 max-w-2xl font-sans text-sm">
+              {t(locale, 'shared.standIn')}
+            </p>
+          </div>
+          <div>
+            <h2 class="font-serif text-4xl md:text-6xl">
+              {t(locale, 'adVideos.stillToMotion.headlineLead')}{' '}
+              <em class="italic">
+                {t(locale, 'adVideos.stillToMotion.headlineEmphasis')}
+              </em>
+              .
+            </h2>
+            <p class="mt-4 max-w-xl font-sans text-sm leading-relaxed">
+              {t(locale, 'adVideos.stillToMotion.body')}
+            </p>
+            <div class="mt-8 grid gap-4 md:grid-cols-2">
+              <figure>
+                <img
+                  class="aspect-video w-full rounded-card object-cover"
+                  src="/media/brand/fox-peeking-snow-4x3.webp"
+                  alt={t(locale, 'media.foxPeek43Alt')}
+                />
+                <figcaption class="label mt-3 text-fox-coral">
+                  {t(locale, 'adVideos.stillToMotion.source')}
+                </figcaption>
+              </figure>
+              <figure>
+                <div class="aspect-video overflow-hidden rounded-card">
+                  <LazyVideo
+                    src="/media/clips/clip-fox-peek-closeup.mp4"
+                    poster="/media/clips/clip-fox-peek-closeup-poster.jpg"
+                    label={t(locale, 'media.clipPeekAlt')}
+                  />
+                </div>
+                <figcaption class="label mt-3 text-fox-coral">
+                  {t(locale, 'adVideos.stillToMotion.result')}
+                </figcaption>
+              </figure>
+            </div>
+            <p class="mt-4 max-w-2xl font-sans text-sm">
+              {t(locale, 'adVideos.stillToMotion.note')}
+            </p>
+          </div>
+        </div>
+      </section>
+    )}
+
+    {service === 'ugcVideos' && (
+      <section class="bg-snow-white px-5 py-20 text-ink md:px-10 md:py-28">
+        <div class="mx-auto flex max-w-6xl flex-col gap-16">
+          <div>
+            <h2 class="font-serif text-4xl md:text-6xl">
+              {t(locale, 'ugcVideos.carousel.headline')}
+            </h2>
+            <ul class="mt-8 flex gap-4 overflow-x-auto pb-2">
+              {[
+                {
+                  src: '/media/clips/clip-fox-peek-closeup.mp4',
+                  poster: '/media/clips/clip-fox-peek-closeup-poster.jpg',
+                  alt: 'media.clipPeekAlt' as UiKey,
+                },
+                {
+                  src: '/media/clips/clip-fox-back-view.mp4',
+                  poster: '/media/clips/clip-fox-back-view-poster.jpg',
+                  alt: 'media.clipBackAlt' as UiKey,
+                },
+                {
+                  src: '/media/clips/clip-fox-on-snowdrift.mp4',
+                  poster: '/media/clips/clip-fox-on-snowdrift-poster.jpg',
+                  alt: 'media.clipDriftAlt' as UiKey,
+                },
+              ].map((clip) => (
+                <li class="w-44 shrink-0 overflow-hidden rounded-card border border-snow-gray sm:w-56">
+                  <div class="aspect-[9/16]">
+                    <LazyVideo
+                      src={clip.src}
+                      poster={clip.poster}
+                      label={t(locale, clip.alt)}
+                    />
+                  </div>
+                </li>
+              ))}
+            </ul>
+            <p class="mt-4 max-w-2xl font-sans text-sm">
+              {t(locale, 'ugcVideos.carousel.note')}
+            </p>
+            <aside class="mt-8 max-w-2xl rounded-card border border-ink p-5">
+              <p class="font-sans text-sm leading-relaxed">
+                {t(locale, 'ugcVideos.transparency.body')}
+              </p>
+              <a class="label mt-4 inline-flex text-fox-coral" href="#ugc-real">
+                {t(locale, 'ugcVideos.transparency.link')}
+              </a>
+            </aside>
+          </div>
+          <div>
+            <h2 class="font-serif text-4xl md:text-6xl">
+              {t(locale, 'ugcVideos.hooks.headlineLead')}{' '}
+              <em class="italic">
+                {t(locale, 'ugcVideos.hooks.headlineEmphasis')}
+              </em>
+              .
+            </h2>
+            <p class="mt-4 max-w-xl font-sans text-sm leading-relaxed">
+              {t(locale, 'ugcVideos.hooks.body')}
+            </p>
+            <div class="mt-8 grid gap-4 md:grid-cols-2">
+              <figure>
+                <div class="aspect-video overflow-hidden rounded-card">
+                  <LazyVideo
+                    src="/media/clips/tunnel-fox-ref-a.mp4"
+                    poster="/media/clips/tunnel-fox-ref-a-poster.jpg"
+                    label={t(locale, 'media.clipTunnelAAlt')}
+                  />
+                </div>
+                <figcaption class="label mt-3 text-fox-coral">
+                  {t(locale, 'ugcVideos.hooks.labelA')}
+                </figcaption>
+              </figure>
+              <figure>
+                <div class="aspect-video overflow-hidden rounded-card">
+                  <LazyVideo
+                    src="/media/clips/tunnel-fox-ref-b.mp4"
+                    poster="/media/clips/tunnel-fox-ref-b-poster.jpg"
+                    label={t(locale, 'media.clipTunnelBAlt')}
+                  />
+                </div>
+                <figcaption class="label mt-3 text-fox-coral">
+                  {t(locale, 'ugcVideos.hooks.labelB')}
+                </figcaption>
+              </figure>
+            </div>
+            <p class="mt-4 max-w-2xl font-sans text-sm">
+              {t(locale, 'ugcVideos.hooks.note')}
+            </p>
+          </div>
+        </div>
+      </section>
+    )}
+
+    <FormatRow locale={locale} />
+    <ProcessSteps locale={locale} />
+    <PackageCards
+      locale={locale}
+      headline="shared.packages.headline"
+      tone="dark"
+      showPricingLink
+    />
+    <FaqList locale={locale} items={faqs[service]} />
+    <FinalCta locale={locale} />
+  </main>
+  <SiteFooter locale={locale} pageKey={pageKey} />
+</BaseLayout>

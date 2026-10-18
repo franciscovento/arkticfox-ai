@@ -1,0 +1,492 @@
+---
+import SiteFooter from '@/components/chrome/SiteFooter.astro';
+import SiteHeader from '@/components/chrome/SiteHeader.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { whatsappHref } from '@/lib/contact';
+import type { Locale } from '@/i18n/routes';
+import type { UiKey } from '@/i18n/ui/en';
+import { getPath, t } from '@/i18n/utils';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const whatsapp = whatsappHref(locale);
+const needs: { value: string; label: UiKey }[] = [
+  { value: 'product-images', label: 'quote.form.needsProduct' },
+  { value: 'ad-videos', label: 'quote.form.needsAds' },
+  { value: 'ugc-videos', label: 'quote.form.needsUgc' },
+  { value: 'unsure', label: 'quote.form.needsUnsure' },
+];
+const packages: { value: string; label: UiKey }[] = [
+  { value: 'pilot', label: 'quote.form.packagePilot' },
+  { value: 'growth', label: 'quote.form.packageGrowth' },
+  { value: 'scale', label: 'quote.form.packageScale' },
+  { value: 'custom', label: 'quote.form.packageCustom' },
+];
+const budgets: UiKey[] = [
+  'quote.form.budget1',
+  'quote.form.budget2',
+  'quote.form.budget3',
+  'quote.form.budget4',
+];
+const timelines: { value: string; label: UiKey }[] = [
+  { value: 'asap', label: 'quote.form.timelineAsap' },
+  { value: '2-4-weeks', label: 'quote.form.timelineWeeks' },
+  { value: 'exploring', label: 'quote.form.timelineExplore' },
+];
+const field =
+  'mt-2 w-full rounded-card-sm border border-snow-gray bg-white px-4 py-3 font-sans text-sm text-ink';
+---
+
+<BaseLayout
+  locale={locale}
+  pageKey="quote"
+  title={t(locale, 'meta.quoteTitle')}
+  description={t(locale, 'meta.quoteDescription')}
+  bodyClass="bg-snow-white"
+>
+  <SiteHeader locale={locale} pageKey="quote" tone="solid" />
+  <main id="content" class="grid min-h-svh lg:grid-cols-2">
+    <section class="relative isolate flex flex-col justify-end overflow-hidden bg-polar-night px-5 pt-28 pb-12 text-white md:px-10 lg:min-h-svh">
+      <img
+        class="absolute inset-0 -z-20 h-full w-full object-cover"
+        src="/media/brand/fox-peeking-snow-wide.webp"
+        alt={t(locale, 'media.foxPeekWideAlt')}
+      />
+      <div class="absolute inset-0 -z-10 scale-110 blur-md" aria-hidden="true">
+        <img
+          class="h-full w-full object-cover opacity-40"
+          src="/media/clips/snow-dawn-loop-poster.jpg"
+          alt=""
+        />
+      </div>
+      <div class="absolute inset-0 -z-10 bg-scrim"></div>
+      <div class="relative max-w-xl">
+        <img
+          src="/media/brand/logo-mark-white.png"
+          alt=""
+          width="788"
+          height="396"
+          class="mb-6 h-10 w-auto"
+        />
+        <h1 class="font-serif text-5xl leading-tight md:text-6xl">
+          {t(locale, 'quote.hero.headlineLead')}{' '}
+          <em class="italic">{t(locale, 'quote.hero.headlineEmphasis')}</em>
+          {t(locale, 'quote.hero.headlineTail')}
+        </h1>
+        <p class="mt-5 font-sans text-sm leading-relaxed text-white/85 md:text-base">
+          {t(locale, 'quote.hero.subhead')}
+        </p>
+        <ul class="mt-8 flex flex-col gap-3">
+          <li class="font-sans text-sm">
+            {t(locale, 'quote.reassurance.reply')}
+          </li>
+          <li class="font-sans text-sm">
+            {t(locale, 'quote.reassurance.noCommitment')}
+          </li>
+          <li class="font-sans text-sm">
+            {t(locale, 'quote.reassurance.clearQuote')}
+          </li>
+        </ul>
+        {whatsapp ? (
+          <a
+            class="label mt-8 inline-flex text-ice-blue"
+            href={whatsapp}
+            rel="noopener noreferrer"
+          >
+            {t(locale, 'shared.whatsapp.label')}
+          </a>
+        ) : (
+          <a
+            class="label mt-8 inline-flex text-ice-blue"
+            href={`mailto:${t(locale, 'shared.email')}`}
+          >
+            {t(locale, 'shared.email')}
+          </a>
+        )}
+      </div>
+    </section>
+
+    <section class="px-5 pt-28 pb-40 md:px-10">
+      <form
+        class="mx-auto flex max-w-xl flex-col gap-5"
+        name="quote"
+        method="POST"
+        action={getPath(locale, 'thanks')}
+        data-netlify="true"
+        netlify-honeypot="bot-field"
+        novalidate
+        data-quote-form
+        data-error-required={t(locale, 'quote.form.errorRequired')}
+        data-error-email={t(locale, 'quote.form.errorEmail')}
+        data-error-url={t(locale, 'quote.form.errorUrl')}
+        data-error-needs={t(locale, 'quote.form.errorNeeds')}
+        data-sending={t(locale, 'quote.form.sending')}
+      >
+        <input type="hidden" name="form-name" value="quote" />
+        <input type="hidden" name="locale" value={locale} />
+        <p hidden>
+          <label>
+            {t(locale, 'quote.form.honeypot')}
+            <input name="bot-field" tabindex="-1" autocomplete="off" />
+          </label>
+        </p>
+        <p
+          class="font-sans text-sm text-fox-coral"
+          role="alert"
+          data-form-alert
+          hidden
+        ></p>
+
+        <div>
+          <label class="label text-ink" for="quote-name">
+            {t(locale, 'quote.form.name')}
+            <span aria-hidden="true"> *</span>
+            <span class="sr-only"> {t(locale, 'quote.form.requiredMark')}</span>
+          </label>
+          <input
+            class={field}
+            id="quote-name"
+            name="name"
+            type="text"
+            autocomplete="name"
+            required
+            data-required
+          />
+          <p
+            class="mt-1 font-sans text-xs text-fox-coral"
+            data-error-for="name"
+            hidden
+          ></p>
+        </div>
+
+        <div>
+          <label class="label text-ink" for="quote-email">
+            {t(locale, 'quote.form.email')}
+            <span aria-hidden="true"> *</span>
+            <span class="sr-only"> {t(locale, 'quote.form.requiredMark')}</span>
+          </label>
+          <input
+            class={field}
+            id="quote-email"
+            name="email"
+            type="email"
+            autocomplete="email"
+            required
+            data-required
+          />
+          <p
+            class="mt-1 font-sans text-xs text-fox-coral"
+            data-error-for="email"
+            hidden
+          ></p>
+        </div>
+
+        <div>
+          <label class="label text-ink" for="quote-company">
+            {t(locale, 'quote.form.company')}
+            <span aria-hidden="true"> *</span>
+            <span class="sr-only"> {t(locale, 'quote.form.requiredMark')}</span>
+          </label>
+          <input
+            class={field}
+            id="quote-company"
+            name="company"
+            type="text"
+            autocomplete="organization"
+            required
+            data-required
+          />
+          <p
+            class="mt-1 font-sans text-xs text-fox-coral"
+            data-error-for="company"
+            hidden
+          ></p>
+        </div>
+
+        <div>
+          <label class="label text-ink" for="quote-website">
+            {t(locale, 'quote.form.website')}
+            <span class="sr-only"> {t(locale, 'quote.form.optional')}</span>
+          </label>
+          <input
+            class={field}
+            id="quote-website"
+            name="website"
+            type="url"
+            inputmode="url"
+            autocomplete="url"
+            data-url
+          />
+          <p
+            class="mt-1 font-sans text-xs text-fox-coral"
+            data-error-for="website"
+            hidden
+          ></p>
+        </div>
+
+        <div>
+          <label class="label text-ink" for="quote-country">
+            {t(locale, 'quote.form.country')}
+            <span class="sr-only"> {t(locale, 'quote.form.optional')}</span>
+          </label>
+          <input
+            class={field}
+            id="quote-country"
+            name="country"
+            type="text"
+            autocomplete="country-name"
+          />
+        </div>
+
+        <fieldset data-needs>
+          <legend class="label text-ink">
+            {t(locale, 'quote.form.needs')}
+            <span aria-hidden="true"> *</span>
+            <span class="sr-only"> {t(locale, 'quote.form.requiredMark')}</span>
+          </legend>
+          <div class="mt-3 flex flex-col gap-2">
+            {needs.map((item) => (
+              <label class="flex items-center gap-3 font-sans text-sm text-ink">
+                <input type="checkbox" name="needs" value={item.value} />
+                {t(locale, item.label)}
+              </label>
+            ))}
+          </div>
+          <p
+            class="mt-1 font-sans text-xs text-fox-coral"
+            data-error-for="needs"
+            hidden
+          ></p>
+        </fieldset>
+
+        <fieldset>
+          <legend class="label text-ink">
+            {t(locale, 'quote.form.package')}
+            <span class="sr-only"> {t(locale, 'quote.form.optional')}</span>
+          </legend>
+          <div class="mt-3 flex flex-col gap-2">
+            {packages.map((item) => (
+              <label class="flex items-center gap-3 font-sans text-sm text-ink">
+                <input type="radio" name="package" value={item.value} />
+                {t(locale, item.label)}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        <div>
+          <label class="label text-ink" for="quote-budget">
+            {t(locale, 'quote.form.budget')}
+            <span class="sr-only"> {t(locale, 'quote.form.optional')}</span>
+          </label>
+          <select class={field} id="quote-budget" name="budget">
+            <option value="">{t(locale, 'quote.form.choose')}</option>
+            {budgets.map((item) => (
+              <option value={t(locale, item)}>{t(locale, item)}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label class="label text-ink" for="quote-timeline">
+            {t(locale, 'quote.form.timeline')}
+            <span class="sr-only"> {t(locale, 'quote.form.optional')}</span>
+          </label>
+          <select class={field} id="quote-timeline" name="timeline">
+            <option value="">{t(locale, 'quote.form.choose')}</option>
+            {timelines.map((item) => (
+              <option value={item.value}>{t(locale, item.label)}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label class="label text-ink" for="quote-brief">
+            {t(locale, 'quote.form.brief')}
+            <span aria-hidden="true"> *</span>
+            <span class="sr-only"> {t(locale, 'quote.form.requiredMark')}</span>
+          </label>
+          <textarea
+            class:list={[field, 'min-h-32']}
+            id="quote-brief"
+            name="brief"
+            required
+            data-required
+          ></textarea>
+          <p
+            class="mt-1 font-sans text-xs text-fox-coral"
+            data-error-for="brief"
+            hidden
+          ></p>
+        </div>
+
+        <div>
+          <label class="label text-ink" for="quote-references">
+            {t(locale, 'quote.form.references')}
+            <span class="sr-only"> {t(locale, 'quote.form.optional')}</span>
+          </label>
+          <textarea
+            class:list={[field, 'min-h-24']}
+            id="quote-references"
+            name="references"
+          ></textarea>
+        </div>
+
+        <div>
+          <label
+            class="flex items-start gap-3 font-sans text-sm text-ink"
+            for="quote-privacy"
+          >
+            <input
+              id="quote-privacy"
+              name="privacy"
+              type="checkbox"
+              value="yes"
+              required
+              data-required
+            />
+            <span>
+              {t(locale, 'quote.form.privacyConsent')}
+              <span aria-hidden="true"> *</span>
+              <span class="sr-only">
+                {' '}
+                {t(locale, 'quote.form.requiredMark')}
+              </span>
+            </span>
+          </label>
+          <a
+            class="font-sans text-sm text-ink underline"
+            href={getPath(locale, 'privacy')}
+          >
+            {t(locale, 'legal.privacy.heading')}
+          </a>
+          <p
+            class="mt-1 font-sans text-xs text-fox-coral"
+            data-error-for="privacy"
+            hidden
+          ></p>
+        </div>
+
+        <label class="flex items-start gap-3 font-sans text-sm text-ink">
+          <input name="newsletter" type="checkbox" value="yes" />
+          <span>{t(locale, 'quote.form.newsletterConsent')}</span>
+        </label>
+
+        <button
+          class="hover-fox inline-flex w-fit items-center rounded-pill bg-brand-gradient px-6 py-3 font-sans text-sm font-medium text-white"
+          type="submit"
+          data-submit
+        >
+          {t(locale, 'quote.form.submit')}
+        </button>
+      </form>
+    </section>
+  </main>
+  <SiteFooter locale={locale} pageKey="quote" />
+</BaseLayout>
+
+<script>
+  import { onPageReady } from '../../motion/ready';
+
+  function setError(form: HTMLFormElement, name: string, message: string) {
+    const slot = form.querySelector<HTMLElement>(`[data-error-for="${name}"]`);
+    const field = form.querySelector<HTMLElement>(`[name="${name}"]`);
+    if (slot) {
+      slot.textContent = message;
+      slot.hidden = message.length === 0;
+    }
+    if (field) {
+      if (message) {
+        field.setAttribute('aria-invalid', 'true');
+        if (slot?.id === '') slot.id = `${name}-error`;
+        if (slot)
+          field.setAttribute('aria-describedby', slot.id || `${name}-error`);
+      } else {
+        field.removeAttribute('aria-invalid');
+      }
+    }
+  }
+
+  function bootQuote() {
+    const form = document.querySelector<HTMLFormElement>('[data-quote-form]');
+    if (!form || form.dataset.booted === 'true') return;
+    form.dataset.booted = 'true';
+    const required = form.dataset.errorRequired ?? '';
+    const emailMsg = form.dataset.errorEmail ?? '';
+    const urlMsg = form.dataset.errorUrl ?? '';
+    const needsMsg = form.dataset.errorNeeds ?? '';
+    const sending = form.dataset.sending ?? '';
+    const alert = form.querySelector<HTMLElement>('[data-form-alert]');
+
+    const validate = () => {
+      let ok = true;
+      form
+        .querySelectorAll<HTMLInputElement | HTMLTextAreaElement>(
+          '[data-required]',
+        )
+        .forEach((field) => {
+          const empty =
+            field instanceof HTMLInputElement && field.type === 'checkbox'
+              ? !field.checked
+              : field.value.trim().length === 0;
+          setError(form, field.name, empty ? required : '');
+          if (empty) ok = false;
+        });
+      const email = form.querySelector<HTMLInputElement>('[name="email"]');
+      if (
+        email &&
+        email.value.trim() &&
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())
+      ) {
+        setError(form, 'email', emailMsg);
+        ok = false;
+      }
+      const website = form.querySelector<HTMLInputElement>('[name="website"]');
+      if (website && website.value.trim()) {
+        try {
+          const url = new URL(website.value.trim());
+          setError(
+            form,
+            'website',
+            url.protocol === 'http:' || url.protocol === 'https:' ? '' : urlMsg,
+          );
+          if (!(url.protocol === 'http:' || url.protocol === 'https:'))
+            ok = false;
+        } catch {
+          setError(form, 'website', urlMsg);
+          ok = false;
+        }
+      } else if (website) {
+        setError(form, 'website', '');
+      }
+      const picked =
+        form.querySelectorAll<HTMLInputElement>('input[name="needs"]:checked')
+          .length > 0;
+      setError(form, 'needs', picked ? '' : needsMsg);
+      if (!picked) ok = false;
+      if (alert) {
+        alert.hidden = ok;
+        alert.textContent = ok ? '' : required;
+      }
+      return ok;
+    };
+
+    form.addEventListener('submit', (event) => {
+      if (!validate()) {
+        event.preventDefault();
+        form.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
+        return;
+      }
+      const button = form.querySelector<HTMLButtonElement>('[data-submit]');
+      if (button) {
+        button.disabled = true;
+        button.textContent = sending;
+      }
+    });
+  }
+
+  onPageReady(bootQuote);
+</script>
