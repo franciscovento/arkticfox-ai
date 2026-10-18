@@ -29,7 +29,7 @@ Three short reassurance points **PDF**:
 | 2 | `quote.reassurance.noCommitment` | `No commitment` **PDF** | `Sin compromiso` **PROPOSED** |
 | 3 | `quote.reassurance.clearQuote` | `A clear quote` **PDF** | `Un presupuesto claro` **PROPOSED** |
 
-**OPEN** — point 1 is an SLA. `docs/01-project-brief.md` flags it as unconfirmed and the PDF itself says "adjust the deadline to one you can meet". If Nabil won't commit to 24 h, replace it with `One working day` or drop the point; do not ship a promise the studio can't keep.
+**OPEN** — point 1 is an SLA. The PDF line is what the page shows. It is not confirmed. `shared.whatsapp.number` is empty, so the panel links to `hello@arkticfox.ai` until a real WhatsApp number exists.
 
 WhatsApp link in this panel, same prefilled message as the floating button: `Hi Arktic Fox, I'd like a quote for…`
 

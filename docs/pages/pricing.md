@@ -123,7 +123,7 @@ The three packages side by side. **PDF** asks for it; the row set below is **PRO
 | `Revision rounds` | 2 | **OPEN** | **OPEN** |
 | `Monthly performance review` | — | — | yes |
 
-The brief only states script inclusion and revision rounds for Pilot. Leaving those cells blank in a comparison table reads as "not included", which may be wrong, so the table cannot ship until Nabil confirms both rows for Growth and Scale.
+The brief only states script inclusion and revision rounds for Pilot. Those two rows say `Confirmed in your quote` for Growth and Scale (`pricing.compare.inQuote`, **PROPOSED**). A blank cell would read as “not included”. The note under the table says so.
 
 ## 5. Pricing FAQ
 

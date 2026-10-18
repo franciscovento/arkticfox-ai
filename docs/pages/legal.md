@@ -68,7 +68,7 @@ The scope of this page depends on which analytics ship.
 | Cookieless (Plausible, Netlify Analytics) | Practically not. The policy still describes any strictly necessary cookies. |
 | Google Analytics or the Meta pixel | Yes, mandatory, with `Reject` as visually equal to `Accept`. |
 
-**OPEN** — which analytics. This is a content decision as much as a technical one, because it determines whether the banner exists.
+**OPEN** — which analytics. The banner ships anyway, with equal Accept and Reject. Choosing either stores the choice and loads nothing, because no analytics script is on the site. The settings line says so.
 
 | Slot | Key | EN | ES |
 |---|---|---|---|

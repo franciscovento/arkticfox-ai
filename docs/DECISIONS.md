@@ -149,3 +149,17 @@
 - Decision: The site header on `/work` scrolls away. Each beat title (The brief, Stills, The film, The cut) is `position: sticky` until the next beat pushes it off. Cards sit on `glass-deep` (ink, token) over a bottom scrim. `SnowCanvas` is a fixed layer under the plates, so flakes fall in the field around the frames, not on the images.
 - Consequences: Contrast holds on pale stills. The sticky menu is the process, not the nav.
 
+## ADR-022 — Brand PNGs in the chrome; studio plates stand in for missing work
+
+- Date: 2026-10-18
+- Context: The nav was the word “Arktic Fox”. `src/assets/logo/fox-mark.svg` is a two-triangle placeholder used only on the styleguide. A set of PNG marks, fox stills and muted loops arrived already web-optimized. Service, pricing, quote, legal and 404 pages were still shells. PR #2 owns `public/media/projects/` and is not on `main`.
+- Decision: Copy the supplied files into `public/media/brand/` and `public/media/clips/` without re-encoding. The nav and footer use the white lockup; small nav, the 404 and the divider use the white mark. The SVG placeholder stays on the styleguide. Favicon and apple touch icon are the supplied PNGs. The Open Graph image is a 1200×630 crop of `fox-leaping-tunnel.webp`. The quote button in the nav stays an outline so the in-page CTA is the one gradient. On scroll the bar becomes solid polar night, because it crosses light sections and white type needs a dark field. Galleries and before/after use the fox plates and say they are studio references, not client work. Paths under `public/media/projects/` are not referenced, so this branch does not break before PR #2 merges.
+- Consequences: The geometric SVG is unused outside the styleguide. There is still no black or transparent-gradient SVG. Sector filters other than Studio are empty on purpose.
+
+## ADR-023 — Quote posts to Netlify Forms; open commercial answers defer to the quote
+
+- Date: 2026-10-18
+- Context: ADR-005 already chose Netlify Forms. The page specs leave turnaround, revision rounds outside Pilot, rights wording, VAT confirmation, contract length, music licensing and the legal texts OPEN. There is no WhatsApp number and no Calendly URL in the docs. The PDF still prints “Reply within 24 h”.
+- Decision: The form is static HTML, `name="quote"`, honeypot `bot-field`, `action` `/thanks` or `/es/gracias`, plus a hidden `locale` field. `novalidate` lets the page script announce errors and move focus; the `required` attributes stay for assistive tech. Assumed Netlify detects the form at deploy. No new package and no backend. Answers that would invent a commercial commitment say the figure is confirmed in the quote. Pilot’s “2 revision rounds” and “15 to 30 seconds” are published because the brief already states them. The 24-hour lines ship as the PDF copy and stay marked OPEN in the specs. The Calendly button is not rendered. WhatsApp renders only when `shared.whatsapp.number` is non-empty; until then the quote panel links to `hello@arkticfox.ai`. Legal sections are headings plus `[LEGAL TEXT]`. The cookie banner stores accept or reject and loads no analytics, because the analytics vendor is still OPEN. Thanks is `noindex, follow` and does not show WhatsApp.
+- Consequences: A submission only completes on Netlify. Local `astro dev` can validate the form but cannot deliver it. The comparison table is safe to read: an open cell says “Confirmed in your quote” instead of looking like “not included”.
+

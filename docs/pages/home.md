@@ -5,7 +5,7 @@
 | URLs | `/` · `/es/` (V1, dive). Parked V2: `/v2` · `/es/v2` (noindex, unlinked). |
 | Goal | Impact, a summary of everything, a quote request. |
 | Rhythm | Twelve blocks alternating dark (cinema) and light (snow). Every block pushes toward the quote. |
-| Roadmap | Step 4. Blocks 1–2 exist as `HomeEntry` + `SnowDive`; 3–12 are still to do. |
+| Roadmap | Step 4. The dive still ends on the marquee. Sections 4–12 render under it in `HomeRest`. Before/after and the gallery use studio plates and say so. |
 
 Read the conventions and the source markers in [`README.md`](./README.md) first.
 

@@ -33,7 +33,7 @@ Read [`README.md`](./README.md) for the source markers.
 
 Sector chips: E-commerce · Fashion · Beauty · Food & beverage · Automotive. Spanish: E-commerce · Moda · Belleza · Alimentación · Automoción. **PROPOSED**
 
-**OPEN** — real samples per sector. Same constraint as the home gallery: only automotive work exists. Placeholders must not be presented as client work.
+**OPEN** — real samples per sector. The page ships fox stills and loops tagged Studio, with `shared.gallery.studioNote` and `shared.standIn` on every card. They are not labeled as client work. Automotive proof stays on the projects branch and is not linked from here.
 
 ## 5. Delivery formats
 
@@ -88,4 +88,4 @@ Identical to home block 11. Reuse `shared.cta.*`.
 
 Service FAQs in blocks 8 repeat three topics across pages. Write each answer once, under `shared.faq.*`, and let the pages reference them: commercial use and rights, what we need from you, turnaround.
 
-**OPEN** — all answers. Turnaround and revision counts are commercial commitments and need Nabil's sign-off.
+**PROPOSED** in the dictionaries, and still **OPEN** where a number would be a commitment. Turnaround defers to the quote. Rights say commercial use is the point and the licence is in the agreement, and that this is not legal advice. Pilot’s two revision rounds are the only published count.

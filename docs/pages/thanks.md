@@ -30,7 +30,7 @@ Fox ears peeking over a line, the signature motif.
 
 **OPEN** — the 24-hour line, same question as the quote page reassurance point. The two must say the same thing; if one changes, both change.
 
-**OPEN** — Calendly URL. The brief specifies a free Calendly, 20-minute call, and this is the only page it appears on, deliberately, so it doesn't compete with the form. Until the URL exists the button stays disabled or hidden; it must not link nowhere.
+**OPEN** — Calendly URL. The button is not rendered. `thanks.bookMissing` says the link will sit there once the calendar exists. WhatsApp is suppressed on this page.
 
 Instagram goes to `@arkticfox.ai`.
 

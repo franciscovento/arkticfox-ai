@@ -80,4 +80,4 @@ The form must exist as static HTML at build time.
 
 ## Sitemap
 
-`@astrojs/sitemap` is configured with `en` as the default locale and `es` as the alternate. `/styleguide` is `noindex` and excluded. Translated slugs (`/product-images` vs `/es/imagenes-de-producto`) will not pair automatically; the hreflang helper is the source for those pairs and should be wired into the sitemap when the pages exist.
+`@astrojs/sitemap` is configured with `en` as the default locale and `es` as the alternate. `/styleguide`, `/v2`, `/work` and `/thanks` (and their Spanish twins) are excluded. `serialize` in `astro.config.mjs` writes `en`, `es` and `x-default` from `src/i18n/routes.ts`, so translated slugs pair. The hreflang tags in the page head use the same map.

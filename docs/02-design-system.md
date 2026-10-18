@@ -36,9 +36,10 @@ Alternatives considered and not chosen: Cormorant Garamond (more fashion, thinne
 
 Fox head peeking over a horizontal line, plus the ARKTIC FOX wordmark.
 
-- Nav: mark only, centered.
-- Footer and mobile hero: full lockup.
-- Versions still needed from Nabil: white, gradient, black, all SVG. The file in `src/assets/logo/fox-mark.svg` is a placeholder.
+- Nav, desktop: white lockup, centered (`public/media/brand/logo-lockup-white.png`).
+- Nav, small screens, 404 and dividers: white mark only (`logo-mark-white.png`).
+- Footer: white lockup.
+- `src/assets/logo/fox-mark.svg` stays the styleguide placeholder. It was not wired into the nav. The supplied files are PNG, not SVG. The gradient lockup and mark are 1080×1350 social cards, used as OG/social base, not as a transparent mark. A black SVG is still not in the repo.
 
 Signature motif: the same horizontal line with ears peeking over it, used as a section divider (`FoxDivider`, not built yet).
 
