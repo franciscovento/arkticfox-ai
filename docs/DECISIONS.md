@@ -149,3 +149,10 @@
 - Decision: The site header on `/work` scrolls away. Each beat title (The brief, Stills, The film, The cut) is `position: sticky` until the next beat pushes it off. Cards sit on `glass-deep` (ink, token) over a bottom scrim. `SnowCanvas` is a fixed layer under the plates, so flakes fall in the field around the frames, not on the images.
 - Consequences: Contrast holds on pale stills. The sticky menu is the process, not the nav.
 
+## ADR-022 — Projects is a public gallery; the winter case stays a mock
+
+- Date: 2026-10-18
+- Context: Real pieces arrived (Cadillac films and stills, Kia stills, a Nissan offer still, a Jeep UGC film, a beauty selfie). `/work` is still the noindex winter-drop stand-in. Some stills have English type baked into the picture. The built header is three service links; the planned dropdown and footer are not built.
+- Decision: Ship an indexed gallery at `/projects` and `/es/proyectos`. Copy is PROPOSED in `docs/pages/projects.md`. Media sits in `public/media/projects/` and is rendered as `<img>` or `<video>`, never as a CSS background. Videos are muted, `playsinline`, with a poster and `preload="none"`. They play when most of the frame is in view, and stay paused when reduced motion is requested. Brands are named only as they appear in the frame. The UGC case keeps the AI-avatar note. The built header gains a Projects link beside the language switch, from the `sm` breakpoint up, so the left service row and the centered mark stay clear. `/work` is unchanged.
+- Consequences: The sitemap gains one EN/ES pair. Hreflang comes from the route map, the same way as the other pages. There is still no footer to repeat the link.
+

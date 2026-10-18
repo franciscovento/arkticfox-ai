@@ -84,15 +84,25 @@ const beats: {
   <div class="work-snow" aria-hidden="true">
     <SnowCanvas />
   </div>
-  <header class="relative z-20 flex items-center justify-between px-5 py-5 md:px-10">
-    <nav class="hidden items-center gap-6 lg:flex" aria-label={t(locale, 'home.navLabel')}>
-      {
-        nav.map((item) => (
-          <a class="label hover-fox text-white" href={getPath(locale, item.pageKey)}>
-            {t(locale, item.label)}
-          </a>
-        ))
-      }
+  <header class="relative z-20 flex flex-wrap items-center justify-between gap-y-3 px-5 py-5 md:px-10">
+    <nav
+      class="order-last flex w-full items-center gap-6 sm:hidden lg:order-none lg:flex lg:w-auto"
+      aria-label={t(locale, 'home.navLabel')}
+    >
+      {nav.map((item) => (
+        <a
+          class="label hover-fox hidden text-white lg:inline"
+          href={getPath(locale, item.pageKey)}
+        >
+          {t(locale, item.label)}
+        </a>
+      ))}
+      <a
+        class="label hover-fox text-white lg:hidden"
+        href={getPath(locale, 'projects')}
+      >
+        {t(locale, 'nav.projects')}
+      </a>
     </nav>
     <a
       class="label text-white lg:absolute lg:left-1/2 lg:-translate-x-1/2"
@@ -102,7 +112,16 @@ const beats: {
     </a>
     <div class="flex items-center gap-3 md:gap-5">
       <a
-        class:list={['label hover-fox', locale === 'en' ? 'text-white' : 'text-white/70']}
+        class="label hover-fox hidden text-white sm:inline"
+        href={getPath(locale, 'projects')}
+      >
+        {t(locale, 'nav.projects')}
+      </a>
+      <a
+        class:list={[
+          'label hover-fox',
+          locale === 'en' ? 'text-white' : 'text-white/70',
+        ]}
         href={getPath('en', 'work')}
         hreflang="en"
         aria-current={locale === 'en' ? 'page' : undefined}
@@ -110,7 +129,10 @@ const beats: {
         {t(locale, 'nav.languageEn')}
       </a>
       <a
-        class:list={['label hover-fox', locale === 'es' ? 'text-white' : 'text-white/70']}
+        class:list={[
+          'label hover-fox',
+          locale === 'es' ? 'text-white' : 'text-white/70',
+        ]}
         href={getPath('es', 'work')}
         hreflang="es"
         aria-current={locale === 'es' ? 'page' : undefined}
@@ -140,51 +162,63 @@ const beats: {
       </Reveal>
     </section>
 
-    {
-      beats.map((beat) => (
-        <section class:list={['work-beat', `work-beat--${beat.side}`]}>
-          <h2 class="work-beat__pin font-serif text-4xl italic text-white md:text-6xl">
-            <span class="label not-italic text-ice-blue">{beat.index}</span>
-            {t(locale, beat.title)}
-          </h2>
-          <figure class="work-beat__plate">
-            {beat.kind === 'video' ? (
-              <video
-                class="work-beat__media"
-                src={beat.src}
-                poster={beat.poster}
-                muted
-                loop
-                playsinline
-                autoplay
-                data-work-loop
-              ></video>
-            ) : (
-              <img
-                class="work-beat__media"
-                src={beat.src}
-                alt={t(locale, beat.title)}
-                width="1800"
-                height="1200"
-                loading={beat.named ? 'eager' : 'lazy'}
-              />
-            )}
-            <div class="work-beat__scrim" aria-hidden="true"></div>
-          </figure>
-          <Reveal class:list={['work-beat__card-wrap', beat.side === 'end' && 'work-beat__card-wrap--end']}>
-            <article class="glass sheen work-beat__card flex flex-col gap-3 p-5 md:p-6" data-sheen>
-              <p class="label text-ice-blue">{beat.index}</p>
-              <p class="font-serif text-2xl leading-tight text-white md:text-3xl">{t(locale, beat.cardTitle)}</p>
-              <p class="font-sans text-sm leading-relaxed text-white/85">{t(locale, beat.body)}</p>
-            </article>
-          </Reveal>
-        </section>
-      ))
-    }
+    {beats.map((beat) => (
+      <section class:list={['work-beat', `work-beat--${beat.side}`]}>
+        <h2 class="work-beat__pin font-serif text-4xl italic text-white md:text-6xl">
+          <span class="label not-italic text-ice-blue">{beat.index}</span>
+          {t(locale, beat.title)}
+        </h2>
+        <figure class="work-beat__plate">
+          {beat.kind === 'video' ? (
+            <video
+              class="work-beat__media"
+              src={beat.src}
+              poster={beat.poster}
+              muted
+              loop
+              playsinline
+              autoplay
+              data-work-loop
+            ></video>
+          ) : (
+            <img
+              class="work-beat__media"
+              src={beat.src}
+              alt={t(locale, beat.title)}
+              width="1800"
+              height="1200"
+              loading={beat.named ? 'eager' : 'lazy'}
+            />
+          )}
+          <div class="work-beat__scrim" aria-hidden="true"></div>
+        </figure>
+        <Reveal
+          class:list={[
+            'work-beat__card-wrap',
+            beat.side === 'end' && 'work-beat__card-wrap--end',
+          ]}
+        >
+          <article
+            class="glass sheen work-beat__card flex flex-col gap-3 p-5 md:p-6"
+            data-sheen
+          >
+            <p class="label text-ice-blue">{beat.index}</p>
+            <p class="font-serif text-2xl leading-tight text-white md:text-3xl">
+              {t(locale, beat.cardTitle)}
+            </p>
+            <p class="font-sans text-sm leading-relaxed text-white/85">
+              {t(locale, beat.body)}
+            </p>
+          </article>
+        </Reveal>
+      </section>
+    ))}
 
     <section class="work-beat work-beat--close">
       <Reveal class="work-beat__intro">
-        <p class="max-w-xl font-serif text-3xl leading-tight text-white md:text-5xl">{t(locale, 'work.note')}</p>
+        <p class="max-w-xl font-serif text-3xl leading-tight text-white md:text-5xl">
+          {t(locale, 'work.note')}
+        </p>
         <a
           class="hover-fox mt-6 inline-flex items-center rounded-pill border border-white px-6 py-3 font-sans text-sm font-medium text-white"
           href={getPath(locale, 'quote')}
@@ -210,7 +244,10 @@ const beats: {
     pinObserver = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
-          entry.target.classList.toggle('is-stuck', entry.intersectionRatio < 1);
+          entry.target.classList.toggle(
+            'is-stuck',
+            entry.intersectionRatio < 1,
+          );
         }
       },
       { threshold: [1], rootMargin: '-1px 0px 0px 0px' },
@@ -220,8 +257,12 @@ const beats: {
   }
 
   function bootWorkLoops() {
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    for (const video of document.querySelectorAll<HTMLVideoElement>('[data-work-loop]')) {
+    const reduce = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    ).matches;
+    for (const video of document.querySelectorAll<HTMLVideoElement>(
+      '[data-work-loop]',
+    )) {
       if (reduce) {
         video.pause();
         video.removeAttribute('autoplay');
@@ -231,7 +272,9 @@ const beats: {
     }
   }
 
-  document.addEventListener('astro:before-swap', () => pinObserver?.disconnect());
+  document.addEventListener('astro:before-swap', () =>
+    pinObserver?.disconnect(),
+  );
   onPageReady(() => {
     bootWorkPins();
     bootWorkLoops();

@@ -1,6 +1,7 @@
 export const en = {
   'nav.services': 'Services',
   'nav.work': 'Work',
+  'nav.projects': 'Projects',
   'nav.process': 'Process',
   'nav.pricing': 'Pricing',
   'nav.quote': 'Get a quote',
@@ -11,7 +12,8 @@ export const en = {
   'meta.homeDescription':
     'AI creative studio for product images, ad videos and hyperreal UGC videos.',
   'meta.productImagesTitle': 'Arktic Fox | Product images',
-  'meta.productImagesDescription': 'Studio-grade product shots, without a studio.',
+  'meta.productImagesDescription':
+    'Studio-grade product shots, without a studio.',
   'meta.adVideosTitle': 'Arktic Fox | Ad videos',
   'meta.adVideosDescription': 'Cinematic ads, without the film crew.',
   'meta.ugcVideosTitle': 'Arktic Fox | Hyperreal UGC videos',
@@ -29,7 +31,8 @@ export const en = {
   'meta.cookiesTitle': 'Arktic Fox | Cookies',
   'meta.cookiesDescription': 'How Arktic Fox uses cookies.',
   'meta.styleguideTitle': 'Style guide — Arktic Fox',
-  'meta.styleguideDescription': 'Internal page used to verify design tokens, type and motion.',
+  'meta.styleguideDescription':
+    'Internal page used to verify design tokens, type and motion.',
   'page.placeholder': 'Structure only. The page design comes next.',
   'page.home.heading': 'Arktic Fox',
   'page.productImages.heading': 'Product images',
@@ -44,7 +47,8 @@ export const en = {
   'styleguide.kicker': 'AI creative studio',
   'styleguide.headlineLead': 'Ads that',
   'styleguide.headlineEmphasis': 'blend in',
-  'styleguide.subhead': 'Token pipeline proof. Final visuals come from the design handoff.',
+  'styleguide.subhead':
+    'Token pipeline proof. Final visuals come from the design handoff.',
   'styleguide.primaryCta': 'Get a quote',
   'styleguide.secondaryCta': 'See our work',
   'styleguide.colorsTitle': 'Color',
@@ -55,7 +59,8 @@ export const en = {
   'styleguide.dividerTitle': 'Fox divider',
   'styleguide.revealTitle': 'Reveal',
   'styleguide.revealItem': 'Fade and rise',
-  'styleguide.marqueeLabel': 'E-commerce · Fashion · Beauty · Food & beverage · Automotive',
+  'styleguide.marqueeLabel':
+    'E-commerce · Fashion · Beauty · Food & beverage · Automotive',
   'styleguide.swatch.foxCoral': 'Fox Coral',
   'styleguide.swatch.foxPink': 'Fox Pink',
   'styleguide.swatch.iceBlue': 'Ice Blue',
@@ -86,24 +91,29 @@ export const en = {
   'home.ugcBody':
     'Hyperrealistic UGC-style videos with AI creators: testimonials, unboxings and tutorials, each with alternative hooks to test.',
   'home.ugcNote': 'All creators are AI-generated avatars.',
-  'home.marquee.label': 'E-commerce · Fashion · Beauty · Food & beverage · Automotive',
+  'home.marquee.label':
+    'E-commerce · Fashion · Beauty · Food & beverage · Automotive',
   'home.marquee.services': 'Product images · Ad videos · Hyperreal UGC',
   'home.marquee.hint': 'Click a word to see the work',
   'home.why.eyebrow': 'Why Arktic Fox',
   'home.why.speedTitle': 'Speed',
   'home.why.speedBody': 'From brief to first drafts in days, not weeks.',
   'home.why.costTitle': 'Cost',
-  'home.why.costBody': 'A fraction of a traditional shoot. No studio, no crew, no logistics.',
+  'home.why.costBody':
+    'A fraction of a traditional shoot. No studio, no crew, no logistics.',
   'home.why.testingTitle': 'Testing',
-  'home.why.testingBody': 'Multiple hooks and variations per concept, so you can find the winner.',
+  'home.why.testingBody':
+    'Multiple hooks and variations per concept, so you can find the winner.',
   'home.why.qualityTitle': 'Brand-safe quality',
   'home.why.qualityBody': 'Reviewed by humans, on-brand every time.',
   'home.versionField': 'V1',
   'home.versionPop': 'V2',
   'home.v2.title': 'Arktic Fox | Scroll',
-  'home.v2.description': 'The same home, with the film stepped through as you scroll.',
+  'home.v2.description':
+    'The same home, with the film stepped through as you scroll.',
   'home.reel.close': 'Close',
-  'home.reel.note': 'Winter drop. New rooms for the pack, and a short film for the feed.',
+  'home.reel.note':
+    'Winter drop. New rooms for the pack, and a short film for the feed.',
   'home.reel.open': 'View work: {name}',
   'home.reel.more': 'See the case',
   'work.title': 'Arktic Fox | Winter drop',
@@ -137,6 +147,67 @@ export const en = {
   'work.card2Title': 'New rooms',
   'work.card3Title': 'The film',
   'work.card4Title': 'Locked cut',
+  'projects.title': 'Arktic Fox | Projects',
+  'projects.description':
+    'Ad films, stills and talk-to-camera pieces. The brands you see are the ones in the frame.',
+  'projects.eyebrow': 'Selected work',
+  'projects.headingLead': 'Ads, stills',
+  'projects.headingEmphasis': 'and to camera.',
+  'projects.lead':
+    'Square and vertical films, stills with the offer inside the frame, and UGC to camera.',
+  'projects.marquee': 'Ad films · Stills · Talk to camera',
+  'projects.note': 'Same craft, cut for the feed.',
+  'projects.ugcNote': 'People on camera are AI avatars.',
+  'projects.kind.ad': 'Ad',
+  'projects.kind.still': 'Still',
+  'projects.kind.ugc': 'UGC',
+  'projects.cadillac.eyebrow': 'Cadillac',
+  'projects.cadillac.title': 'Spot, offer and stills',
+  'projects.cadillac.body':
+    'A square Lyriq film, a vertical deals film, a talk to camera from the driver seat, and stills in red fog. One still carries the offer in the frame.',
+  'projects.kia.eyebrow': 'Kia',
+  'projects.kia.title': 'Stills in red',
+  'projects.kia.body':
+    'Two stills of a Kia in red light, with no type on the picture.',
+  'projects.nissan.eyebrow': 'Nissan',
+  'projects.nissan.title': 'The offer in the frame',
+  'projects.nissan.body':
+    'A vertical still of the grille. The line Best 2026 New Nissan Prices sits inside the picture, so the still is the ad.',
+  'projects.jeep.eyebrow': 'Jeep UGC',
+  'projects.jeep.title': 'To camera',
+  'projects.jeep.body':
+    'A woman in a Jeep with mountains behind her, and a mirror selfie with a lip product. The selfie is another UGC piece, this one for beauty.',
+  'projects.piece.lyriq': 'Square Lyriq spot',
+  'projects.piece.lyriqAlt': 'Square ad of a Cadillac Lyriq.',
+  'projects.piece.deals': 'Vertical deals spot',
+  'projects.piece.dealsAlt': 'Vertical Cadillac ad about year-end deals.',
+  'projects.piece.driver': 'From the driver seat',
+  'projects.piece.driverAlt':
+    'A man talks to camera from the driver seat of a car.',
+  'projects.piece.cadillacOffer': 'Year-end offer',
+  'projects.piece.cadillacOfferAlt':
+    'Vertical still of a black Cadillac in red fog. The frame reads Best Year-End Cadillac Deals.',
+  'projects.piece.fogA': 'Red fog',
+  'projects.piece.fogAAlt': 'Still of a black Cadillac in red fog.',
+  'projects.piece.fogB': 'Red fog, second frame',
+  'projects.piece.fogBAlt':
+    'Still of a black Cadillac in red fog, from another angle.',
+  'projects.piece.fogC': 'Red fog, third frame',
+  'projects.piece.fogCAlt':
+    'Still of a black Cadillac in red fog, a third frame.',
+  'projects.piece.kiaA': 'Red light',
+  'projects.piece.kiaAAlt': 'Still of a Kia in red light.',
+  'projects.piece.kiaB': 'Red light, second frame',
+  'projects.piece.kiaBAlt': 'Still of a Kia in red light, another frame.',
+  'projects.piece.nissan': 'New prices',
+  'projects.piece.nissanAlt':
+    'Vertical still of a Nissan grille. The frame reads Best 2026 New Nissan Prices.',
+  'projects.piece.jeep': 'In the Jeep',
+  'projects.piece.jeepAlt':
+    'A woman in a Jeep, with mountains behind her, talks to camera.',
+  'projects.piece.selfie': 'Mirror selfie',
+  'projects.piece.selfieAlt':
+    'UGC-style selfie in a mirror with a lip product.',
 } as const;
 
 export type UiKey = keyof typeof en;

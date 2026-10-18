@@ -1,12 +1,13 @@
 # Sitemap and i18n
 
-Ten pages per language. English lives at the root. Spanish lives under `/es/` with translated slugs. Each page links to its twin. There is **no automatic language redirect**.
+Eleven pages per language. English lives at the root. Spanish lives under `/es/` with translated slugs. Each page links to its twin. There is **no automatic language redirect**.
 
 | Page | English | Spanish | Goal |
 |---|---|---|---|
 | Home | `/` | `/es/` | Impact, summary, quote |
 | Home V2 (trial, noindex) | `/v2` | `/es/v2` | Image-led cut, not in the sitemap |
 | Sample work (mock, noindex) | `/work` | `/es/trabajo` | One stand-in case from the home marquee |
+| Projects | `/projects` | `/es/proyectos` | Real ad films, stills and UGC pieces |
 | Product images | `/product-images` | `/es/imagenes-de-producto` | Sell product images |
 | Ad videos | `/ad-videos` | `/es/videos-publicitarios` | Sell ad films |
 | Hyperreal UGC | `/ugc-videos` | `/es/videos-ugc` | Sell AI UGC videos |
@@ -26,6 +27,8 @@ Desktop, split:
 - Left: Services dropdown (the three service pages), Work, Process.
 - Center: fox mark.
 - Right: Pricing, EN/ES, "Get a quote" gradient button.
+
+The header that is built today lists the three services on the left from the `lg` breakpoint. Projects (`nav.projects`) sits with the language switch from the `sm` breakpoint up, and on a nav row below that, so the centered mark stays clear and the link remains reachable on a phone. The dropdown, Process and the footer are still the step 3 layout.
 
 Mobile: mark on the left, quote button and a full-screen hamburger on the right.
 

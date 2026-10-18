@@ -3,6 +3,7 @@ import type { UiKey } from './en';
 export const es = {
   'nav.services': 'Servicios',
   'nav.work': 'Trabajo',
+  'nav.projects': 'Proyectos',
   'nav.process': 'Proceso',
   'nav.pricing': 'Precios',
   'nav.quote': 'Pide presupuesto',
@@ -21,7 +22,8 @@ export const es = {
   'meta.pricingTitle': 'Arktic Fox | Precios',
   'meta.pricingDescription': 'Pilot, Growth y Scale. Precios sin IVA.',
   'meta.quoteTitle': 'Arktic Fox | Pide presupuesto',
-  'meta.quoteDescription': 'Cuéntanos qué necesitas y te preparamos un presupuesto.',
+  'meta.quoteDescription':
+    'Cuéntanos qué necesitas y te preparamos un presupuesto.',
   'meta.thanksTitle': 'Arktic Fox | Gracias',
   'meta.thanksDescription': 'Hemos recibido tu solicitud.',
   'meta.legalNoticeTitle': 'Arktic Fox | Aviso legal',
@@ -31,8 +33,10 @@ export const es = {
   'meta.cookiesTitle': 'Arktic Fox | Cookies',
   'meta.cookiesDescription': 'Cómo usa Arktic Fox las cookies.',
   'meta.styleguideTitle': 'Guía de estilo — Arktic Fox',
-  'meta.styleguideDescription': 'Página interna para comprobar tokens, tipografía y movimiento.',
-  'page.placeholder': 'Solo la estructura. El diseño de la página viene después.',
+  'meta.styleguideDescription':
+    'Página interna para comprobar tokens, tipografía y movimiento.',
+  'page.placeholder':
+    'Solo la estructura. El diseño de la página viene después.',
   'page.home.heading': 'Arktic Fox',
   'page.productImages.heading': 'Fotos de producto',
   'page.adVideos.heading': 'Vídeos publicitarios',
@@ -54,11 +58,13 @@ export const es = {
   'styleguide.typeTitle': 'Tipo',
   'styleguide.buttonsTitle': 'Botones',
   'styleguide.glassTitle': 'Cristal esmerilado',
-  'styleguide.glassBody': 'Las tarjetas flotan sobre el vídeo y las secciones oscuras.',
+  'styleguide.glassBody':
+    'Las tarjetas flotan sobre el vídeo y las secciones oscuras.',
   'styleguide.dividerTitle': 'Separador del zorro',
   'styleguide.revealTitle': 'Aparición',
   'styleguide.revealItem': 'Fundido y subida',
-  'styleguide.marqueeLabel': 'E-commerce · Moda · Belleza · Alimentación · Automoción',
+  'styleguide.marqueeLabel':
+    'E-commerce · Moda · Belleza · Alimentación · Automoción',
   'styleguide.swatch.foxCoral': 'Fox Coral',
   'styleguide.swatch.foxPink': 'Fox Pink',
   'styleguide.swatch.iceBlue': 'Ice Blue',
@@ -89,24 +95,31 @@ export const es = {
   'home.ugcBody':
     'Vídeos con aire de UGC hiperrealista y creadores de IA: testimonios, unboxings y tutoriales, cada uno con ganchos distintos para probar.',
   'home.ugcNote': 'Todos los creadores son avatares generados con IA.',
-  'home.marquee.label': 'E-commerce · Moda · Belleza · Alimentación · Automoción',
-  'home.marquee.services': 'Imágenes de producto · Vídeos publicitarios · UGC hiperrealista',
+  'home.marquee.label':
+    'E-commerce · Moda · Belleza · Alimentación · Automoción',
+  'home.marquee.services':
+    'Imágenes de producto · Vídeos publicitarios · UGC hiperrealista',
   'home.marquee.hint': 'Pulsa una palabra para ver el trabajo',
   'home.why.eyebrow': 'Por qué Arktic Fox',
   'home.why.speedTitle': 'Velocidad',
-  'home.why.speedBody': 'Del brief a las primeras propuestas en días, no semanas.',
+  'home.why.speedBody':
+    'Del brief a las primeras propuestas en días, no semanas.',
   'home.why.costTitle': 'Coste',
-  'home.why.costBody': 'Una fracción de un rodaje tradicional. Sin estudio, sin equipo, sin logística.',
+  'home.why.costBody':
+    'Una fracción de un rodaje tradicional. Sin estudio, sin equipo, sin logística.',
   'home.why.testingTitle': 'Testeo',
-  'home.why.testingBody': 'Varios hooks y variaciones por concepto, para que encuentres el que funciona.',
+  'home.why.testingBody':
+    'Varios hooks y variaciones por concepto, para que encuentres el que funciona.',
   'home.why.qualityTitle': 'Calidad de marca',
   'home.why.qualityBody': 'Revisado por personas, fiel a tu marca siempre.',
   'home.versionField': 'V1',
   'home.versionPop': 'V2',
   'home.v2.title': 'Arktic Fox | Scroll',
-  'home.v2.description': 'La misma home, con el vídeo avanzando fotograma a fotograma al hacer scroll.',
+  'home.v2.description':
+    'La misma home, con el vídeo avanzando fotograma a fotograma al hacer scroll.',
   'home.reel.close': 'Cerrar',
-  'home.reel.note': 'Drop de invierno. El pack en habitaciones nuevas y un film corto para el feed.',
+  'home.reel.note':
+    'Drop de invierno. El pack en habitaciones nuevas y un film corto para el feed.',
   'home.reel.open': 'Ver trabajo: {name}',
   'home.reel.more': 'Ver el caso',
   'work.title': 'Arktic Fox | Drop de invierno',
@@ -140,4 +153,66 @@ export const es = {
   'work.card2Title': 'Otras habitaciones',
   'work.card3Title': 'El film',
   'work.card4Title': 'Corte cerrado',
+  'projects.title': 'Arktic Fox | Proyectos',
+  'projects.description':
+    'Anuncios, stills y piezas a cámara. Las marcas que ves son las que salen en el encuadre.',
+  'projects.eyebrow': 'Trabajo seleccionado',
+  'projects.headingLead': 'Anuncios, stills',
+  'projects.headingEmphasis': 'y a cámara.',
+  'projects.lead':
+    'Films en cuadrado y en vertical, stills con la oferta dentro del encuadre y UGC a cámara.',
+  'projects.marquee': 'Anuncios · Stills · A cámara',
+  'projects.note': 'El mismo oficio, cortado para el feed.',
+  'projects.ugcNote': 'Quien sale a cámara es un avatar de IA.',
+  'projects.kind.ad': 'Anuncio',
+  'projects.kind.still': 'Still',
+  'projects.kind.ugc': 'UGC',
+  'projects.cadillac.eyebrow': 'Cadillac',
+  'projects.cadillac.title': 'Spot, oferta y stills',
+  'projects.cadillac.body':
+    'Un film cuadrado del Lyriq, un vertical de ofertas, un UGC a cámara desde el asiento y stills con niebla roja. Uno de los stills lleva la oferta dentro del encuadre.',
+  'projects.kia.eyebrow': 'Kia',
+  'projects.kia.title': 'Stills en rojo',
+  'projects.kia.body':
+    'Dos stills de un Kia con luz roja, sin texto encima de la imagen.',
+  'projects.nissan.eyebrow': 'Nissan',
+  'projects.nissan.title': 'La oferta en el encuadre',
+  'projects.nissan.body':
+    'Un still vertical de la parrilla. La línea Best 2026 New Nissan Prices va dentro de la imagen, así que el still es el anuncio.',
+  'projects.jeep.eyebrow': 'Jeep UGC',
+  'projects.jeep.title': 'A cámara',
+  'projects.jeep.body':
+    'Una mujer en un Jeep, con montañas detrás, y un selfie en el espejo con un producto de labios. El selfie es otra pieza UGC, esta de belleza.',
+  'projects.piece.lyriq': 'Spot cuadrado del Lyriq',
+  'projects.piece.lyriqAlt': 'Anuncio cuadrado de un Cadillac Lyriq.',
+  'projects.piece.deals': 'Spot vertical de ofertas',
+  'projects.piece.dealsAlt':
+    'Anuncio vertical de un Cadillac sobre ofertas de fin de año.',
+  'projects.piece.driver': 'Desde el asiento',
+  'projects.piece.driverAlt':
+    'Un hombre habla a cámara desde el asiento del conductor.',
+  'projects.piece.cadillacOffer': 'Oferta de fin de año',
+  'projects.piece.cadillacOfferAlt':
+    'Still vertical de un Cadillac negro con niebla roja. En el encuadre se lee Best Year-End Cadillac Deals.',
+  'projects.piece.fogA': 'Niebla roja',
+  'projects.piece.fogAAlt': 'Still de un Cadillac negro con niebla roja.',
+  'projects.piece.fogB': 'Niebla roja, segundo encuadre',
+  'projects.piece.fogBAlt':
+    'Still de un Cadillac negro con niebla roja, desde otro ángulo.',
+  'projects.piece.fogC': 'Niebla roja, tercer encuadre',
+  'projects.piece.fogCAlt':
+    'Still de un Cadillac negro con niebla roja, un tercer encuadre.',
+  'projects.piece.kiaA': 'Luz roja',
+  'projects.piece.kiaAAlt': 'Still de un Kia con luz roja.',
+  'projects.piece.kiaB': 'Luz roja, segundo encuadre',
+  'projects.piece.kiaBAlt': 'Still de un Kia con luz roja, otro encuadre.',
+  'projects.piece.nissan': 'Precios nuevos',
+  'projects.piece.nissanAlt':
+    'Still vertical de la parrilla de un Nissan. En el encuadre se lee Best 2026 New Nissan Prices.',
+  'projects.piece.jeep': 'En el Jeep',
+  'projects.piece.jeepAlt':
+    'Una mujer en un Jeep, con montañas detrás, habla a cámara.',
+  'projects.piece.selfie': 'Selfie en el espejo',
+  'projects.piece.selfieAlt':
+    'Selfie de estilo UGC en un espejo, con un producto de labios.',
 } as const satisfies Record<UiKey, string>;

@@ -6,6 +6,7 @@ Page copy now lives in **one spec per page** under [`docs/pages/`](./pages/READM
 |---|---|
 | Home | [`pages/home.md`](./pages/home.md) |
 | Sample work | [`pages/work.md`](./pages/work.md) |
+| Projects | [`pages/projects.md`](./pages/projects.md) |
 | Service template | [`pages/_service-template.md`](./pages/_service-template.md) |
 | Product images | [`pages/product-images.md`](./pages/product-images.md) |
 | Ad videos | [`pages/ad-videos.md`](./pages/ad-videos.md) |
