@@ -25,7 +25,7 @@
 
 - Date: 2026-10-11
 - Context: Scroll libraries are easy to import from random components and hard to pause.
-- Decision: `gsap` and `lenis` may only be imported from `src/motion/`, `src/components/motion/` and `src/components/islands/`. `src/motion/gsap.ts` is the registration point. Scroll scenes return early when reduced motion is on.
+- Decision: `gsap` and `lenis` may only be imported from `src/motion/`, `src/components/motion/` and `src/components/islands/`. `src/motion/gsap.ts` is the registration point. Scroll scenes return early when reduced motion is on. The same import fence covers `three`, `@react-three/fiber` and `@react-three/drei` (ADR-022).
 - Consequences: The token guard enforces the import rule. Lenis is installed but not started until a page needs smooth scroll.
 
 ## ADR-005 — Netlify Forms
@@ -148,4 +148,11 @@
 - Context: Glass cards on light stills failed contrast. The page chrome stuck while the process titles did not. Snow on top of the photos would hide the work.
 - Decision: The site header on `/work` scrolls away. Each beat title (The brief, Stills, The film, The cut) is `position: sticky` until the next beat pushes it off. Cards sit on `glass-deep` (ink, token) over a bottom scrim. `SnowCanvas` is a fixed layer under the plates, so flakes fall in the field around the frames, not on the images.
 - Consequences: Contrast holds on pale stills. The sticky menu is the process, not the nav.
+
+## ADR-022 — 3D fox hero stays on a parked route
+
+- Date: 2026-10-18
+- Context: The shipping hero is the loop on `/` and the frame scrub on `/v2`. A rigged fox (`public/media/fox.glb`, about 45 MB, three 4096² PNGs) can walk, sit, idle, and look alert, but Walk has no root motion. Putting three.js on the home critical path fights the motion doc and the token guard.
+- Decision: Prototype at `/hero-3d` and `/es/hero-3d`, `noindex`, out of the sitemap, unlinked from the home. `@react-three/fiber` and `@react-three/drei` load only in `src/components/islands/`. Scroll distance drives position along a curve and the Walk cycle; after 400 ms still, the fox crossfades to Sit and yaws its head. Reduced motion pins one frame, drops the flakes, and skips the head turn. Textures are capped to 2048 after decode. `three@0.186.1` is about 23 MB on disk, fiber about 2.5 MB, drei about 3.1 MB; the page imports drei's GLTF, animations, and progress entry points so the barrel stays out of the graph.
+- Consequences: `/` and `/v2` are unchanged. The GLB is too heavy to ship on the home until it is re-exported (meshopt or Draco, 1–2K textures, no unused maps). Sit is a held pose, not a sit-down, so the stop reads as a crossfade plus a look. Idle Alert stays unused because blending it would stand the fox back up.
 

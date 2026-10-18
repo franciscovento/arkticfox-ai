@@ -21,7 +21,8 @@ export const es = {
   'meta.pricingTitle': 'Arktic Fox | Precios',
   'meta.pricingDescription': 'Pilot, Growth y Scale. Precios sin IVA.',
   'meta.quoteTitle': 'Arktic Fox | Pide presupuesto',
-  'meta.quoteDescription': 'Cuéntanos qué necesitas y te preparamos un presupuesto.',
+  'meta.quoteDescription':
+    'Cuéntanos qué necesitas y te preparamos un presupuesto.',
   'meta.thanksTitle': 'Arktic Fox | Gracias',
   'meta.thanksDescription': 'Hemos recibido tu solicitud.',
   'meta.legalNoticeTitle': 'Arktic Fox | Aviso legal',
@@ -31,8 +32,10 @@ export const es = {
   'meta.cookiesTitle': 'Arktic Fox | Cookies',
   'meta.cookiesDescription': 'Cómo usa Arktic Fox las cookies.',
   'meta.styleguideTitle': 'Guía de estilo — Arktic Fox',
-  'meta.styleguideDescription': 'Página interna para comprobar tokens, tipografía y movimiento.',
-  'page.placeholder': 'Solo la estructura. El diseño de la página viene después.',
+  'meta.styleguideDescription':
+    'Página interna para comprobar tokens, tipografía y movimiento.',
+  'page.placeholder':
+    'Solo la estructura. El diseño de la página viene después.',
   'page.home.heading': 'Arktic Fox',
   'page.productImages.heading': 'Fotos de producto',
   'page.adVideos.heading': 'Vídeos publicitarios',
@@ -54,11 +57,13 @@ export const es = {
   'styleguide.typeTitle': 'Tipo',
   'styleguide.buttonsTitle': 'Botones',
   'styleguide.glassTitle': 'Cristal esmerilado',
-  'styleguide.glassBody': 'Las tarjetas flotan sobre el vídeo y las secciones oscuras.',
+  'styleguide.glassBody':
+    'Las tarjetas flotan sobre el vídeo y las secciones oscuras.',
   'styleguide.dividerTitle': 'Separador del zorro',
   'styleguide.revealTitle': 'Aparición',
   'styleguide.revealItem': 'Fundido y subida',
-  'styleguide.marqueeLabel': 'E-commerce · Moda · Belleza · Alimentación · Automoción',
+  'styleguide.marqueeLabel':
+    'E-commerce · Moda · Belleza · Alimentación · Automoción',
   'styleguide.swatch.foxCoral': 'Fox Coral',
   'styleguide.swatch.foxPink': 'Fox Pink',
   'styleguide.swatch.iceBlue': 'Ice Blue',
@@ -89,24 +94,37 @@ export const es = {
   'home.ugcBody':
     'Vídeos con aire de UGC hiperrealista y creadores de IA: testimonios, unboxings y tutoriales, cada uno con ganchos distintos para probar.',
   'home.ugcNote': 'Todos los creadores son avatares generados con IA.',
-  'home.marquee.label': 'E-commerce · Moda · Belleza · Alimentación · Automoción',
-  'home.marquee.services': 'Imágenes de producto · Vídeos publicitarios · UGC hiperrealista',
+  'home.marquee.label':
+    'E-commerce · Moda · Belleza · Alimentación · Automoción',
+  'home.marquee.services':
+    'Imágenes de producto · Vídeos publicitarios · UGC hiperrealista',
   'home.marquee.hint': 'Pulsa una palabra para ver el trabajo',
   'home.why.eyebrow': 'Por qué Arktic Fox',
   'home.why.speedTitle': 'Velocidad',
-  'home.why.speedBody': 'Del brief a las primeras propuestas en días, no semanas.',
+  'home.why.speedBody':
+    'Del brief a las primeras propuestas en días, no semanas.',
   'home.why.costTitle': 'Coste',
-  'home.why.costBody': 'Una fracción de un rodaje tradicional. Sin estudio, sin equipo, sin logística.',
+  'home.why.costBody':
+    'Una fracción de un rodaje tradicional. Sin estudio, sin equipo, sin logística.',
   'home.why.testingTitle': 'Testeo',
-  'home.why.testingBody': 'Varios hooks y variaciones por concepto, para que encuentres el que funciona.',
+  'home.why.testingBody':
+    'Varios hooks y variaciones por concepto, para que encuentres el que funciona.',
   'home.why.qualityTitle': 'Calidad de marca',
   'home.why.qualityBody': 'Revisado por personas, fiel a tu marca siempre.',
   'home.versionField': 'V1',
   'home.versionPop': 'V2',
   'home.v2.title': 'Arktic Fox | Scroll',
-  'home.v2.description': 'La misma home, con el vídeo avanzando fotograma a fotograma al hacer scroll.',
+  'home.v2.description':
+    'La misma home, con el vídeo avanzando fotograma a fotograma al hacer scroll.',
+  'hero3d.title': 'Arktic Fox | Zorro en la nieve',
+  'hero3d.description':
+    'Prototipo: un zorro en 3D recorre un camino de nieve al hacer scroll.',
+  'hero3d.hint': 'Haz scroll para seguirlo',
+  'hero3d.scene':
+    'Un zorro ártico en la nieve. Al hacer scroll camina por el camino. Si paras, se sienta y mira a los lados.',
   'home.reel.close': 'Cerrar',
-  'home.reel.note': 'Drop de invierno. El pack en habitaciones nuevas y un film corto para el feed.',
+  'home.reel.note':
+    'Drop de invierno. El pack en habitaciones nuevas y un film corto para el feed.',
   'home.reel.open': 'Ver trabajo: {name}',
   'home.reel.more': 'Ver el caso',
   'work.title': 'Arktic Fox | Drop de invierno',

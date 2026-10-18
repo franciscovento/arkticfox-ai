@@ -19,7 +19,11 @@ export default defineConfig({
     react(),
     sitemap({
       filter: (page) =>
-        !page.includes('/styleguide') && !page.includes('/v2') && !page.includes('/work') && !page.includes('/trabajo'),
+        !page.includes('/styleguide') &&
+        !page.includes('/v2') &&
+        !page.includes('/hero-3d') &&
+        !page.includes('/work') &&
+        !page.includes('/trabajo'),
       i18n: {
         defaultLocale: 'en',
         locales: {

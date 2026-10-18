@@ -11,7 +11,8 @@ export const en = {
   'meta.homeDescription':
     'AI creative studio for product images, ad videos and hyperreal UGC videos.',
   'meta.productImagesTitle': 'Arktic Fox | Product images',
-  'meta.productImagesDescription': 'Studio-grade product shots, without a studio.',
+  'meta.productImagesDescription':
+    'Studio-grade product shots, without a studio.',
   'meta.adVideosTitle': 'Arktic Fox | Ad videos',
   'meta.adVideosDescription': 'Cinematic ads, without the film crew.',
   'meta.ugcVideosTitle': 'Arktic Fox | Hyperreal UGC videos',
@@ -29,7 +30,8 @@ export const en = {
   'meta.cookiesTitle': 'Arktic Fox | Cookies',
   'meta.cookiesDescription': 'How Arktic Fox uses cookies.',
   'meta.styleguideTitle': 'Style guide — Arktic Fox',
-  'meta.styleguideDescription': 'Internal page used to verify design tokens, type and motion.',
+  'meta.styleguideDescription':
+    'Internal page used to verify design tokens, type and motion.',
   'page.placeholder': 'Structure only. The page design comes next.',
   'page.home.heading': 'Arktic Fox',
   'page.productImages.heading': 'Product images',
@@ -44,7 +46,8 @@ export const en = {
   'styleguide.kicker': 'AI creative studio',
   'styleguide.headlineLead': 'Ads that',
   'styleguide.headlineEmphasis': 'blend in',
-  'styleguide.subhead': 'Token pipeline proof. Final visuals come from the design handoff.',
+  'styleguide.subhead':
+    'Token pipeline proof. Final visuals come from the design handoff.',
   'styleguide.primaryCta': 'Get a quote',
   'styleguide.secondaryCta': 'See our work',
   'styleguide.colorsTitle': 'Color',
@@ -55,7 +58,8 @@ export const en = {
   'styleguide.dividerTitle': 'Fox divider',
   'styleguide.revealTitle': 'Reveal',
   'styleguide.revealItem': 'Fade and rise',
-  'styleguide.marqueeLabel': 'E-commerce · Fashion · Beauty · Food & beverage · Automotive',
+  'styleguide.marqueeLabel':
+    'E-commerce · Fashion · Beauty · Food & beverage · Automotive',
   'styleguide.swatch.foxCoral': 'Fox Coral',
   'styleguide.swatch.foxPink': 'Fox Pink',
   'styleguide.swatch.iceBlue': 'Ice Blue',
@@ -86,24 +90,34 @@ export const en = {
   'home.ugcBody':
     'Hyperrealistic UGC-style videos with AI creators: testimonials, unboxings and tutorials, each with alternative hooks to test.',
   'home.ugcNote': 'All creators are AI-generated avatars.',
-  'home.marquee.label': 'E-commerce · Fashion · Beauty · Food & beverage · Automotive',
+  'home.marquee.label':
+    'E-commerce · Fashion · Beauty · Food & beverage · Automotive',
   'home.marquee.services': 'Product images · Ad videos · Hyperreal UGC',
   'home.marquee.hint': 'Click a word to see the work',
   'home.why.eyebrow': 'Why Arktic Fox',
   'home.why.speedTitle': 'Speed',
   'home.why.speedBody': 'From brief to first drafts in days, not weeks.',
   'home.why.costTitle': 'Cost',
-  'home.why.costBody': 'A fraction of a traditional shoot. No studio, no crew, no logistics.',
+  'home.why.costBody':
+    'A fraction of a traditional shoot. No studio, no crew, no logistics.',
   'home.why.testingTitle': 'Testing',
-  'home.why.testingBody': 'Multiple hooks and variations per concept, so you can find the winner.',
+  'home.why.testingBody':
+    'Multiple hooks and variations per concept, so you can find the winner.',
   'home.why.qualityTitle': 'Brand-safe quality',
   'home.why.qualityBody': 'Reviewed by humans, on-brand every time.',
   'home.versionField': 'V1',
   'home.versionPop': 'V2',
   'home.v2.title': 'Arktic Fox | Scroll',
-  'home.v2.description': 'The same home, with the film stepped through as you scroll.',
+  'home.v2.description':
+    'The same home, with the film stepped through as you scroll.',
+  'hero3d.title': 'Arktic Fox | Fox in the snow',
+  'hero3d.description': 'Prototype: a 3D fox walks a snowy path as you scroll.',
+  'hero3d.hint': 'Scroll to follow the fox',
+  'hero3d.scene':
+    'An arctic fox in the snow. Scroll and it walks the path. Stop, and it sits and looks from side to side.',
   'home.reel.close': 'Close',
-  'home.reel.note': 'Winter drop. New rooms for the pack, and a short film for the feed.',
+  'home.reel.note':
+    'Winter drop. New rooms for the pack, and a short film for the feed.',
   'home.reel.open': 'View work: {name}',
   'home.reel.more': 'See the case',
   'work.title': 'Arktic Fox | Winter drop',

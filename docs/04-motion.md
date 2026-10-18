@@ -71,3 +71,11 @@ Export: MP4 (H.264) and WebM, 1920×1080, no audio, ideally under 4–6 MB. Mobi
 ## Current home cut
 
 The entry pins one screen. `public/media/hero-loop.mp4` plays muted on a loop behind the type. It is the same film as the `/v2` frame sequence, so the loop and the scroll cut can be compared. Scroll does not scrub this copy. A light ink wash sits on the film so the type and the snow read. The hero rises away, then the three service cards slide in from the right, one after another, and stay. Scrolling back reverses the type. Snow is drawn on top of the film and falls from the top of the frame. `data-snow-direction="dive"` on the home canvas restores the head-on field. Reduced motion unpins the stage, stacks the beats, pauses the video on its first frame, and turns the snow off.
+
+## 3D fox prototype
+
+`/hero-3d` and `/es/hero-3d` are a parked cut (`noindex`). They do not replace `/` or `/v2`.
+
+`public/media/fox.glb` clips: `Idle` (1.33s, standing), `Idle Alert` (1.6s, standing look), `Sit` (1.33s, held pose), `Walk` (1s, in place). Walk does not move the root, so scroll distance walks the rig along a curve and scrubs the cycle. After the scroll rests for 400ms the rig crossfades to Sit (duration from `dur.reveal`) and turns the head to each side. The camera lags on `dur.hover`, offset to the fox's right so the left of the frame stays open for the headline. One coral rim light matches the hero brief; the only brand gradient on the page is the quote button.
+
+Reduced motion: the stage is one screen, the fox stays seated, flakes and the head turn are off. Three.js stays in `src/components/islands/`.

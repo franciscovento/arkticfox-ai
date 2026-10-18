@@ -21,7 +21,8 @@ const rules = [
   { name: 'hardcoded font-family (use font-serif / font-sans)', re: /font-family\s*:/, colorOnly: true },
 ];
 
-const libRe = /from\s+['"](?:gsap|gsap\/[^'"]+|lenis)['"]/;
+const libRe =
+  /from\s+['"](?:gsap|gsap\/[^'"]+|lenis|three|three\/[^'"]+|@react-three\/(?:fiber|drei)(?:\/[^'"]+)?)['"]/;
 
 function walk(dir, out = []) {
   for (const f of readdirSync(dir)) {
@@ -44,7 +45,7 @@ for (const file of walk(SRC)) {
       if (r.re.test(line)) problems.push(`${rel}:${i + 1}  ${r.name}\n    ${line.trim()}`);
     }
     if (libRe.test(line) && !MOTION_LIB_ALLOWED.some((a) => rel.startsWith(a))) {
-      problems.push(`${rel}:${i + 1}  gsap/lenis may only be imported in src/motion, src/components/motion or src/components/islands\n    ${line.trim()}`);
+      problems.push(`${rel}:${i + 1}  gsap, lenis and three may only be imported in src/motion, src/components/motion or src/components/islands\n    ${line.trim()}`);
     }
   });
 }

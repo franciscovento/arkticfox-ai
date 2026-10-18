@@ -88,6 +88,17 @@ html.js [data-snow-dive] {
   height: 440vh;
 }
 
+html.js [data-fox-stage] {
+  height: 520vh;
+}
+
+html.js [data-fox-sticky] {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+}
+
 @media (min-width: 768px) {
   html.js [data-snow-dive] {
     height: 680vh;
@@ -543,6 +554,15 @@ html:has([data-work-reel][open]) [data-marquee-hint] {
 
   html.js [data-snow-dive] {
     height: auto;
+  }
+
+  html.js [data-fox-stage] {
+    height: 100svh;
+  }
+
+  html.js [data-fox-sticky] {
+    position: relative;
+    height: 100svh;
   }
 
   html.js [data-journey-stage] {
