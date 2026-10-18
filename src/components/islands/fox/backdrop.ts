@@ -2,17 +2,17 @@ import { DoubleSide, ShaderMaterial, type Color } from 'three';
 import { TRAVEL_MPS } from './path';
 
 /**
- * Maps travelled meters to a video clock.
- * While the fox cruises, this advances one second per second and wraps the
- * clip. While the fox sits, distance holds, so the clock holds too.
- * `?bg=video` on `/hero-3d` plays this clock. `?bg=3d` keeps the drawn woods.
+ * Maps signed path meters to a video clock.
+ * Scroll down increases the clock one second per second. Scroll up decreases
+ * it. Both directions wrap the clip. While the fox sits, the meters hold.
  */
 export const BACKDROP_LOOP_S = 8;
 
-export function backdropTime(distance: number, loopSeconds = BACKDROP_LOOP_S): number {
+export function backdropTime(along: number, loopSeconds = BACKDROP_LOOP_S): number {
   if (loopSeconds <= 0) return 0;
-  const played = distance / TRAVEL_MPS;
-  return played % loopSeconds;
+  const played = along / TRAVEL_MPS;
+  const wrapped = played % loopSeconds;
+  return wrapped < 0 ? wrapped + loopSeconds : wrapped;
 }
 
 type BackdropColors = {

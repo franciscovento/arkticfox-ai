@@ -58,9 +58,11 @@ import {
   createPineGeometry,
   createToonMaterial,
   createToonRamp,
+  farSlots,
   hillSlots,
   pineSlots,
   placeSlots,
+  stoneSlots,
   type ScenerySlot,
 } from './fox/scenery';
 
@@ -91,8 +93,10 @@ type Ride = {
   reduced: boolean;
   /** +1 scroll down (advance), -1 scroll up (retreat). */
   direction: 1 | -1;
-  /** Meters travelled at the cruise speed. Drives the walk cycle and the plate. */
-  distance: number;
+  /** Signed meters along the path. Scroll down grows it; scroll up shrinks it. */
+  along: number;
+  /** Unsigned meters. The walk cycle plays forward while the body faces travel. */
+  steps: number;
   point: Vector3;
 };
 
@@ -145,7 +149,8 @@ function useRide(reduced: boolean): RideRef {
     moving: false,
     reduced,
     direction: 1,
-    distance: 0,
+    along: reduced ? 0.12 * PATH_LENGTH : 0,
+    steps: 0,
     point: pointOnPath(reduced ? 0.12 : 0, new Vector3()),
   });
 
@@ -168,6 +173,7 @@ function useRide(reduced: boolean): RideRef {
       lastTick = now;
       if (!stage || rideNow.reduced) {
         rideNow.progress = 0.12;
+        rideNow.along = 0.12 * PATH_LENGTH;
         rideNow.moving = false;
         bank = 0;
       } else {
@@ -192,26 +198,18 @@ function useRide(reduced: boolean): RideRef {
           lastScrollAt = now;
         }
         const recent = now - lastScrollAt < IDLE_AFTER_MS;
-        const room =
-          rideNow.direction > 0
-            ? (1 - rideNow.progress) * PATH_LENGTH
-            : rideNow.progress * PATH_LENGTH;
         const cruising = recent || bank > 0.0005;
-        if (cruising && room > 0.0005) {
-          const step = Math.min(TRAVEL_MPS * dt, room);
-          rideNow.progress += (rideNow.direction * step) / PATH_LENGTH;
+        if (cruising) {
+          const step = TRAVEL_MPS * dt;
+          rideNow.along += rideNow.direction * step;
+          rideNow.steps += step;
           bank = Math.max(0, bank - step);
-          rideNow.distance += step;
-          rideNow.moving = true;
-        } else if (cruising && recent) {
-          bank = 0;
-          rideNow.distance += TRAVEL_MPS * dt;
           rideNow.moving = true;
         } else {
           bank = 0;
           rideNow.moving = false;
         }
-        rideNow.progress = Math.min(1, Math.max(0, rideNow.progress));
+        rideNow.progress = rideNow.along / PATH_LENGTH;
       }
       frame = requestAnimationFrame(tick);
     };
@@ -348,7 +346,9 @@ function Sky({ palette }: { palette: FoxPalette }) {
 function LoopField({ palette }: { palette: FoxPalette }) {
   const camera = useThree((state) => state.camera);
   const pines = useMemo(() => pineSlots(), []);
+  const far = useMemo(() => farSlots(), []);
   const hills = useMemo(() => hillSlots(), []);
+  const stones = useMemo(() => stoneSlots(), []);
   const ramp = useMemo(
     () => createToonRamp(palette.snowShade, palette.white),
     [palette.snowShade, palette.white],
@@ -366,6 +366,14 @@ function LoopField({ palette }: { palette: FoxPalette }) {
     () => createToonMaterial(ramp, palette.snow, false),
     [ramp, palette.snow],
   );
+  const farMat = useMemo(
+    () => createToonMaterial(ramp, palette.mist, false),
+    [ramp, palette.mist],
+  );
+  const stoneMat = useMemo(
+    () => createToonMaterial(ramp, palette.snowShade, false),
+    [ramp, palette.snowShade],
+  );
   const pathMat = useMemo(() => {
     const material = createToonMaterial(ramp, palette.trail, false);
     material.polygonOffset = true;
@@ -382,7 +390,9 @@ function LoopField({ palette }: { palette: FoxPalette }) {
     [palette.snow],
   );
   const pineRef = useRef<InstancedMesh>(null);
+  const farRef = useRef<InstancedMesh>(null);
   const hillRef = useRef<InstancedMesh>(null);
+  const stoneRef = useRef<InstancedMesh>(null);
   const groundRef = useRef<Mesh>(null);
   const pathRef = useRef<Mesh>(null);
 
@@ -393,21 +403,32 @@ function LoopField({ palette }: { palette: FoxPalette }) {
       hillGeo.dispose();
       pineMat.dispose();
       hillMat.dispose();
+      farMat.dispose();
+      stoneMat.dispose();
       pathMat.dispose();
       groundMat.dispose();
     },
-    [ramp, pineGeo, hillGeo, pineMat, hillMat, pathMat, groundMat],
+    [ramp, pineGeo, hillGeo, pineMat, hillMat, farMat, stoneMat, pathMat, groundMat],
   );
 
   const place = useCallback(() => {
     const z = camera.position.z;
     if (pineRef.current) placeSlots(pineRef.current, pines, z, () => 0);
+    if (farRef.current) placeSlots(farRef.current, far, z, () => 0);
     if (hillRef.current) {
       placeSlots(
         hillRef.current,
         hills,
         z,
-        (slot: ScenerySlot) => -slot.scale * 0.55,
+        (slot: ScenerySlot) => -slot.scale * 0.58,
+      );
+    }
+    if (stoneRef.current) {
+      placeSlots(
+        stoneRef.current,
+        stones,
+        z,
+        (slot: ScenerySlot) => -slot.scale * 0.35,
       );
     }
     if (groundRef.current) {
@@ -415,7 +436,7 @@ function LoopField({ palette }: { palette: FoxPalette }) {
       groundRef.current.position.z = z;
     }
     if (pathRef.current) pathRef.current.position.z = z;
-  }, [camera, hills, pines]);
+  }, [camera, far, hills, pines, stones]);
 
   useLayoutEffect(() => {
     place();
@@ -440,7 +461,7 @@ function LoopField({ palette }: { palette: FoxPalette }) {
         position={[-0.62, 0.02, 0]}
         material={pathMat}
       >
-        <planeGeometry args={[1.35, 48]} />
+        <planeGeometry args={[1.55, 72]} />
       </mesh>
       <instancedMesh
         ref={pineRef}
@@ -448,8 +469,18 @@ function LoopField({ palette }: { palette: FoxPalette }) {
         frustumCulled={false}
       />
       <instancedMesh
+        ref={farRef}
+        args={[pineGeo, farMat, far.length]}
+        frustumCulled={false}
+      />
+      <instancedMesh
         ref={hillRef}
         args={[hillGeo, hillMat, hills.length]}
+        frustumCulled={false}
+      />
+      <instancedMesh
+        ref={stoneRef}
+        args={[hillGeo, stoneMat, stones.length]}
         frustumCulled={false}
       />
     </group>
@@ -613,7 +644,8 @@ function Fox({
       if (walk) {
         const duration = walk.getClip().duration || 1;
         walk.paused = true;
-        walk.time = (rideNow.distance / STRIDE) % duration;
+        const cycle = (rideNow.steps / STRIDE) % duration;
+        walk.time = cycle < 0 ? cycle + duration : cycle;
       }
     } else {
       const sit = actions[CLIP_SIT];
@@ -703,7 +735,7 @@ function CameraRig({
     camera.position.lerp(_cam, blend);
     look.current.lerp(_look, blend);
     primed.current = true;
-    const fov = narrow ? 38 : 32;
+    const fov = narrow ? 44 : 30;
     if (camera.fov !== fov) {
       camera.fov = fov;
       camera.updateProjectionMatrix();
@@ -751,31 +783,56 @@ function CameraRig({
   );
 }
 
-/** Cruise clock. Rate stays at 1 while the fox moves, and the frame holds when it sits. */
+function clockDrift(current: number, target: number, duration: number) {
+  const raw = Math.abs(current - target);
+  return Math.min(raw, duration - raw);
+}
+
+/**
+ * Forward cruise plays at rate 1. Reverse seeks the all-intra file one frame
+ * at a time: browsers will not play a negative rate. The clock holds when sitting.
+ */
 function VideoClock({ ride }: { ride: RideRef }) {
+  const seeking = useRef(false);
+  const soughtAt = useRef(0);
+
   useFrame(() => {
     const video = document.querySelector<HTMLVideoElement>('[data-fox-video]');
     if (!video || video.hidden) return;
     const duration = video.duration;
     if (!Number.isFinite(duration) || duration <= 0) return;
-    video.playbackRate = 1;
     if (ride.current.reduced) {
       video.pause();
       if (video.currentTime > 0.001) video.currentTime = 0;
       return;
     }
-    const target = backdropTime(ride.current.distance, duration);
+    const target = backdropTime(ride.current.along, duration);
+    const drift = clockDrift(video.currentTime, target, duration);
     if (!ride.current.moving) {
       video.pause();
-      if (Math.abs(video.currentTime - target) > 0.04) video.currentTime = target;
+      if (drift > 0.04) video.currentTime = target;
       return;
     }
+    if (ride.current.direction < 0) {
+      video.pause();
+      const due = !seeking.current || performance.now() - soughtAt.current > 42;
+      if (due && drift > 1 / 48) {
+        seeking.current = true;
+        soughtAt.current = performance.now();
+        video.onseeked = () => {
+          seeking.current = false;
+        };
+        video.currentTime = target;
+      }
+      return;
+    }
+    video.playbackRate = 1;
     if (video.paused) {
-      if (Math.abs(video.currentTime - target) > 0.04) video.currentTime = target;
+      if (drift > 0.04) video.currentTime = target;
       void video.play().catch(() => undefined);
       return;
     }
-    if (Math.abs(video.currentTime - target) > 0.25) video.currentTime = target;
+    if (drift > 0.25) video.currentTime = target;
   });
 
   return null;
@@ -821,7 +878,7 @@ function World({ reduced, plate }: { reduced: boolean; plate: FoxPlate }) {
       <PlateClear plate={plate} palette={palette} />
       <Present />
       {filmed ? null : <color attach="background" args={[palette.skyMid]} />}
-      {filmed ? null : <fogExp2 attach="fog" args={[palette.horizon, 0.04]} />}
+      {filmed ? null : <fogExp2 attach="fog" args={[palette.horizon, 0.05]} />}
       {filmed ? null : <Sky palette={palette} />}
       <Fox ride={ride} reduced={reduced} palette={palette} />
       <CameraRig ride={ride} reduced={reduced} palette={palette} />

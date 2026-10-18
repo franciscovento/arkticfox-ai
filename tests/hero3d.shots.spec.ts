@@ -431,4 +431,24 @@ test('video query plays the film with the fox and holds it when sitting', async 
   expect(heldAgain.paused).toBe(true);
   expect(Math.abs(heldAgain.time - held)).toBeLessThan(0.08);
   await page.screenshot({ path: `${outDir}/desktop-video-idle.png` });
+
+  const beforeBack = await video.evaluate((el: HTMLVideoElement) => el.currentTime);
+  await waitWalk(page, 'back');
+  await holdScroll(page, -1);
+  await expect
+    .poll(
+      async () =>
+        video.evaluate((el: HTMLVideoElement, start: number) => {
+          const duration = el.duration || 8;
+          let delta = start - el.currentTime;
+          if (delta < -duration / 2) delta += duration;
+          if (delta > duration / 2) delta -= duration;
+          return delta;
+        }, beforeBack),
+      { timeout: 4_000 },
+    )
+    .toBeGreaterThan(0.12);
+  expect(await attr(page, 'data-fox-facing')).toBe('back');
+  await page.screenshot({ path: `${outDir}/desktop-video-back.png` });
+  await releaseScroll(page);
 });

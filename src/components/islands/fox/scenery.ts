@@ -35,33 +35,85 @@ export function wrapAlong(slotZ: number, cameraZ: number): number {
   return min + wrapped;
 }
 
-/** Left of the path. The fox's right side stays open. */
-export function pineSlots(): ScenerySlot[] {
+function fill(
+  count: number,
+  phase: number,
+  xAt: (index: number) => number,
+  scaleAt: (index: number) => number,
+): ScenerySlot[] {
   const slots: ScenerySlot[] = [];
-  const count = 12;
   for (let i = 0; i < count; i++) {
     slots.push({
-      x: -(2.45 + (i % 3) * 1.35),
-      z: (i / count) * LOOP_SPAN,
-      scale: 1.15 + (i % 4) * 0.22,
-      spin: (i % 5) * 0.55,
+      x: xAt(i),
+      z: (((i + phase) % count) / count) * LOOP_SPAN,
+      scale: scaleAt(i),
+      spin: ((i * 5) % 7) * 0.45,
     });
   }
   return slots;
 }
 
+/** Two rows on the left of the path. The fox's lane stays open. */
+export function pineSlots(): ScenerySlot[] {
+  return [
+    ...fill(
+      14,
+      0.15,
+      (i) => -(2.15 + (i % 3) * 0.7),
+      (i) => 0.78 + (i % 4) * 0.16,
+    ),
+    ...fill(
+      12,
+      0.42,
+      (i) => -(4.7 + (i % 3) * 1.1),
+      (i) => 1.2 + (i % 4) * 0.2,
+    ),
+  ];
+}
+
+/** Far left and far right. Same geometry, drawn as mist silhouettes. */
+export function farSlots(): ScenerySlot[] {
+  return [
+    ...fill(
+      10,
+      0.2,
+      (i) => -(8.4 + (i % 4) * 1.65),
+      (i) => 2.05 + (i % 3) * 0.42,
+    ),
+    ...fill(
+      8,
+      0.58,
+      (i) => 3.5 + (i % 3) * 1.4,
+      (i) => 1.65 + (i % 3) * 0.38,
+    ),
+  ];
+}
+
 export function hillSlots(): ScenerySlot[] {
-  const slots: ScenerySlot[] = [];
-  const count = 6;
-  for (let i = 0; i < count; i++) {
-    slots.push({
-      x: -(5.4 + (i % 2) * 2.5),
-      z: ((i + 0.35) / count) * LOOP_SPAN,
-      scale: 2.15 + (i % 3) * 0.55,
-      spin: 0,
-    });
-  }
-  return slots;
+  return [
+    ...fill(
+      7,
+      0.12,
+      (i) => -(6.1 + (i % 3) * 2.2),
+      (i) => 2.5 + (i % 3) * 0.65,
+    ),
+    ...fill(
+      5,
+      0.48,
+      (i) => 5.4 + (i % 2) * 2.6,
+      (i) => 2.2 + (i % 3) * 0.5,
+    ),
+  ];
+}
+
+/** Small snow stones along the left edge of the path. */
+export function stoneSlots(): ScenerySlot[] {
+  return fill(
+    18,
+    0.28,
+    (i) => -(1.62 + (i % 2) * 0.38),
+    (i) => 0.12 + (i % 4) * 0.05,
+  );
 }
 
 function paint(geometry: BufferGeometry, color: Color) {

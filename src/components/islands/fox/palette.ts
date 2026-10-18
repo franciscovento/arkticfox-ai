@@ -17,6 +17,8 @@ export type FoxPalette = {
   foliage: Color;
   cap: Color;
   trunk: Color;
+  /** Distant pines. Horizon pulled toward the low sky so fog can swallow them. */
+  mist: Color;
 };
 
 function cssColor(name: string): Color {
@@ -69,5 +71,6 @@ export function readFoxPalette(): FoxPalette {
     foliage,
     cap,
     trunk,
+    mist: horizon.clone().lerp(skyLow, 0.55),
   };
 }
