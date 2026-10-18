@@ -59,7 +59,6 @@ const FADE = dur.reveal * 0.5;
 const SNOW_COUNT = 380;
 const TURN_TAU = dur.reveal * 0.55;
 const UP = new Vector3(0, 1, 0);
-const _point = new Vector3();
 const _aim = new Vector3();
 const _cam = new Vector3();
 const _look = new Vector3();
@@ -504,11 +503,11 @@ function Fox({
     rig.position.copy(rideNow.point);
     const facing = facingFor(rideNow);
     aimBody(facing, rideNow.progress, rideNow.point, narrow);
-    const dt = Math.min(delta, 0.05);
+    const dt = Math.min(Math.max(delta, 0), 0.25);
     if (rideNow.reduced || !turned.current) rig.quaternion.copy(_desired);
     else {
       rig.quaternion.slerp(_desired, 1 - Math.exp(-dt / TURN_TAU));
-      if (rig.quaternion.angleTo(_desired) < 0.02) rig.quaternion.copy(_desired);
+      if (rig.quaternion.angleTo(_desired) < 0.04) rig.quaternion.copy(_desired);
     }
     turned.current = true;
     _nose.set(0, 0, 1).applyQuaternion(rig.quaternion);

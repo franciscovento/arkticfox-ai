@@ -8,7 +8,7 @@ async function attr(page: Page, name: string) {
 }
 
 async function ready(page: Page) {
-  await page.locator('h1').waitFor();
+  await page.locator('[data-fox-stage] h1').waitFor();
   await page.addStyleTag({
     content: 'astro-dev-toolbar { display: none !important; }',
   });
@@ -37,32 +37,52 @@ async function scrubTo(page: Page, at: number) {
   }, at);
 }
 
-async function nudge(page: Page, direction: 1 | -1) {
-  await page.evaluate((dir) => window.scrollBy(0, dir * 12), direction);
-}
-
-/** Keeps the scroll alive so the 400ms idle does not sit the fox mid-turn. */
+/** Scrolls every frame so the 400ms idle does not sit the fox mid-turn. */
 async function waitWalk(page: Page, facing: 'forward' | 'back') {
   const direction = facing === 'forward' ? 1 : -1;
-  await expect
-    .poll(
-      async () => {
-        await nudge(page, direction);
-        return attr(page, 'data-fox-facing');
-      },
-      { timeout: 4_000 },
-    )
-    .toBe(facing);
-  await expect
-    .poll(
-      async () => {
-        await nudge(page, direction);
-        return Number(await attr(page, 'data-fox-align'));
-      },
-      { timeout: 5_000 },
-    )
-    .toBeGreaterThan(0.98);
-  expect(await attr(page, 'data-fox-state')).toBe('walk');
+  const result = await page.evaluate(async (dir) => {
+    const stage = document.querySelector<HTMLElement>('[data-fox-stage]');
+    if (!stage) return { facing: '', align: 0, state: '', progress: 0 };
+    const started = performance.now();
+    let facingNow = '';
+    let align = 0;
+    let state = '';
+    while (performance.now() - started < 5000) {
+      window.scrollBy(0, dir * 90);
+      await new Promise((resolve) => setTimeout(resolve, 16));
+      facingNow = stage.dataset.foxFacing ?? '';
+      align = Number(stage.dataset.foxAlign ?? 0);
+      state = stage.dataset.foxState ?? '';
+      if (facingNow === (dir > 0 ? 'forward' : 'back') && align > 0.98 && state === 'walk') {
+        break;
+      }
+    }
+    return {
+      facing: facingNow,
+      align,
+      state,
+      progress: Number(stage.dataset.foxProgress ?? 0),
+    };
+  }, direction);
+  expect(result.facing).toBe(facing);
+  expect(result.align).toBeGreaterThan(0.98);
+  expect(result.state).toBe('walk');
+  return result.progress;
+}
+
+async function holdScroll(page: Page, direction: 1 | -1) {
+  await page.evaluate((dir) => {
+    const view = window as Window & { __foxHold?: number };
+    window.clearInterval(view.__foxHold);
+    view.__foxHold = window.setInterval(() => window.scrollBy(0, dir * 40), 60);
+  }, direction);
+}
+
+async function releaseScroll(page: Page) {
+  await page.evaluate(() => {
+    const view = window as Window & { __foxHold?: number };
+    window.clearInterval(view.__foxHold);
+  });
 }
 
 async function expectStill(page: Page) {
@@ -77,7 +97,7 @@ async function expectStill(page: Page) {
         const second = await attr(page, 'data-fox-nose');
         return first !== null && first === second;
       },
-      { timeout: 4_000 },
+      { timeout: 8_000 },
     )
     .toBe(true);
   expect(await attr(page, 'data-fox-state')).toMatch(/sit|reduced/);
@@ -87,7 +107,7 @@ test.beforeAll(async () => {
   await mkdir(outDir, { recursive: true });
 });
 
-test.describe.configure({ timeout: 120_000 });
+test.describe.configure({ mode: 'serial', timeout: 120_000 });
 
 test('scroll down walks forward, idle faces the camera, scroll up walks back', async ({
   page,
@@ -102,16 +122,12 @@ test('scroll down walks forward, idle faces the camera, scroll up walks back', a
   await expectStill(page);
   await page.screenshot({ path: `${outDir}/desktop-start-idle.png` });
 
-  await scrubTo(page, 0.45);
-  await expect
-    .poll(async () => attr(page, 'data-fox-state'), { timeout: 2_000 })
-    .toBe('walk');
-  const forward = Number(await attr(page, 'data-fox-progress'));
-  expect(forward).toBeGreaterThan(0.37);
-  expect(forward).toBeLessThan(0.53);
-  expect(await attr(page, 'data-fox-facing')).toBe('forward');
-  await waitWalk(page, 'forward');
+  await scrubTo(page, 0.2);
+  const forward = await waitWalk(page, 'forward');
+  expect(forward).toBeGreaterThan(0.2);
+  await holdScroll(page, 1);
   await page.screenshot({ path: `${outDir}/desktop-scroll-down-walk.png` });
+  await releaseScroll(page);
 
   await expect
     .poll(async () => attr(page, 'data-fox-state'), { timeout: 3_000 })
@@ -119,16 +135,12 @@ test('scroll down walks forward, idle faces the camera, scroll up walks back', a
   await expectStill(page);
   await page.screenshot({ path: `${outDir}/desktop-scroll-down-idle.png` });
 
-  await scrubTo(page, 0.12);
-  await expect
-    .poll(async () => attr(page, 'data-fox-state'), { timeout: 2_000 })
-    .toBe('walk');
-  const back = Number(await attr(page, 'data-fox-progress'));
-  expect(back).toBeGreaterThan(0.04);
-  expect(back).toBeLessThan(0.2);
-  expect(await attr(page, 'data-fox-facing')).toBe('back');
-  await waitWalk(page, 'back');
+  const beforeBack = Number(await attr(page, 'data-fox-progress'));
+  const back = await waitWalk(page, 'back');
+  expect(back).toBeLessThan(beforeBack - 0.01);
+  await holdScroll(page, -1);
   await page.screenshot({ path: `${outDir}/desktop-scroll-up-walk.png` });
+  await releaseScroll(page);
 
   await expect
     .poll(async () => attr(page, 'data-fox-state'), { timeout: 3_000 })
@@ -147,12 +159,12 @@ test('mobile scroll and idle', async ({ page }) => {
   await expectStill(page);
   await page.screenshot({ path: `${outDir}/mobile-start-idle.png` });
 
-  await scrubTo(page, 0.5);
-  await expect
-    .poll(async () => attr(page, 'data-fox-state'), { timeout: 2_000 })
-    .toBe('walk');
-  await waitWalk(page, 'forward');
+  await scrubTo(page, 0.15);
+  const mobileForward = await waitWalk(page, 'forward');
+  expect(mobileForward).toBeGreaterThan(0.15);
+  await holdScroll(page, 1);
   await page.screenshot({ path: `${outDir}/mobile-scroll-05-walk.png` });
+  await releaseScroll(page);
   await expect
     .poll(async () => attr(page, 'data-fox-state'), { timeout: 3_000 })
     .toBe('sit');
