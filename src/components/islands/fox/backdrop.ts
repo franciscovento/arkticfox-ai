@@ -2,22 +2,17 @@ import { DoubleSide, ShaderMaterial, type Color } from 'three';
 import { TRAVEL_MPS } from './path';
 
 /**
- * Looping travelling plate behind the fox.
- * Leave this null until the plate asset exists, then set it to a same-origin
- * URL such as `/media/fox-travel.mp4` (muted loop) or a still sequence poster.
- * The plate already scrolls with travelled meters and holds when the fox sits.
- * A video should pause with the fox and set `currentTime` from `backdropTime`.
+ * Maps travelled meters to a video clock.
+ * While the fox cruises, this advances one second per second and wraps the
+ * clip. While the fox sits, distance holds, so the clock holds too.
+ * The filmed route is `/hero-3d-video`, not a query string.
  */
-export const BACKDROP_URL: string | null = null;
-
-/** Seconds of travel the future clip represents. */
 export const BACKDROP_LOOP_S = 8;
 
-export function backdropTime(distance: number): number {
-  const span = TRAVEL_MPS * BACKDROP_LOOP_S;
-  if (span <= 0) return 0;
-  const wrapped = distance % span;
-  return (wrapped / span) * BACKDROP_LOOP_S;
+export function backdropTime(distance: number, loopSeconds = BACKDROP_LOOP_S): number {
+  if (loopSeconds <= 0) return 0;
+  const played = distance / TRAVEL_MPS;
+  return played % loopSeconds;
 }
 
 type BackdropColors = {
@@ -28,7 +23,7 @@ type BackdropColors = {
   ice: Color;
 };
 
-/** Token-colored stand-in. Swap the material when BACKDROP_URL is set. */
+/** Token-colored stand-in for an in-scene plate. The filmed route uses HTML video instead. */
 export function createBackdropMaterial(colors: BackdropColors): ShaderMaterial {
   return new ShaderMaterial({
     transparent: true,

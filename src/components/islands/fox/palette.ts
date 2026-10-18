@@ -14,6 +14,9 @@ export type FoxPalette = {
   skyLow: Color;
   horizon: Color;
   trail: Color;
+  foliage: Color;
+  cap: Color;
+  trunk: Color;
 };
 
 function cssColor(name: string): Color {
@@ -26,32 +29,33 @@ function cssColor(name: string): Color {
 }
 
 /**
- * Overcast field for the 3D fox only. Mixes stay inside the token set.
- * Ice is pulled toward snow gray and ink so the sky reads as gray-lavender
- * and muted blue, not a bright pastel. The fox fur stays the light shape.
+ * Pastel field for the 3D fox only. Mixes stay inside the token set.
+ * There is no green token, so the pines are ice blue pulled toward pink.
+ * Global sky tokens stay on the home frost field.
  */
 export function readFoxPalette(): FoxPalette {
   const ice = cssColor('--color-ice-blue');
   const ink = cssColor('--color-ink');
   const white = cssColor('--color-white');
   const snowWhite = cssColor('--color-snow-white');
-  const gray = cssColor('--color-snow-gray');
   const coral = cssColor('--color-fox-coral');
   const pink = cssColor('--color-fox-pink');
   const night = cssColor('--color-polar-night');
 
-  const cloud = ice.clone().lerp(gray, 0.58).lerp(ink, 0.28);
-  const skyHigh = gray.clone().lerp(ink, 0.3).lerp(ice, 0.2);
-  const skyMid = skyHigh.clone().lerp(gray, 0.12).lerp(pink, 0.06);
-  const skyLow = skyMid.clone().lerp(gray, 0.16);
-  const snow = snowWhite.clone().lerp(gray, 0.5).lerp(ink, 0.14).lerp(ice, 0.04);
-  const snowShade = snow.clone().lerp(ink, 0.08).lerp(cloud, 0.1);
-  const mist = ice.clone().lerp(gray, 0.55).lerp(ink, 0.22);
+  const skyHigh = ice.clone().lerp(white, 0.62);
+  const skyMid = white.clone().lerp(pink, 0.16).lerp(ice, 0.4);
+  const skyLow = snowWhite.clone().lerp(pink, 0.2).lerp(ice, 0.18);
+  const horizon = snowWhite.clone().lerp(pink, 0.28);
+  const snow = snowWhite.clone().lerp(pink, 0.05).lerp(white, 0.35);
+  const snowShade = ice.clone().lerp(white, 0.42).lerp(pink, 0.14);
+  const foliage = ice.clone().lerp(white, 0.18).lerp(pink, 0.26);
+  const cap = white.clone().lerp(ice, 0.16).lerp(pink, 0.05);
+  const trunk = coral.clone().lerp(ink, 0.52).lerp(pink, 0.1);
 
   return {
     snow,
     snowShade,
-    ice: mist,
+    ice: ice.clone().lerp(white, 0.48),
     ink,
     coral,
     pink,
@@ -60,7 +64,10 @@ export function readFoxPalette(): FoxPalette {
     skyHigh,
     skyMid,
     skyLow,
-    horizon: gray.clone().lerp(cloud, 0.4).lerp(ink, 0.22),
-    trail: snow.clone().lerp(snowShade, 0.55),
+    horizon,
+    trail: snow.clone().lerp(ice, 0.22).lerp(snowShade, 0.28),
+    foliage,
+    cap,
+    trunk,
   };
 }

@@ -4,6 +4,7 @@ import { useAnimations } from '@react-three/drei/core/useAnimations.js';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import {
   Component,
+  useCallback,
   useEffect,
   useLayoutEffect,
   useMemo,
@@ -19,6 +20,7 @@ import {
   BufferAttribute,
   BufferGeometry,
   Group,
+  InstancedMesh,
   LoopRepeat,
   Mesh,
   MeshStandardMaterial,
@@ -37,13 +39,9 @@ import { clone as cloneSkeleton } from 'three/examples/jsm/utils/SkeletonUtils.j
 import { prefersReducedMotion } from '@/motion/reduced';
 import { dur } from '@/motion/tokens';
 import { readFoxPalette, type FoxPalette } from './fox/palette';
+import { backdropTime } from './fox/backdrop';
+import type { FoxPlate } from './fox/plate';
 import {
-  BACKDROP_URL,
-  backdropTime,
-  createBackdropMaterial,
-} from './fox/backdrop';
-import {
-  DRIFTS,
   FOX_SCALE,
   FOX_URL,
   IDLE_AFTER_MS,
@@ -52,25 +50,26 @@ import {
   STRIDE,
   TRAVEL_BANK_MAX,
   TRAVEL_MPS,
-  buildTrail,
   frameFor,
   pointOnPath,
 } from './fox/path';
 import {
-  SIT_CLIP_HAS_HEAD,
-  SIT_CLIP_HAS_TAIL,
-  applyHeadLife,
-  applyTailLife,
-  sitLifeLabel,
-} from './fox/sitLife';
-import { makeSnowTexture } from './fox/snowTexture';
+  createHillGeometry,
+  createPineGeometry,
+  createToonMaterial,
+  createToonRamp,
+  hillSlots,
+  pineSlots,
+  placeSlots,
+  type ScenerySlot,
+} from './fox/scenery';
 
 useGLTF.preload(FOX_URL, false, false);
 
 const CLIP_WALK = 'Walk';
 const CLIP_SIT = 'Sit';
 const FADE = dur.reveal * 0.5;
-const SNOW_COUNT = 380;
+const SNOW_COUNT = 200;
 const TURN_TAU = dur.reveal * 0.55;
 const UP = new Vector3(0, 1, 0);
 const _aim = new Vector3();
@@ -79,6 +78,8 @@ const _look = new Vector3();
 const _nose = new Vector3();
 const _want = new Vector3();
 const _desired = new Quaternion();
+const _headInv = new Quaternion();
+const _headDelta = new Quaternion();
 const _pivot = new Object3D();
 
 type ClipName = typeof CLIP_WALK | typeof CLIP_SIT;
@@ -131,6 +132,7 @@ function publish(
   if (stage.dataset.foxNose !== nose) stage.dataset.foxNose = nose;
   if (stage.dataset.foxLife !== life) stage.dataset.foxLife = life;
   if (stage.dataset.foxHead !== head) stage.dataset.foxHead = head;
+  if (stage.dataset.foxOffset !== 'off') stage.dataset.foxOffset = 'off';
 }
 
 function hideLoader() {
@@ -318,10 +320,10 @@ function Sky({ palette }: { palette: FoxPalette }) {
           uniform vec3 glowColor;
           void main() {
             float h = clamp(vHeight, 0.0, 1.0);
-            vec3 color = mix(lowColor, midColor, smoothstep(0.0, 0.42, h));
-            color = mix(color, highColor, smoothstep(0.35, 1.0, h));
-            float band = exp(-pow((h - 0.46) * 3.2, 2.0));
-            color = mix(color, glowColor, band * 0.06);
+            vec3 color = mix(lowColor, midColor, smoothstep(0.02, 0.48, h));
+            color = mix(color, highColor, smoothstep(0.22, 0.92, h));
+            float blush = smoothstep(0.0, 0.7, 1.0 - h);
+            color = mix(color, glowColor, blush * 0.28);
             gl_FragColor = vec4(color, 1.0);
           }
         `,
@@ -338,18 +340,39 @@ function Sky({ palette }: { palette: FoxPalette }) {
       frustumCulled={false}
       material={material}
     >
-      <sphereGeometry args={[72, 40, 28]} />
+      <sphereGeometry args={[64, 20, 12]} />
     </mesh>
   );
 }
 
-function SnowField({ palette }: { palette: FoxPalette }) {
-  const trail = useMemo(() => buildTrail(0.7), []);
-  const ground = useMemo(
-    () => makeSnowTexture(palette.snow, palette.snowShade, palette.ice),
-    [palette],
+function LoopField({ palette }: { palette: FoxPalette }) {
+  const camera = useThree((state) => state.camera);
+  const pines = useMemo(() => pineSlots(), []);
+  const hills = useMemo(() => hillSlots(), []);
+  const ramp = useMemo(
+    () => createToonRamp(palette.snowShade, palette.white),
+    [palette.snowShade, palette.white],
   );
-  const driftMaterial = useMemo(
+  const pineGeo = useMemo(
+    () => createPineGeometry(palette.foliage, palette.cap, palette.trunk),
+    [palette.foliage, palette.cap, palette.trunk],
+  );
+  const hillGeo = useMemo(() => createHillGeometry(), []);
+  const pineMat = useMemo(
+    () => createToonMaterial(ramp, palette.white, true),
+    [ramp, palette.white],
+  );
+  const hillMat = useMemo(
+    () => createToonMaterial(ramp, palette.snow, false),
+    [ramp, palette.snow],
+  );
+  const pathMat = useMemo(() => {
+    const material = createToonMaterial(ramp, palette.trail, false);
+    material.polygonOffset = true;
+    material.polygonOffsetFactor = -1;
+    return material;
+  }, [ramp, palette.trail]);
+  const groundMat = useMemo(
     () =>
       new MeshStandardMaterial({
         color: palette.snow,
@@ -358,46 +381,77 @@ function SnowField({ palette }: { palette: FoxPalette }) {
       }),
     [palette.snow],
   );
+  const pineRef = useRef<InstancedMesh>(null);
+  const hillRef = useRef<InstancedMesh>(null);
+  const groundRef = useRef<Mesh>(null);
+  const pathRef = useRef<Mesh>(null);
 
   useEffect(
     () => () => {
-      trail.dispose();
-      ground.dispose();
-      driftMaterial.dispose();
+      ramp.dispose();
+      pineGeo.dispose();
+      hillGeo.dispose();
+      pineMat.dispose();
+      hillMat.dispose();
+      pathMat.dispose();
+      groundMat.dispose();
     },
-    [trail, ground, driftMaterial],
+    [ramp, pineGeo, hillGeo, pineMat, hillMat, pathMat, groundMat],
   );
+
+  const place = useCallback(() => {
+    const z = camera.position.z;
+    if (pineRef.current) placeSlots(pineRef.current, pines, z, () => 0);
+    if (hillRef.current) {
+      placeSlots(
+        hillRef.current,
+        hills,
+        z,
+        (slot: ScenerySlot) => -slot.scale * 0.55,
+      );
+    }
+    if (groundRef.current) {
+      groundRef.current.position.x = camera.position.x;
+      groundRef.current.position.z = z;
+    }
+    if (pathRef.current) pathRef.current.position.z = z;
+  }, [camera, hills, pines]);
+
+  useLayoutEffect(() => {
+    place();
+  }, [place]);
+
+  useFrame(() => {
+    place();
+  });
 
   return (
     <group>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, -10]}>
-        <planeGeometry args={[140, 140]} />
-        <meshStandardMaterial
-          map={ground}
-          color={palette.white}
-          roughness={1}
-          metalness={0}
-        />
+      <mesh
+        ref={groundRef}
+        rotation={[-Math.PI / 2, 0, 0]}
+        material={groundMat}
+      >
+        <planeGeometry args={[120, 120]} />
       </mesh>
-      <mesh geometry={trail}>
-        <meshStandardMaterial
-          color={palette.trail}
-          roughness={1}
-          metalness={0}
-          polygonOffset
-          polygonOffsetFactor={-1}
-        />
+      <mesh
+        ref={pathRef}
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[-0.62, 0.02, 0]}
+        material={pathMat}
+      >
+        <planeGeometry args={[1.35, 48]} />
       </mesh>
-      {DRIFTS.map(([x, z, radius, height], index) => (
-        <mesh
-          key={index}
-          position={[x, radius * 0.28 * height * 0.42, z]}
-          scale={[radius, radius * 0.28 * height, radius * 0.86]}
-          material={driftMaterial}
-        >
-          <sphereGeometry args={[1, 28, 18]} />
-        </mesh>
-      ))}
+      <instancedMesh
+        ref={pineRef}
+        args={[pineGeo, pineMat, pines.length]}
+        frustumCulled={false}
+      />
+      <instancedMesh
+        ref={hillRef}
+        args={[hillGeo, hillMat, hills.length]}
+        frustumCulled={false}
+      />
     </group>
   );
 }
@@ -438,10 +492,10 @@ function Snow({ palette }: { palette: FoxPalette }) {
   return (
     <points ref={ref} geometry={geometry}>
       <pointsMaterial
-        color={palette.snow}
-        size={0.05}
+        color={palette.white}
+        size={0.04}
         transparent
-        opacity={0.78}
+        opacity={0.72}
         depthWrite={false}
         sizeAttenuation
       />
@@ -476,7 +530,7 @@ function Fox({
   const active = useRef<ClipName>(CLIP_SIT);
   const turned = useRef(false);
   const head = useMemo(() => model.getObjectByName('Head') ?? null, [model]);
-  const tail = useMemo(() => model.getObjectByName('Tail_Base') ?? null, [model]);
+  const headRest = useRef(new Quaternion());
   const narrow = useThree((state) => state.size.width < 768);
   const blob = useMemo(
     () =>
@@ -503,7 +557,7 @@ function Fox({
       for (const material of list) {
         if (!material.emissive) continue;
         material.emissive.copy(palette.white);
-        material.emissiveIntensity = 0.16;
+        material.emissiveIntensity = 0.07;
       }
     });
   }, [model, palette.white]);
@@ -519,8 +573,9 @@ function Fox({
     }
     sit.reset().fadeIn(0).play();
     sit.setLoop(LoopRepeat, Infinity);
-    sit.paused = reduced || !SIT_CLIP_HAS_TAIL;
+    sit.paused = reduced;
     mixer.update(0);
+    if (head) headRest.current.copy(head.quaternion);
     pointOnPath(ride.current.progress, ride.current.point);
     rig.position.copy(ride.current.point);
     aimBody('camera', ride.current.progress, ride.current.point, narrow);
@@ -533,14 +588,15 @@ function Fox({
       'camera',
       1,
       `${_nose.x.toFixed(3)},${_nose.z.toFixed(3)}`,
-      reduced ? 'off' : sitLifeLabel(),
+      reduced ? 'off' : 'clip',
       '0.00',
     );
     hideLoader();
     invalidate();
-  }, [actions, invalidate, mixer, narrow, reduced, ride]);
+  }, [actions, head, invalidate, mixer, narrow, reduced, ride]);
 
-  useFrame((state, delta) => {
+  // Priority 1 runs after the mixer (priority 0). This callback only reads the head.
+  useFrame((_, delta) => {
     const rig = group.current;
     if (!rig) return;
     const rideNow = ride.current;
@@ -552,7 +608,6 @@ function Fox({
       active.current = clip;
     }
     let life = 'off';
-    let headText = '0.00';
     if (clip === CLIP_WALK) {
       const walk = actions[CLIP_WALK];
       if (walk) {
@@ -563,17 +618,17 @@ function Fox({
     } else {
       const sit = actions[CLIP_SIT];
       if (sit) {
-        sit.paused = rideNow.reduced || !SIT_CLIP_HAS_TAIL;
+        sit.paused = rideNow.reduced;
         if (rideNow.reduced) sit.time = 0;
       }
-      if (!rideNow.reduced) {
-        life = sitLifeLabel();
-        if (!SIT_CLIP_HAS_HEAD && head) {
-          const yaw = applyHeadLife(head, state.clock.elapsedTime);
-          headText = ((yaw * 180) / Math.PI).toFixed(2);
-        }
-        if (!SIT_CLIP_HAS_TAIL && tail) applyTailLife(tail, state.clock.elapsedTime);
-      }
+      if (!rideNow.reduced) life = 'clip';
+    }
+    let headText = '0.00';
+    if (head) {
+      _headInv.copy(headRest.current).invert();
+      _headDelta.copy(_headInv).multiply(head.quaternion);
+      const w = Math.min(1, Math.abs(_headDelta.w));
+      headText = ((2 * Math.acos(w) * 180) / Math.PI).toFixed(2);
     }
     pointOnPath(rideNow.progress, rideNow.point);
     rig.position.copy(rideNow.point);
@@ -597,7 +652,7 @@ function Fox({
       life,
       headText,
     );
-  });
+  }, 1);
 
   return (
     <group ref={group} scale={FOX_SCALE}>
@@ -688,70 +743,62 @@ function CameraRig({
 
   return (
     <>
-      <hemisphereLight args={[palette.skyMid, palette.snowShade, 0.62]} />
-      <directionalLight ref={key} color={palette.white} intensity={1.05} />
-      <directionalLight ref={fill} color={palette.white} intensity={0.85} />
-      <directionalLight ref={rim} color={palette.coral} intensity={0.32} />
+      <hemisphereLight args={[palette.skyHigh, palette.snowShade, 0.7]} />
+      <directionalLight ref={key} color={palette.white} intensity={1.1} />
+      <directionalLight ref={fill} color={palette.white} intensity={0.42} />
+      <directionalLight ref={rim} color={palette.coral} intensity={0.22} />
     </>
   );
 }
 
-function TravelPlate({
-  ride,
-  palette,
-}: {
-  ride: RideRef;
-  palette: FoxPalette;
-}) {
-  const camera = useThree((state) => state.camera);
-  const plate = useRef<Mesh>(null);
-  const material = useMemo(
-    () =>
-      createBackdropMaterial({
-        skyHigh: palette.skyHigh,
-        skyMid: palette.skyMid,
-        skyLow: palette.skyLow,
-        snow: palette.snow,
-        ice: palette.ice,
-      }),
-    [palette],
-  );
-
-  useEffect(() => () => material.dispose(), [material]);
-
+/** Keeps the filmed plate on the cruise clock and pauses it with the fox. */
+function VideoClock({ ride }: { ride: RideRef }) {
   useFrame(() => {
-    const mesh = plate.current;
-    if (!mesh) return;
-    const travelled = ride.current.distance;
-    material.uniforms.offset.value = travelled;
-    // Future video: element.currentTime = mesh.userData.clipTime, and pause when sitting.
-    mesh.userData.clipTime = BACKDROP_URL ? backdropTime(travelled) : 0;
-    camera.getWorldDirection(_look);
-    mesh.position.copy(camera.position).addScaledVector(_look, 10);
-    mesh.quaternion.copy(camera.quaternion);
+    const video = document.querySelector<HTMLVideoElement>('[data-fox-video]');
+    if (!video) return;
+    const duration = video.duration;
+    if (!Number.isFinite(duration) || duration <= 0) return;
+    const target = backdropTime(ride.current.distance, duration);
+    const moving = ride.current.moving && !ride.current.reduced;
+    if (!moving) {
+      if (!video.paused) video.pause();
+      if (Math.abs(video.currentTime - target) > 0.04) video.currentTime = target;
+      return;
+    }
+    if (video.paused) {
+      if (Math.abs(video.currentTime - target) > 0.04) video.currentTime = target;
+      void video.play().catch(() => undefined);
+      return;
+    }
+    if (Math.abs(video.currentTime - target) > 0.35) video.currentTime = target;
   });
 
-  return (
-    <mesh ref={plate} frustumCulled={false} material={material}>
-      <planeGeometry args={[36, 14]} />
-    </mesh>
-  );
+  return null;
 }
 
-function World({ reduced }: { reduced: boolean }) {
+function World({ reduced, plate }: { reduced: boolean; plate: FoxPlate }) {
   const palette = useMemo(() => readFoxPalette(), []);
   const ride = useRide(reduced);
   ride.current.reduced = reduced;
 
+  if (plate === 'video') {
+    return (
+      <>
+        <Fox ride={ride} reduced={reduced} palette={palette} />
+        <CameraRig ride={ride} reduced={reduced} palette={palette} />
+        <VideoClock ride={ride} />
+      </>
+    );
+  }
+
   return (
     <>
       <color attach="background" args={[palette.skyMid]} />
-      <fogExp2 attach="fog" args={[palette.skyLow, 0.082]} />
+      <fogExp2 attach="fog" args={[palette.horizon, 0.04]} />
       <Sky palette={palette} />
-      <TravelPlate ride={ride} palette={palette} />
-      <SnowField palette={palette} />
       <Fox ride={ride} reduced={reduced} palette={palette} />
       <CameraRig ride={ride} reduced={reduced} palette={palette} />
+      <LoopField palette={palette} />
       {reduced ? null : <Snow palette={palette} />}
     </>
   );
@@ -799,8 +846,9 @@ class WebglBoundary extends Component<BoundaryProps, BoundaryState> {
   }
 }
 
-export default function FoxHeroScene() {
+export default function FoxHeroScene({ plate = 'scene' }: { plate?: FoxPlate }) {
   const reduced = useReducedFlag();
+  const filmed = plate === 'video';
 
   return (
     <>
@@ -814,17 +862,21 @@ export default function FoxHeroScene() {
             camera={{ fov: 32, near: 0.08, far: 90, position: [-1.65, 1.12, 8.65] }}
             gl={{
               antialias: true,
-              alpha: false,
+              alpha: filmed,
               powerPreference: 'high-performance',
               stencil: false,
             }}
-            onCreated={({ gl, invalidate }) => {
+            onCreated={({ gl, scene, invalidate }) => {
               gl.toneMapping = ACESFilmicToneMapping;
               gl.toneMappingExposure = 1;
+              if (filmed) {
+                scene.background = null;
+                gl.setClearColor(0x000000, 0);
+              }
               if (reduced) invalidate();
             }}
           >
-            <World reduced={reduced} />
+            <World reduced={reduced} plate={plate} />
           </Canvas>
         </WebglBoundary>
       </div>

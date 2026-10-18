@@ -121,7 +121,14 @@ export const es = {
     'Prototipo: un zorro en 3D está sentado en la nieve y, al hacer scroll, camina a un ritmo fijo.',
   'hero3d.hint': 'Haz scroll para seguirlo',
   'hero3d.scene':
-    'Un zorro ártico en la nieve. Está sentado mirándote: la cola se mueve y la cabeza se inclina un poco. Al hacer scroll se gira y camina a un ritmo fijo. Si paras, se gira hacia ti y se sienta.',
+    'Un zorro ártico en un camino recto de nieve, con pinos redondeados y colinas suaves a la izquierda. Está sentado mirándote y la cola se mueve con el clip de sentado. Al hacer scroll se gira y camina a un ritmo fijo mientras el bosque se desplaza. Si paras, se gira hacia ti y se sienta.',
+  'hero3d.toVideo': 'Fondo de vídeo',
+  'hero3d.toScene': 'Bosque dibujado',
+  'hero3dVideo.title': 'Arktic Fox | Zorro sobre el vídeo',
+  'hero3dVideo.description':
+    'Prototipo: el mismo zorro en 3D, con un campo de nieve filmado detrás.',
+  'hero3dVideo.scene':
+    'Un zorro ártico delante de un campo de nieve filmado. Está sentado mirándote y la cola se mueve con el clip de sentado. Al hacer scroll se gira y camina a un ritmo fijo mientras el vídeo avanza. Si paras, el vídeo se queda quieto, se gira hacia ti y se sienta.',
   'home.reel.close': 'Cerrar',
   'home.reel.note':
     'Drop de invierno. El pack en habitaciones nuevas y un film corto para el feed.',

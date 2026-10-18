@@ -63,7 +63,7 @@ The hero sentence above is what ships. These five stay on file if we switch back
 
 Muted looping fox film, full bleed, dark scrim on the left third for legibility. Poster image required. Prompts and the current frame-sequence stand-in are documented in `docs/04-motion.md` (see also ADR-010 → ADR-012, which supersede the PDF's wildlife shot).
 
-A separate noindex prototype at `/hero-3d` loads `public/media/fox.glb` (ADR-022). It is not this block and it is not linked from the home.
+Separate noindex prototypes at `/hero-3d` and `/hero-3d-video` load `public/media/fox.glb` (ADR-022). They are not this block and they are not linked from the home.
 
 ## 3. Sector marquee
 

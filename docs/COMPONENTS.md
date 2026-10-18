@@ -30,7 +30,7 @@ Update this table in the same task that creates or changes a component.
 | WorkReel | `src/components/home/WorkReel.astro` | `closeLabel`, `note`, `moreLabel`, `moreHref`, `poster` | HomeEntry | built (glass card, bottom-right; mobile stacks note then CTA so the pill stays on one line) |
 | WorkCase | `src/components/home/WorkCase.astro` | `locale` | `/work` and `/es/trabajo` | built (frost field, glass process beats, large plates) |
 | SnowDive | `src/components/motion/SnowDive.astro` | none | HomeEntry | built (looping video on `/`; scroll-scrubbed frames on `/v2`; snow direction is `data-snow-direction`: `fall` or `dive`) |
-| FoxHero | `src/components/hero3d/FoxHero.astro` | `locale` | `/hero-3d`, `/es/hero-3d` | prototype (noindex; pinned scroll stage, copy from the home hero, one brand-gradient CTA) |
-| FoxHeroScene | `src/components/islands/FoxHeroScene.tsx` | none | FoxHero | prototype (`client:only`; R3F fox, cruise-speed straight path, Sit tail plus capped head, travelling plate placeholder) |
+| FoxHero | `src/components/hero3d/FoxHero.astro` | `locale`, `plate` (`scene` or `video`) | `/hero-3d`, `/es/hero-3d`, `/hero-3d-video`, `/es/hero-3d-video` | prototype (noindex; pinned scroll stage, copy from the home hero, one brand-gradient CTA, dev-only link between plates) |
+| FoxHeroScene | `src/components/islands/FoxHeroScene.tsx` | `plate` | FoxHero | prototype (`client:only`; R3F fox, cruise-speed straight path, looping toon woods or a transparent fox over the film, Sit clip with no bone offset) |
 | FrostField | `src/components/motion/FrostField.astro` | `fixed`, `class` | WorkCase | built (procedural blue-hour sky; off the home during the video look test) |
 | GlassSheen | `src/components/motion/GlassSheen.astro` | none | HomeEntry | built (pointer sheen on `[data-sheen]`) |

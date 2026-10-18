@@ -1,4 +1,4 @@
-import { BufferAttribute, BufferGeometry, Vector3 } from 'three';
+import { Vector3 } from 'three';
 
 export const FOX_URL = '/media/fox.glb';
 
@@ -31,18 +31,6 @@ export const PATH_ORIGIN = new Vector3(0.55, 0, 6);
 export const PATH_FORWARD = new Vector3(0, 0, -1);
 export const PATH_LENGTH = 20;
 
-const UP = new Vector3(0, 1, 0);
-
-/** x, z, radius, height. Beside the straight path, never on it. */
-export const DRIFTS: readonly [number, number, number, number][] = [
-  [-3.2, 5.2, 2.2, 1],
-  [3.4, 2.4, 2.5, 0.95],
-  [-3.6, -1.2, 2.8, 1.05],
-  [3.5, -5.4, 2.3, 0.9],
-  [-3.1, -9.2, 2.6, 1],
-  [3.8, -13.2, 2.4, 0.85],
-];
-
 export function pointOnPath(progress: number, target: Vector3): Vector3 {
   const t = Math.min(1, Math.max(0, progress));
   return target.copy(PATH_ORIGIN).addScaledVector(PATH_FORWARD, t * PATH_LENGTH);
@@ -70,34 +58,4 @@ export function frameFor(
   look.x += narrow ? -0.15 : -0.65;
   look.y += 0.4;
   look.addScaledVector(PATH_FORWARD, 0.2);
-}
-
-export function buildTrail(width: number): BufferGeometry {
-  const steps = 2;
-  const positions = new Float32Array((steps + 1) * 6);
-  const indices: number[] = [];
-  const side = new Vector3().crossVectors(PATH_FORWARD, UP).normalize();
-  const point = new Vector3();
-
-  for (let i = 0; i <= steps; i++) {
-    pointOnPath(i / steps, point);
-    const left = i * 2;
-    const right = left + 1;
-    positions[left * 3] = point.x + side.x * width;
-    positions[left * 3 + 1] = 0.025;
-    positions[left * 3 + 2] = point.z + side.z * width;
-    positions[right * 3] = point.x - side.x * width;
-    positions[right * 3 + 1] = 0.025;
-    positions[right * 3 + 2] = point.z - side.z * width;
-    if (i < steps) {
-      const a = i * 2;
-      indices.push(a, a + 1, a + 2, a + 1, a + 3, a + 2);
-    }
-  }
-
-  const geometry = new BufferGeometry();
-  geometry.setAttribute('position', new BufferAttribute(positions, 3));
-  geometry.setIndex(indices);
-  geometry.computeVertexNormals();
-  return geometry;
 }

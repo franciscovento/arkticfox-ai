@@ -8,6 +8,7 @@ export const routes = {
   home: { en: '/', es: '/es/' },
   homeV2: { en: '/v2', es: '/es/v2' },
   hero3d: { en: '/hero-3d', es: '/es/hero-3d' },
+  hero3dVideo: { en: '/hero-3d-video', es: '/es/hero-3d-video' },
   work: { en: '/work', es: '/es/trabajo' },
   productImages: { en: '/product-images', es: '/es/imagenes-de-producto' },
   adVideos: { en: '/ad-videos', es: '/es/videos-publicitarios' },

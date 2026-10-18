@@ -1,27 +1,32 @@
 ---
 import FoxHeroScene from '@/components/islands/FoxHeroScene';
+import { FOX_VIDEO_POSTER, FOX_VIDEO_URL, type FoxPlate } from '@/components/islands/fox/plate';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import type { Locale } from '@/i18n/routes';
 import { getPath, t } from '@/i18n/utils';
 
 interface Props {
   locale: Locale;
+  plate?: FoxPlate;
 }
 
-const { locale } = Astro.props;
+const { locale, plate = 'scene' } = Astro.props;
+const pageKey = plate === 'video' ? 'hero3dVideo' : 'hero3d';
 ---
 
 <BaseLayout
   locale={locale}
-  pageKey="hero3d"
-  title={t(locale, 'hero3d.title')}
-  description={t(locale, 'hero3d.description')}
+  pageKey={pageKey}
+  title={t(locale, plate === 'video' ? 'hero3dVideo.title' : 'hero3d.title')}
+  description={t(locale, plate === 'video' ? 'hero3dVideo.description' : 'hero3d.description')}
   noindex
   bodyClass="bg-sky-high"
 >
   <section
     class="relative min-h-svh"
     data-fox-stage
+    data-fox-plate={plate}
+    data-fox-offset="off"
     data-fox-state="loading"
     data-fox-progress="0"
   >
@@ -46,7 +51,22 @@ const { locale } = Astro.props;
         <p class="sr-only">{t(locale, 'home.loading')}</p>
       </div>
 
-      <FoxHeroScene client:only="react" />
+      {
+        plate === 'video' && (
+          <video
+            data-fox-video
+            class="absolute inset-0 z-0 h-full w-full object-cover"
+            src={FOX_VIDEO_URL}
+            poster={FOX_VIDEO_POSTER}
+            muted
+            playsinline
+            loop
+            preload="auto"
+          />
+        )
+      }
+
+      <FoxHeroScene client:only="react" plate={plate} />
 
       <div
         class="pointer-events-none absolute inset-0 z-10 bg-hero-scrim"
@@ -67,7 +87,7 @@ const { locale } = Astro.props;
               'label hover-fox',
               locale === 'en' ? 'text-white' : 'text-white/70',
             ]}
-            href={getPath('en', 'hero3d')}
+            href={getPath('en', pageKey)}
             hreflang="en"
             aria-current={locale === 'en' ? 'page' : undefined}
           >
@@ -78,7 +98,7 @@ const { locale } = Astro.props;
               'label hover-fox',
               locale === 'es' ? 'text-white' : 'text-white/70',
             ]}
-            href={getPath('es', 'hero3d')}
+            href={getPath('es', pageKey)}
             hreflang="es"
             aria-current={locale === 'es' ? 'page' : undefined}
           >
@@ -127,7 +147,20 @@ const { locale } = Astro.props;
       <p class="label pointer-events-none absolute inset-x-0 bottom-6 z-20 text-center text-white">
         {t(locale, 'hero3d.hint')}
       </p>
-      <p class="sr-only">{t(locale, 'hero3d.scene')}</p>
+      {
+        import.meta.env.DEV && (
+          <a
+            data-fox-plate-link
+            class="label pointer-events-auto absolute end-5 bottom-6 z-30 text-white/80"
+            href={getPath(locale, plate === 'video' ? 'hero3d' : 'hero3dVideo')}
+          >
+            {t(locale, plate === 'video' ? 'hero3d.toScene' : 'hero3d.toVideo')}
+          </a>
+        )
+      }
+      <p class="sr-only">
+        {t(locale, plate === 'video' ? 'hero3dVideo.scene' : 'hero3d.scene')}
+      </p>
     </div>
   </section>
 </BaseLayout>

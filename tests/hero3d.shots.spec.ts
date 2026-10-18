@@ -85,18 +85,41 @@ async function releaseScroll(page: Page) {
   });
 }
 
-async function expectLife(page: Page) {
+/**
+ * Sit plays the clip. Head keys are identical, so the angle away from that
+ * pose stays at zero. data-fox-offset stays off because nothing writes a bone.
+ */
+async function expectClipOnly(page: Page) {
   await expect
     .poll(async () => attr(page, 'data-fox-life'), { timeout: 4_000 })
     .toBe('clip');
-  const samples = new Set<string>();
-  for (let i = 0; i < 5; i += 1) {
-    const head = await attr(page, 'data-fox-head');
-    expect(Math.abs(Number(head))).toBeLessThanOrEqual(6);
-    samples.add(head ?? '');
+  const heads: number[] = [];
+  for (let i = 0; i < 6; i += 1) {
+    expect(await attr(page, 'data-fox-offset')).toBe('off');
+    heads.push(Number(await attr(page, 'data-fox-head')));
     await page.waitForTimeout(280);
   }
-  expect(samples.size).toBeGreaterThan(1);
+  const span = Math.max(...heads) - Math.min(...heads);
+  expect(span).toBeLessThan(1);
+  expect(Math.max(...heads.map((value) => Math.abs(value)))).toBeLessThan(1);
+}
+
+/** Samples the head while the walk crossfades back to Sit. */
+async function waitSit(page: Page) {
+  const heads: number[] = [];
+  await expect
+    .poll(
+      async () => {
+        expect(await attr(page, 'data-fox-offset')).toBe('off');
+        const head = Number(await attr(page, 'data-fox-head'));
+        if (!Number.isNaN(head)) heads.push(head);
+        return attr(page, 'data-fox-state');
+      },
+      { timeout: 7_000 },
+    )
+    .toBe('sit');
+  expect(heads.length).toBeGreaterThan(0);
+  expect(Math.max(...heads.map((value) => Math.abs(value)))).toBeLessThan(1);
 }
 
 async function expectStill(page: Page) {
@@ -133,7 +156,12 @@ test('scroll down walks forward, idle faces the camera, scroll up walks back', a
   await expect
     .poll(async () => attr(page, 'data-fox-state'), { timeout: 5_000 })
     .toBe('sit');
-  await expectLife(page);
+  expect(await attr(page, 'data-fox-plate')).toBe('scene');
+  expect(await page.locator('[data-fox-video]').count()).toBe(0);
+  expect(await page.locator('[data-fox-plate-link]').getAttribute('href')).toBe(
+    '/hero-3d-video',
+  );
+  await expectClipOnly(page);
   await expectStill(page);
   await page.screenshot({ path: `${outDir}/desktop-start-idle.png` });
 
@@ -153,11 +181,9 @@ test('scroll down walks forward, idle faces the camera, scroll up walks back', a
   await page.screenshot({ path: `${outDir}/desktop-scroll-down-walk.png` });
   await releaseScroll(page);
 
-  await expect
-    .poll(async () => attr(page, 'data-fox-state'), { timeout: 7_000 })
-    .toBe('sit');
+  await waitSit(page);
   await expectStill(page);
-  await expectLife(page);
+  await expectClipOnly(page);
   await page.screenshot({ path: `${outDir}/desktop-scroll-down-idle.png` });
 
   const beforeBack = Number(await attr(page, 'data-fox-progress'));
@@ -206,6 +232,7 @@ test('reduced motion holds a still frame', async ({ page }) => {
     .poll(async () => attr(page, 'data-fox-state'), { timeout: 5_000 })
     .toBe('reduced');
   expect(await attr(page, 'data-fox-life')).toBe('off');
+  expect(await attr(page, 'data-fox-offset')).toBe('off');
   const head = await attr(page, 'data-fox-head');
   await page.waitForTimeout(400);
   expect(await attr(page, 'data-fox-head')).toBe(head);
@@ -216,4 +243,76 @@ test('reduced motion holds a still frame', async ({ page }) => {
   expect(await attr(page, 'data-fox-progress')).toBe(before);
   expect(await attr(page, 'data-fox-facing')).toBe('camera');
   await page.screenshot({ path: `${outDir}/desktop-reduced.png` });
+});
+
+test('plates are routes, and a query string does not switch them', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/hero-3d?bg=video&debug=1');
+  await expect(page.locator('[data-fox-stage]')).toHaveAttribute('data-fox-plate', 'scene');
+  await expect(page.locator('[data-fox-video]')).toHaveCount(0);
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
+  expect(new URL(page.url()).searchParams.get('bg')).toBe('video');
+  expect(await page.locator('[data-fox-plate-link]').getAttribute('href')).toBe('/hero-3d-video');
+
+  await page.goto('/hero-3d-video?bg=scene');
+  await expect(page.locator('[data-fox-stage]')).toHaveAttribute('data-fox-plate', 'video');
+  await expect(page.locator('[data-fox-video]')).toHaveAttribute('src', '/media/hero-snowfield.mp4');
+  await expect(page.locator('[data-fox-plate-link]')).toHaveAttribute('href', '/hero-3d');
+  expect(new URL(page.url()).pathname).toBe('/hero-3d-video');
+
+  await page.goto('/es/hero-3d-video');
+  await expect(page.locator('[data-fox-stage]')).toHaveAttribute('data-fox-plate', 'video');
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
+  await expect(page.locator('[data-fox-plate-link]')).toHaveAttribute('href', '/es/hero-3d');
+  expect(new URL(page.url()).search).toBe('');
+
+  await page.goto('/es/hero-3d');
+  await expect(page.locator('[data-fox-stage]')).toHaveAttribute('data-fox-plate', 'scene');
+  await expect(page.locator('[data-fox-video]')).toHaveCount(0);
+  await expect(page.locator('[data-fox-plate-link]')).toHaveAttribute('href', '/es/hero-3d-video');
+});
+
+test('video route plays the film with the fox and holds it when sitting', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/hero-3d-video');
+  await ready(page);
+  expect(await attr(page, 'data-fox-plate')).toBe('video');
+  await expect
+    .poll(async () => attr(page, 'data-fox-state'), { timeout: 5_000 })
+    .toBe('sit');
+  await expectClipOnly(page);
+  const video = page.locator('[data-fox-video]');
+  await expect
+    .poll(async () => video.evaluate((el: HTMLVideoElement) => el.readyState), {
+      timeout: 15_000,
+    })
+    .toBeGreaterThanOrEqual(1);
+  const start = await video.evaluate((el: HTMLVideoElement) => ({
+    time: el.currentTime,
+    paused: el.paused,
+  }));
+  expect(start.paused).toBe(true);
+  expect(start.time).toBeLessThan(0.05);
+
+  await waitWalk(page, 'forward');
+  await holdScroll(page, 1);
+  await expect
+    .poll(async () => video.evaluate((el: HTMLVideoElement) => el.currentTime), {
+      timeout: 4_000,
+    })
+    .toBeGreaterThan(0.2);
+  await page.screenshot({ path: `${outDir}/desktop-video-walk.png` });
+  await releaseScroll(page);
+
+  await waitSit(page);
+  await expectClipOnly(page);
+  const held = await video.evaluate((el: HTMLVideoElement) => el.currentTime);
+  await page.waitForTimeout(500);
+  const heldAgain = await video.evaluate((el: HTMLVideoElement) => ({
+    time: el.currentTime,
+    paused: el.paused,
+  }));
+  expect(heldAgain.paused).toBe(true);
+  expect(Math.abs(heldAgain.time - held)).toBeLessThan(0.08);
+  await page.screenshot({ path: `${outDir}/desktop-video-idle.png` });
 });
