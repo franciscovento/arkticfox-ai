@@ -42,10 +42,12 @@ import {
   FOX_SCALE,
   FOX_URL,
   IDLE_AFTER_MS,
-  MODEL_LOOK_SIGN,
+  PATH_FORWARD,
+  PATH_LENGTH,
   STRIDE,
   buildTrail,
-  foxPath,
+  frameFor,
+  pointOnPath,
 } from './fox/path';
 import { makeSnowTexture } from './fox/snowTexture';
 
@@ -55,26 +57,27 @@ const CLIP_WALK = 'Walk';
 const CLIP_SIT = 'Sit';
 const FADE = dur.reveal * 0.5;
 const SNOW_COUNT = 380;
+const TURN_TAU = dur.reveal * 0.55;
 const UP = new Vector3(0, 1, 0);
 const _point = new Vector3();
-const _tangent = new Vector3();
-const _side = new Vector3();
 const _aim = new Vector3();
 const _cam = new Vector3();
 const _look = new Vector3();
-const _parentQuat = new Quaternion();
-const _inv = new Quaternion();
-const _yaw = new Quaternion();
-const _local = new Quaternion();
+const _nose = new Vector3();
+const _want = new Vector3();
+const _desired = new Quaternion();
+const _pivot = new Object3D();
 
 type ClipName = typeof CLIP_WALK | typeof CLIP_SIT;
+type Facing = 'forward' | 'back' | 'camera';
 
 type Ride = {
   progress: number;
   moving: boolean;
   reduced: boolean;
+  /** +1 scroll down (advance), -1 scroll up (retreat). */
+  direction: 1 | -1;
   point: Vector3;
-  tangent: Vector3;
 };
 
 type RideRef = RefObject<Ride>;
@@ -93,12 +96,22 @@ function useReducedFlag(): boolean {
   return reduced;
 }
 
-function publish(state: string, progress: number) {
+function publish(
+  state: string,
+  progress: number,
+  facing: Facing,
+  align: number,
+  nose: string,
+) {
   const stage = document.querySelector<HTMLElement>('[data-fox-stage]');
   if (!stage) return;
   if (stage.dataset.foxState !== state) stage.dataset.foxState = state;
   const next = progress.toFixed(3);
   if (stage.dataset.foxProgress !== next) stage.dataset.foxProgress = next;
+  if (stage.dataset.foxFacing !== facing) stage.dataset.foxFacing = facing;
+  const alignText = align.toFixed(2);
+  if (stage.dataset.foxAlign !== alignText) stage.dataset.foxAlign = alignText;
+  if (stage.dataset.foxNose !== nose) stage.dataset.foxNose = nose;
 }
 
 function hideLoader() {
@@ -110,8 +123,8 @@ function useRide(reduced: boolean): RideRef {
     progress: reduced ? 0.12 : 0,
     moving: false,
     reduced,
-    point: foxPath.getPointAt(reduced ? 0.12 : 0),
-    tangent: foxPath.getTangentAt(reduced ? 0.12 : 0),
+    direction: 1,
+    point: pointOnPath(reduced ? 0.12 : 0, new Vector3()),
   });
 
   useEffect(() => {
@@ -141,6 +154,7 @@ function useRide(reduced: boolean): RideRef {
           last = next;
           rideNow.moving = false;
         } else if (Math.abs(next - last) > 0.00012) {
+          rideNow.direction = next > last ? 1 : -1;
           last = next;
           lastChange = performance.now();
           rideNow.moving = true;
@@ -159,32 +173,23 @@ function useRide(reduced: boolean): RideRef {
   return ride;
 }
 
-/** Sit is a held pose, so the head rests on each side, then turns. */
-function lookYaw(time: number): number {
-  const period = dur.slow * 4.2;
-  const t = (time % period) / period;
-  const amp = 0.62;
-  const ease = (u: number) =>
-    0.5 - 0.5 * Math.cos(Math.min(1, Math.max(0, u)) * Math.PI);
-  if (t < 0.18) return -amp;
-  if (t < 0.42) return -amp + ease((t - 0.18) / 0.24) * amp * 2;
-  if (t < 0.6) return amp;
-  if (t < 0.84) return amp - ease((t - 0.6) / 0.24) * amp * 2;
-  return -amp;
+function facingFor(ride: Ride): Facing {
+  if (ride.reduced || !ride.moving) return 'camera';
+  return ride.direction > 0 ? 'forward' : 'back';
 }
 
-function placeOnPath(progress: number, target: Object3D, ride: Ride) {
-  const p = Math.min(1, Math.max(0, progress));
-  foxPath.getPointAt(p, _point);
-  foxPath.getTangentAt(p, _tangent);
-  if (_tangent.lengthSq() < 1e-8) _tangent.set(0, 0, -1);
-  _tangent.normalize();
-  ride.point.copy(_point);
-  ride.tangent.copy(_tangent);
-  _aim.copy(_point).addScaledVector(_tangent, MODEL_LOOK_SIGN);
-  _aim.y = _point.y;
-  target.position.copy(_point);
-  target.lookAt(_aim);
+/** Body aim only. The head stays on the clip. lookAt points local +Z at the target. */
+function aimBody(facing: Facing, progress: number, point: Vector3, narrow: boolean) {
+  if (facing === 'forward') _aim.copy(point).add(PATH_FORWARD);
+  else if (facing === 'back') _aim.copy(point).sub(PATH_FORWARD);
+  else {
+    frameFor(progress, narrow, _cam, _look);
+    _aim.set(_cam.x, point.y, _cam.z);
+  }
+  _pivot.position.copy(point);
+  _pivot.up.copy(UP);
+  _pivot.lookAt(_aim);
+  _desired.copy(_pivot.quaternion);
 }
 
 function capTextures(root: Object3D, max: number) {
@@ -232,7 +237,7 @@ function fadeTo(
   next.enabled = true;
   next.setLoop(LoopRepeat, Infinity);
   next.reset().fadeIn(FADE).play();
-  next.paused = to === CLIP_WALK;
+  next.paused = true;
   prev?.fadeOut(FADE);
 }
 
@@ -291,7 +296,7 @@ function Sky({ palette }: { palette: FoxPalette }) {
 }
 
 function SnowField({ palette }: { palette: FoxPalette }) {
-  const trail = useMemo(() => buildTrail(foxPath, 0.7), []);
+  const trail = useMemo(() => buildTrail(0.7), []);
   const ground = useMemo(
     () => makeSnowTexture(palette.snow, palette.snowShade, palette.ice),
     [palette],
@@ -421,7 +426,9 @@ function Fox({
   }, [gltf.scene]);
   const { actions, mixer } = useAnimations(gltf.animations, group);
   const active = useRef<ClipName>(CLIP_SIT);
-  const head = useMemo(() => model.getObjectByName('Head') ?? null, [model]);
+  const progressPrev = useRef(ride.current.progress);
+  const turned = useRef(false);
+  const narrow = useThree((state) => state.size.width < 768);
   const blob = useMemo(
     () =>
       new MeshStandardMaterial({
@@ -442,23 +449,32 @@ function Fox({
     const sit = actions[CLIP_SIT];
     const walk = actions[CLIP_WALK];
     if (!rig || !sit || !walk) {
-      publish('error', 0);
+      publish('error', 0, 'camera', 0, '0,0');
       hideLoader();
       return;
     }
     sit.reset().fadeIn(0).play();
     sit.setLoop(LoopRepeat, Infinity);
+    sit.paused = true;
     mixer.update(0);
-    placeOnPath(reduced ? 0.12 : ride.current.progress, rig, ride.current);
+    pointOnPath(ride.current.progress, ride.current.point);
+    rig.position.copy(ride.current.point);
+    aimBody('camera', ride.current.progress, ride.current.point, narrow);
+    rig.quaternion.copy(_desired);
+    turned.current = true;
+    _nose.set(0, 0, 1).applyQuaternion(rig.quaternion);
     publish(
-      reduced ? 'reduced' : ride.current.moving ? 'walk' : 'sit',
+      reduced ? 'reduced' : 'sit',
       ride.current.progress,
+      'camera',
+      1,
+      `${_nose.x.toFixed(3)},${_nose.z.toFixed(3)}`,
     );
     hideLoader();
     invalidate();
-  }, [actions, invalidate, mixer, reduced, ride]);
+  }, [actions, invalidate, mixer, narrow, reduced, ride]);
 
-  useFrame((state) => {
+  useFrame((_, delta) => {
     const rig = group.current;
     if (!rig) return;
     const rideNow = ride.current;
@@ -469,36 +485,40 @@ function Fox({
       fadeTo(actions, active.current, clip);
       active.current = clip;
     }
+    const deltaProgress = rideNow.progress - progressPrev.current;
+    progressPrev.current = rideNow.progress;
     if (clip === CLIP_WALK) {
       const walk = actions[CLIP_WALK];
       if (walk) {
         const duration = walk.getClip().duration || 1;
         walk.paused = true;
         walk.time =
-          ((foxPath.getLength() * rideNow.progress) / STRIDE) % duration;
+          (walk.time + (Math.abs(deltaProgress) * PATH_LENGTH) / STRIDE) %
+          duration;
       }
+    } else {
+      const sit = actions[CLIP_SIT];
+      if (sit) sit.paused = true;
     }
-    placeOnPath(rideNow.progress, rig, rideNow);
-    const weight = actions[CLIP_SIT]?.getEffectiveWeight() ?? 0;
-    const influence = Math.min(1, Math.max(0, (weight - 0.35) / 0.65));
-    if (head && !rideNow.reduced && influence > 0) {
-      const parent = head.parent;
-      if (parent) {
-        parent.updateWorldMatrix(true, false);
-        parent.getWorldQuaternion(_parentQuat);
-        _inv.copy(_parentQuat).invert();
-        _yaw.setFromAxisAngle(UP, lookYaw(state.clock.elapsedTime) * influence);
-        _local.copy(head.quaternion);
-        head.quaternion
-          .copy(_inv)
-          .multiply(_yaw)
-          .multiply(_parentQuat)
-          .multiply(_local);
-      }
+    pointOnPath(rideNow.progress, rideNow.point);
+    rig.position.copy(rideNow.point);
+    const facing = facingFor(rideNow);
+    aimBody(facing, rideNow.progress, rideNow.point, narrow);
+    const dt = Math.min(delta, 0.05);
+    if (rideNow.reduced || !turned.current) rig.quaternion.copy(_desired);
+    else {
+      rig.quaternion.slerp(_desired, 1 - Math.exp(-dt / TURN_TAU));
+      if (rig.quaternion.angleTo(_desired) < 0.02) rig.quaternion.copy(_desired);
     }
+    turned.current = true;
+    _nose.set(0, 0, 1).applyQuaternion(rig.quaternion);
+    _want.set(0, 0, 1).applyQuaternion(_desired);
     publish(
       rideNow.reduced ? 'reduced' : rideNow.moving ? 'walk' : 'sit',
       rideNow.progress,
+      facing,
+      _nose.dot(_want),
+      `${_nose.x.toFixed(3)},${_nose.z.toFixed(3)}`,
     );
   });
 
@@ -539,25 +559,9 @@ function CameraRig({
   }, [scene]);
 
   const aim = (snap: boolean, delta: number) => {
-    const { point, tangent } = ride.current;
+    const { point } = ride.current;
     const narrow = size.width < 768;
-    const swing = Math.sin(ride.current.progress * Math.PI);
-    const sideAmount = (narrow ? 0.42 : 1.2) + swing * (narrow ? 0.15 : 0.7);
-    const back = (narrow ? 2.45 : 2.85) - swing * 0.3;
-    const height = (narrow ? 0.95 : 1.18) - swing * 0.1;
-    _side.crossVectors(tangent, UP);
-    if (_side.lengthSq() < 1e-8) _side.set(1, 0, 0);
-    _side.normalize();
-    _cam
-      .copy(point)
-      .addScaledVector(_side, sideAmount)
-      .addScaledVector(tangent, -back)
-      .addScaledVector(UP, height);
-    _look
-      .copy(point)
-      .addScaledVector(UP, 0.42)
-      .addScaledVector(_side, narrow ? -0.12 : -0.78)
-      .addScaledVector(tangent, 0.25);
+    frameFor(ride.current.progress, narrow, _cam, _look);
     const blend =
       snap || reduced || !primed.current
         ? 1
@@ -575,19 +579,15 @@ function CameraRig({
     const keyLight = key.current;
     const rimLight = rim.current;
     if (keyLight) {
-      keyLight.position
-        .copy(camera.position)
-        .addScaledVector(UP, 1.4)
-        .addScaledVector(_side, 0.8);
+      keyLight.position.copy(camera.position).addScaledVector(UP, 1.4);
       keyLight.target.position.copy(point);
       keyLight.target.updateMatrixWorld();
     }
     if (rimLight) {
       rimLight.position
         .copy(point)
-        .addScaledVector(tangent, -1.2)
-        .addScaledVector(UP, 0.8)
-        .addScaledVector(_side, -1.1);
+        .addScaledVector(PATH_FORWARD, -1.3)
+        .addScaledVector(UP, 0.75);
       rimLight.target.position.copy(point).addScaledVector(UP, 0.4);
       rimLight.target.updateMatrixWorld();
     }
@@ -682,7 +682,7 @@ export default function FoxHeroScene() {
             className="h-full w-full"
             dpr={[1, 1.5]}
             frameloop={reduced ? 'demand' : 'always'}
-            camera={{ fov: 32, near: 0.08, far: 90, position: [1.8, 1.2, 8.2] }}
+            camera={{ fov: 32, near: 0.08, far: 90, position: [-1.65, 1.12, 8.65] }}
             gl={{
               antialias: true,
               alpha: false,

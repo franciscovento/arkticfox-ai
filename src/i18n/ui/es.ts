@@ -118,10 +118,10 @@ export const es = {
     'La misma home, con el vídeo avanzando fotograma a fotograma al hacer scroll.',
   'hero3d.title': 'Arktic Fox | Zorro en la nieve',
   'hero3d.description':
-    'Prototipo: un zorro en 3D recorre un camino de nieve al hacer scroll.',
+    'Prototipo: un zorro en 3D está sentado en la nieve y, al hacer scroll, se gira y camina.',
   'hero3d.hint': 'Haz scroll para seguirlo',
   'hero3d.scene':
-    'Un zorro ártico en la nieve. Al hacer scroll camina por el camino. Si paras, se sienta y mira a los lados.',
+    'Un zorro ártico en la nieve. Está sentado mirándote. Al hacer scroll se gira y camina. Si paras, se gira hacia ti, se sienta y se queda quieto.',
   'home.reel.close': 'Cerrar',
   'home.reel.note':
     'Drop de invierno. El pack en habitaciones nuevas y un film corto para el feed.',
