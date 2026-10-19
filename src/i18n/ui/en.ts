@@ -161,6 +161,11 @@ export const en = {
   'projects.kind.ad': 'Ad',
   'projects.kind.still': 'Still',
   'projects.kind.ugc': 'UGC',
+  'projects.format.story': '9:16',
+  'projects.format.square': '1:1',
+  'projects.row.motion': 'Ads and UGC',
+  'projects.row.stills': 'Stills and static',
+  'projects.row.nissan': 'Static ad',
   'projects.cadillac.eyebrow': 'Cadillac',
   'projects.cadillac.title': 'Spot, offer and stills',
   'projects.cadillac.body':

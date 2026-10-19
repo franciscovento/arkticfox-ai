@@ -167,6 +167,11 @@ export const es = {
   'projects.kind.ad': 'Anuncio',
   'projects.kind.still': 'Still',
   'projects.kind.ugc': 'UGC',
+  'projects.format.story': '9:16',
+  'projects.format.square': '1:1',
+  'projects.row.motion': 'Anuncios y UGC',
+  'projects.row.stills': 'Stills y anuncio estático',
+  'projects.row.nissan': 'Anuncio estático',
   'projects.cadillac.eyebrow': 'Cadillac',
   'projects.cadillac.title': 'Spot, oferta y stills',
   'projects.cadillac.body':

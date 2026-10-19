@@ -44,6 +44,8 @@ Categories, not client names. No logos.
 
 The note sits in the case card, before the frames, because this case includes a talk-to-camera piece. The Jeep case repeats it.
 
+Row labels for this case: `projects.row.motion` (`Ads and UGC` / `Anuncios y UGC`) and `projects.row.stills` (`Stills and static` / `Stills y anuncio estático`). Format chips use `projects.format.story` (`9:16`) and `projects.format.square` (`1:1`). **PROPOSED**.
+
 | Piece | Kind | Ratio | File | Title key | EN title | ES title |
 |---|---|---|---|---|---|---|
 | Square Lyriq spot | Ad | 1:1 | `cadillac-1.mp4` + `cadillac-1.jpg` | `projects.piece.lyriq` | `Square Lyriq spot` | `Spot cuadrado del Lyriq` |
@@ -81,6 +83,8 @@ Alt keys are the title key plus `Alt` (`projects.piece.lyriqAlt`, and the same p
 |---|---|---|---|---|
 | Ad still | `autos-9x16-1.webp` | `projects.piece.nissan` | `New prices` | `Precios nuevos` |
 
+Row label: `projects.row.nissan` (`Static ad` / `Anuncio estático`) **PROPOSED**. The note beside the still reuses the piece title and alt. It does not add a new claim.
+
 ## 6. Jeep UGC
 
 | Slot | Key | EN | ES |
@@ -114,4 +118,4 @@ Outline button. The header quote button is the only brand gradient on the page.
 
 Files live in `public/media/projects/`. Videos are muted, `playsinline`, with a poster, `preload="none"`, and play only when most of the frame is in view. Reduced motion leaves them paused on the poster. Controls stay so the film can still be started by hand.
 
-Frames sit in even rows, never in a leftover cell. A single piece (the square Lyriq film, the Nissan still) is centered at its cap. Pairs share one row from the `md` breakpoint: two 1080-wide 9:16s, the 4K stills as a wider pair, and the Jeep film beside the mirror selfie at the selfie's stricter cap. CSS width stays at or under half the native pixel width (540, 536, 1080, or 512).
+Each brand is one section. The glass card (and the format chips under it) sticks on the left from the `lg` breakpoint. On the right, labelled rows hold the frames at a fixed height, tucked or offset the way the approved case-study row does. Cadillac is two rows (motion, then stills). Kia is one taller pair. Nissan pairs its single still with a small glass note that reuses the piece title and alt. Jeep pairs the film with the selfie. Below `lg`, each row is a horizontal strip with scroll-snap. CSS width stays at or under half the native pixel width (540, 536, 1080, or 512).
