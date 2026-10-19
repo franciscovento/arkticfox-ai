@@ -20,10 +20,10 @@ Update this table in the same task that creates or changes a component.
 | SnowCanvas | `src/components/motion/SnowCanvas.astro` | `class` | styleguide, WorkCase, ProjectsGallery | built (behind plates; pointer drifts the fall, same source as the home) |
 | Seo | `src/components/seo/Seo.astro` | `title`, `description`, `siteName`, `noindex` | BaseLayout | built |
 | Hreflang | `src/components/seo/Hreflang.astro` | `pageKey` | BaseLayout | built |
-| LanguageSwitcher | — | — | — | planned |
-| Nav | — | — | — | planned |
+| LanguageSwitcher | `src/components/SiteHeader.astro` | part of the header (`pageKey` keeps the switch on the current page) | HomeEntry, ProjectsGallery, WorkCase | built (bar from `lg`; inside the mobile menu below that) |
+| Nav | `src/components/SiteHeader.astro` | `locale`, `pageKey`, `markKey`, `fixed`, `quote` (`outline` or `gradient`) | HomeEntry, ProjectsGallery, WorkCase | built (services left, mark centered, Projects + language + quote right, from `lg`) |
 | Footer | — | — | — | planned |
-| MobileMenu | — | — | — | planned |
+| MobileMenu | `src/components/SiteHeader.astro` | same header; dialog below `lg` | HomeEntry, ProjectsGallery, WorkCase | built (full-screen glass dialog, one gradient quote, focus trap, Escape, scroll lock) |
 | WhatsAppButton | — | — | — | planned |
 | PageShell | `src/components/pages/PageShell.astro` | `locale`, `pageKey`, `titleKey`, `descriptionKey`, `headingKey` | public routes except home, `/work`, and `/projects` | built (shell only, no page design) |
 | HomeEntry | `src/components/home/HomeEntry.astro` | `locale`, `variant` (`loop` or `scrub`) | `/`, `/es/`, `/v2`, `/es/v2` | built (`loop` plays `hero-loop.mp4`; `scrub` steps `public/media/scrub/` with scroll; v2 is noindex) |

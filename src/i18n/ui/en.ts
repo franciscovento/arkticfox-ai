@@ -7,6 +7,8 @@ export const en = {
   'nav.quote': 'Get a quote',
   'nav.languageEn': 'EN',
   'nav.languageEs': 'ES',
+  'nav.menu': 'Menu',
+  'nav.menuClose': 'Close',
   'meta.siteName': 'Arktic Fox',
   'meta.homeTitle': 'Arktic Fox',
   'meta.homeDescription':

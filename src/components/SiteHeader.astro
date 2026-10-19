@@ -1,0 +1,313 @@
+---
+import type { Locale, PageKey } from '@/i18n/routes';
+import type { UiKey } from '@/i18n/ui/en';
+import { getPath, t } from '@/i18n/utils';
+
+interface Props {
+  locale: Locale;
+  /** Page the language switch stays on. */
+  pageKey: PageKey;
+  /** Wordmark target. Home v2 keeps its own URL; other pages return home. */
+  markKey?: PageKey;
+  /** Home stays fixed over the film. Work and projects scroll away. */
+  fixed?: boolean;
+  /**
+   * Home keeps an outline quote so the closed hero can spend the one gradient
+   * on its own CTA. Other pages use the gradient quote in the bar from `lg`.
+   */
+  quote?: 'outline' | 'gradient';
+}
+
+const { locale, pageKey, markKey = pageKey, fixed = false, quote = 'gradient' } = Astro.props;
+
+const services: { pageKey: PageKey; label: UiKey }[] = [
+  { pageKey: 'productImages', label: 'page.productImages.heading' },
+  { pageKey: 'adVideos', label: 'page.adVideos.heading' },
+  { pageKey: 'ugcVideos', label: 'page.ugcVideos.heading' },
+];
+
+const menuLinks: { pageKey: PageKey; label: UiKey }[] = [
+  ...services,
+  { pageKey: 'projects', label: 'nav.projects' },
+];
+
+const quoteClass =
+  quote === 'outline'
+    ? 'hover-fox hidden items-center rounded-pill border border-white px-4 py-2.5 font-sans text-xs font-medium whitespace-nowrap text-white md:px-5 md:py-3 md:text-sm lg:inline-flex'
+    : 'hover-fox hidden items-center rounded-pill bg-brand-gradient px-4 py-2.5 font-sans text-xs font-medium text-white md:px-5 md:py-3 md:text-sm lg:inline-flex';
+---
+
+<header
+  class:list={[
+    'flex flex-wrap items-center justify-between gap-y-3 px-5 py-5 md:px-10',
+    fixed ? 'fixed inset-x-0 top-0 z-30' : 'relative z-20',
+  ]}
+  data-site-header
+>
+  <nav class="hidden items-center gap-6 lg:flex" aria-label={t(locale, 'home.navLabel')}>
+    {
+      services.map((item) => (
+        <a
+          class="label hover-fox text-white"
+          href={getPath(locale, item.pageKey)}
+          aria-current={pageKey === item.pageKey ? 'page' : undefined}
+        >
+          {t(locale, item.label)}
+        </a>
+      ))
+    }
+  </nav>
+  <a
+    class="label shrink-0 whitespace-nowrap text-white lg:absolute lg:left-1/2 lg:-translate-x-1/2"
+    href={getPath(locale, markKey)}
+  >
+    {t(locale, 'meta.siteName')}
+  </a>
+  <div class="flex items-center gap-3 md:gap-5">
+    <a
+      class="label hover-fox hidden text-white lg:inline"
+      href={getPath(locale, 'projects')}
+      aria-current={pageKey === 'projects' ? 'page' : undefined}
+    >
+      {t(locale, 'nav.projects')}
+    </a>
+    <a
+      class:list={[
+        'label hover-fox hidden lg:inline',
+        locale === 'en' ? 'text-white' : 'text-white/70',
+      ]}
+      href={getPath('en', pageKey)}
+      hreflang="en"
+      aria-current={locale === 'en' ? 'page' : undefined}
+    >
+      {t(locale, 'nav.languageEn')}
+    </a>
+    <a
+      class:list={[
+        'label hover-fox hidden lg:inline',
+        locale === 'es' ? 'text-white' : 'text-white/70',
+      ]}
+      href={getPath('es', pageKey)}
+      hreflang="es"
+      aria-current={locale === 'es' ? 'page' : undefined}
+    >
+      {t(locale, 'nav.languageEs')}
+    </a>
+    <a class={quoteClass} href={getPath(locale, 'quote')}>
+      {t(locale, 'nav.quote')}
+    </a>
+    <button
+      type="button"
+      class="label hover-fox inline-flex shrink-0 items-center gap-2 text-white lg:hidden"
+      data-menu-open
+      aria-expanded="false"
+      aria-controls="site-menu"
+      aria-haspopup="dialog"
+    >
+      <svg class="size-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path
+          d="M2 4h12M2 8h12M2 12h12"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"></path>
+      </svg>
+      {t(locale, 'nav.menu')}
+    </button>
+  </div>
+</header>
+
+<dialog
+  id="site-menu"
+  class="site-menu"
+  data-site-menu
+  aria-modal="true"
+  aria-labelledby="site-menu-title"
+>
+  <div
+    class="site-menu__sheet sheen flex h-full min-h-0 flex-col rounded-card border border-glass-border bg-glass-deep p-5 backdrop-blur-md md:p-8"
+    data-sheen
+  >
+    <div class="flex shrink-0 items-center justify-between gap-4">
+      <p class="label text-white" id="site-menu-title">{t(locale, 'nav.menu')}</p>
+      <button type="button" class="label hover-fox text-white" data-menu-close>
+        {t(locale, 'nav.menuClose')}
+      </button>
+    </div>
+    <nav class="mt-8 min-h-0 flex-1 overflow-auto overscroll-contain" aria-label={t(locale, 'home.navLabel')}>
+      <ul class="flex flex-col gap-4">
+        {
+          menuLinks.map((item) => (
+            <li>
+              <a
+                class:list={[
+                  'hover-fox font-serif text-4xl leading-none md:text-5xl',
+                  pageKey === item.pageKey ? 'text-ice-blue' : 'text-white',
+                ]}
+                href={getPath(locale, item.pageKey)}
+                aria-current={pageKey === item.pageKey ? 'page' : undefined}
+              >
+                {t(locale, item.label)}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+    <div class="mt-8 flex shrink-0 flex-col gap-6 border-t border-glass-border pt-6">
+      <div class="flex items-center gap-5">
+        <a
+          class:list={[
+            'label hover-fox',
+            locale === 'en' ? 'text-white' : 'text-white/70',
+          ]}
+          href={getPath('en', pageKey)}
+          hreflang="en"
+          aria-current={locale === 'en' ? 'page' : undefined}
+        >
+          {t(locale, 'nav.languageEn')}
+        </a>
+        <a
+          class:list={[
+            'label hover-fox',
+            locale === 'es' ? 'text-white' : 'text-white/70',
+          ]}
+          href={getPath('es', pageKey)}
+          hreflang="es"
+          aria-current={locale === 'es' ? 'page' : undefined}
+        >
+          {t(locale, 'nav.languageEs')}
+        </a>
+      </div>
+      <a
+        class="hover-fox inline-flex w-full items-center justify-center rounded-pill bg-brand-gradient px-5 py-3 font-sans text-sm font-medium whitespace-nowrap text-white"
+        href={getPath(locale, 'quote')}
+      >
+        {t(locale, 'nav.quote')}
+      </a>
+    </div>
+  </div>
+</dialog>
+
+<script>
+  import { onPageReady } from '../motion/ready';
+
+  const DESKTOP = '(min-width: 64rem)';
+  let bound = false;
+  let closeToken = 0;
+
+  function reduce() {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+
+  function nodes() {
+    const dialog = document.querySelector<HTMLDialogElement>('[data-site-menu]');
+    const openButton = document.querySelector<HTMLButtonElement>('[data-menu-open]');
+    return { dialog, openButton };
+  }
+
+  function setExpanded(open: boolean) {
+    const { openButton } = nodes();
+    openButton?.setAttribute('aria-expanded', open ? 'true' : 'false');
+    document.documentElement.classList.toggle('menu-open', open);
+    if (open) document.documentElement.dataset.menu = 'open';
+    else delete document.documentElement.dataset.menu;
+    document.dispatchEvent(new CustomEvent('site-menu-toggle'));
+  }
+
+  function closeNow() {
+    closeToken += 1;
+    const { dialog } = nodes();
+    if (!dialog) return;
+    dialog.classList.remove('is-open');
+    setExpanded(false);
+    if (dialog.open) dialog.close();
+  }
+
+  function requestClose() {
+    const { dialog } = nodes();
+    if (!dialog || !dialog.open) return;
+    const panel = dialog;
+    const token = ++closeToken;
+    panel.classList.remove('is-open');
+    let settled = false;
+    function finish() {
+      if (settled || token !== closeToken) return;
+      settled = true;
+      panel.removeEventListener('transitionend', onEnd);
+      setExpanded(false);
+      if (panel.open) panel.close();
+    }
+    function onEnd(event: TransitionEvent) {
+      if (event.target !== panel || event.propertyName !== 'opacity') return;
+      finish();
+    }
+    if (reduce()) {
+      finish();
+      return;
+    }
+    panel.addEventListener('transitionend', onEnd);
+    const raw = getComputedStyle(panel).getPropertyValue('--dur-reveal').trim();
+    const ms = raw.endsWith('ms') ? Number.parseFloat(raw) : Number.parseFloat(raw) * 1000;
+    window.setTimeout(finish, (Number.isFinite(ms) ? ms : 0) + 50);
+  }
+
+  function openMenu() {
+    const { dialog } = nodes();
+    if (!dialog || dialog.open) return;
+    if (window.matchMedia(DESKTOP).matches) return;
+    closeToken += 1;
+    dialog.showModal();
+    setExpanded(true);
+    window.requestAnimationFrame(() => dialog.classList.add('is-open'));
+  }
+
+  function bootSiteMenu() {
+    if (bound) return;
+    bound = true;
+
+    document.addEventListener('click', (event) => {
+      const target = event.target as HTMLElement | null;
+      if (target?.closest('[data-menu-open]')) {
+        openMenu();
+        return;
+      }
+      if (target?.closest('[data-menu-close]')) {
+        requestClose();
+        return;
+      }
+      const { dialog } = nodes();
+      if (event.target === dialog) requestClose();
+    });
+
+    // `cancel` and `close` do not bubble. Capture them so Escape can fade out
+    // before the dialog dismisses, and so a native close still clears the lock.
+    document.addEventListener(
+      'cancel',
+      (event) => {
+        const { dialog } = nodes();
+        if (!(event.target instanceof HTMLDialogElement) || event.target !== dialog) return;
+        event.preventDefault();
+        requestClose();
+      },
+      true,
+    );
+
+    document.addEventListener(
+      'close',
+      (event) => {
+        const { dialog } = nodes();
+        if (!dialog || event.target !== dialog) return;
+        dialog.classList.remove('is-open');
+        setExpanded(false);
+      },
+      true,
+    );
+
+    const desktop = window.matchMedia(DESKTOP);
+    desktop.addEventListener('change', () => {
+      if (desktop.matches) closeNow();
+    });
+  }
+
+  onPageReady(bootSiteMenu);
+</script>

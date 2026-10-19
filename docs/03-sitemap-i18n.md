@@ -28,9 +28,9 @@ Desktop, split:
 - Center: fox mark.
 - Right: Pricing, EN/ES, "Get a quote" gradient button.
 
-The header that is built today lists the three services on the left from the `lg` breakpoint. Projects (`nav.projects`) sits with the language switch from the `sm` breakpoint up, and on a nav row below that, so the centered mark stays clear and the link remains reachable on a phone. The dropdown, Process and the footer are still the step 3 layout.
+The header that is built today lists the three services on the left from the `lg` breakpoint. Projects (`nav.projects`) sits with the language switch and the quote button on the right, also from `lg`, so the centered mark stays clear. Below `lg` that row is a menu button. The overlay lists the three services, Projects, the language switch, and one gradient quote. The services dropdown, Process, Pricing in the bar, and the footer are still the step 3 layout.
 
-Mobile: mark on the left, quote button and a full-screen hamburger on the right.
+Mobile: mark on the left, menu button on the right. The menu is a full-screen glass sheet.
 
 ## Home section order
 

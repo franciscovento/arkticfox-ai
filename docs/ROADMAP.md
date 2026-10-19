@@ -7,7 +7,7 @@ Page copy is specified per page in [`pages/`](./pages/README.md). Build steps 4�
 | 1 | Environment, tooling, guardrails, docs | done — pending approval |
 | 1b | Content specs per page (`docs/pages/`), EN + ES, provenance marked | done — Spanish and all `OPEN` items pending Nabil |
 | 2 | Design system build: tokens ← Claude Design handoff, primitives, FoxDivider, logo, `/styleguide` approved | todo |
-| 3 | Layout: Nav (split + mobile menu), Footer, language switcher, WhatsApp button, Seo/Hreflang | todo |
+| 3 | Layout: Nav (split + mobile menu), Footer, language switcher, WhatsApp button, Seo/Hreflang | partial — `SiteHeader` is the split bar from `lg` and a full-screen menu below it; footer, services dropdown, and WhatsApp are still todo |
 | 4 | Home sections 1→12 (dark/light rhythm, hero video, marquee, sliders, masonry) | `/` loops `hero-loop.mp4`; `/v2` is the same page with scroll-scrubbed frames (noindex); V1 dive through the marquee; Why and sections 5, 7–12 still todo |
 | 4b | Projects gallery | `/projects` · `/es/proyectos` indexed, linked from the built header |
 | 5 | Service page template + 3 services | todo |

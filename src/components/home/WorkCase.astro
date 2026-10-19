@@ -1,10 +1,11 @@
 ---
 import FrostField from '@/components/motion/FrostField.astro';
 import GlassSheen from '@/components/motion/GlassSheen.astro';
+import SiteHeader from '@/components/SiteHeader.astro';
 import Reveal from '@/components/motion/Reveal.astro';
 import SnowCanvas from '@/components/motion/SnowCanvas.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import type { Locale, PageKey } from '@/i18n/routes';
+import type { Locale } from '@/i18n/routes';
 import type { UiKey } from '@/i18n/ui/en';
 import { getPath, t } from '@/i18n/utils';
 
@@ -13,12 +14,6 @@ interface Props {
 }
 
 const { locale } = Astro.props;
-
-const nav: { pageKey: PageKey; label: UiKey }[] = [
-  { pageKey: 'productImages', label: 'page.productImages.heading' },
-  { pageKey: 'adVideos', label: 'page.adVideos.heading' },
-  { pageKey: 'ugcVideos', label: 'page.ugcVideos.heading' },
-];
 
 const beats: {
   src: string;
@@ -84,69 +79,7 @@ const beats: {
   <div class="work-snow" aria-hidden="true">
     <SnowCanvas />
   </div>
-  <header class="relative z-20 flex flex-wrap items-center justify-between gap-y-3 px-5 py-5 md:px-10">
-    <nav
-      class="order-last flex w-full items-center gap-6 sm:hidden lg:order-none lg:flex lg:w-auto"
-      aria-label={t(locale, 'home.navLabel')}
-    >
-      {nav.map((item) => (
-        <a
-          class="label hover-fox hidden text-white lg:inline"
-          href={getPath(locale, item.pageKey)}
-        >
-          {t(locale, item.label)}
-        </a>
-      ))}
-      <a
-        class="label hover-fox text-white lg:hidden"
-        href={getPath(locale, 'projects')}
-      >
-        {t(locale, 'nav.projects')}
-      </a>
-    </nav>
-    <a
-      class="label text-white lg:absolute lg:left-1/2 lg:-translate-x-1/2"
-      href={getPath(locale, 'home')}
-    >
-      {t(locale, 'meta.siteName')}
-    </a>
-    <div class="flex items-center gap-3 md:gap-5">
-      <a
-        class="label hover-fox hidden text-white sm:inline"
-        href={getPath(locale, 'projects')}
-      >
-        {t(locale, 'nav.projects')}
-      </a>
-      <a
-        class:list={[
-          'label hover-fox',
-          locale === 'en' ? 'text-white' : 'text-white/70',
-        ]}
-        href={getPath('en', 'work')}
-        hreflang="en"
-        aria-current={locale === 'en' ? 'page' : undefined}
-      >
-        {t(locale, 'nav.languageEn')}
-      </a>
-      <a
-        class:list={[
-          'label hover-fox',
-          locale === 'es' ? 'text-white' : 'text-white/70',
-        ]}
-        href={getPath('es', 'work')}
-        hreflang="es"
-        aria-current={locale === 'es' ? 'page' : undefined}
-      >
-        {t(locale, 'nav.languageEs')}
-      </a>
-      <a
-        class="hover-fox inline-flex items-center rounded-pill bg-brand-gradient px-4 py-2.5 font-sans text-xs font-medium text-white md:px-5 md:py-3 md:text-sm"
-        href={getPath(locale, 'quote')}
-      >
-        {t(locale, 'nav.quote')}
-      </a>
-    </div>
-  </header>
+  <SiteHeader locale={locale} pageKey="work" markKey="home" />
 
   <main class="relative z-10">
     <section class="work-beat work-beat--hero">

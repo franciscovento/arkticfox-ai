@@ -112,7 +112,7 @@ Outline button. The header quote button is the only brand gradient on the page.
 
 ## Nav
 
-`nav.projects`: `Projects` / `Proyectos` **PROPOSED**. From the `sm` breakpoint it sits in the header beside the language switch. Below that it is a row in the primary nav, so it stays reachable at 390px. There is no footer yet.
+`nav.projects`: `Projects` / `Proyectos` **PROPOSED**. From `lg` it sits in the header beside the language switch. Below that it is a large link in the menu (`nav.menu` / `nav.menuClose`), with the language switch and the quote button. There is no footer yet.
 
 ## Media
 

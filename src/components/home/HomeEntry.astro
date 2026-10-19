@@ -1,5 +1,6 @@
 ---
 import GlassSheen from '@/components/motion/GlassSheen.astro';
+import SiteHeader from '@/components/SiteHeader.astro';
 import WorkReel from '@/components/home/WorkReel.astro';
 import Marquee from '@/components/motion/Marquee.astro';
 import SnowDive from '@/components/motion/SnowDive.astro';
@@ -25,12 +26,6 @@ const frameCount = scrub
       name.endsWith('.webp'),
     ).length
   : 0;
-
-const nav: { pageKey: PageKey; label: UiKey }[] = [
-  { pageKey: 'productImages', label: 'page.productImages.heading' },
-  { pageKey: 'adVideos', label: 'page.adVideos.heading' },
-  { pageKey: 'ugcVideos', label: 'page.ugcVideos.heading' },
-];
 
 const cards: {
   from: string;
@@ -127,69 +122,7 @@ const sectorClips = [
       <p class="sr-only">{t(locale, 'home.loading')}</p>
     </div>
 
-    <header class="fixed inset-x-0 top-0 z-30 flex flex-wrap items-center justify-between gap-y-3 px-5 py-5 md:px-10">
-      <nav
-        class="order-last flex w-full items-center gap-6 sm:hidden lg:order-none lg:flex lg:w-auto"
-        aria-label={t(locale, 'home.navLabel')}
-      >
-        {nav.map((item) => (
-          <a
-            class="label hover-fox hidden text-white lg:inline"
-            href={getPath(locale, item.pageKey)}
-          >
-            {t(locale, item.label)}
-          </a>
-        ))}
-        <a
-          class="label hover-fox text-white lg:hidden"
-          href={getPath(locale, 'projects')}
-        >
-          {t(locale, 'nav.projects')}
-        </a>
-      </nav>
-      <a
-        class="label text-white lg:absolute lg:left-1/2 lg:-translate-x-1/2"
-        href={getPath(locale, pageKey)}
-      >
-        {t(locale, 'meta.siteName')}
-      </a>
-      <div class="flex items-center gap-3 md:gap-5">
-        <a
-          class="label hover-fox hidden text-white sm:inline"
-          href={getPath(locale, 'projects')}
-        >
-          {t(locale, 'nav.projects')}
-        </a>
-        <a
-          class:list={[
-            'label hover-fox',
-            locale === 'en' ? 'text-white' : 'text-white/70',
-          ]}
-          href={getPath('en', pageKey)}
-          hreflang="en"
-          aria-current={locale === 'en' ? 'page' : undefined}
-        >
-          {t(locale, 'nav.languageEn')}
-        </a>
-        <a
-          class:list={[
-            'label hover-fox',
-            locale === 'es' ? 'text-white' : 'text-white/70',
-          ]}
-          href={getPath('es', pageKey)}
-          hreflang="es"
-          aria-current={locale === 'es' ? 'page' : undefined}
-        >
-          {t(locale, 'nav.languageEs')}
-        </a>
-        <a
-          class="hover-fox inline-flex items-center rounded-pill border border-white px-4 py-2.5 font-sans text-xs font-medium whitespace-nowrap text-white md:px-5 md:py-3 md:text-sm"
-          href={getPath(locale, 'quote')}
-        >
-          {t(locale, 'nav.quote')}
-        </a>
-      </div>
-    </header>
+    <SiteHeader locale={locale} pageKey={pageKey} fixed quote="outline" />
 
     <div class="relative z-20 min-h-svh" data-journey-stage>
       {scrub ? (

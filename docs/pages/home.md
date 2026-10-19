@@ -29,6 +29,8 @@ No copy of its own beyond the labels, which already live in `src/i18n/ui/*.ts` u
 | Process (anchor to block 8) | `nav.process` | `Process` **PDF** | `Proceso` **PROPOSED** |
 | Pricing | `nav.pricing` | `Pricing` **PDF** | `Precios` **PDF** |
 | Quote button | `nav.quote` | `Get a quote` **PDF** | `Pide presupuesto` **PDF** |
+| Menu | `nav.menu` | `Menu` **PROPOSED** | `Menú` **PROPOSED** |
+| Close menu | `nav.menuClose` | `Close` **PROPOSED** | `Cerrar` **PROPOSED** |
 
 Dropdown items reuse the service page titles from block 4.
 

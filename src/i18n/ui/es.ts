@@ -9,6 +9,8 @@ export const es = {
   'nav.quote': 'Pide presupuesto',
   'nav.languageEn': 'EN',
   'nav.languageEs': 'ES',
+  'nav.menu': 'Menú',
+  'nav.menuClose': 'Cerrar',
   'meta.siteName': 'Arktic Fox',
   'meta.homeTitle': 'Arktic Fox',
   'meta.homeDescription':
