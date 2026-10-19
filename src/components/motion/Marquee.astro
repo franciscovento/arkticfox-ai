@@ -1,9 +1,17 @@
 ---
+export interface ReelClip {
+  src: string;
+  title: string;
+  note: string;
+  alt: string;
+  poster?: string;
+}
+
 interface Props {
   label: string;
   reverse?: boolean;
   pauseOnHover?: boolean;
-  clips?: string[];
+  clips?: ReelClip[];
   openTemplate?: string;
   class?: string;
 }
@@ -30,8 +38,11 @@ const items = label.split(/\s*·\s*/).filter(Boolean);
                         type="button"
                         class="label marquee__item"
                         data-reel
-                        data-reel-src={clip}
-                        data-reel-title={item}
+                        data-reel-src={clip.src}
+                        data-reel-title={clip.title}
+                        data-reel-note={clip.note}
+                        data-reel-alt={clip.alt}
+                        data-reel-poster={clip.poster}
                         aria-haspopup="dialog"
                         aria-controls="work-reel"
                         aria-label={openTemplate ? openTemplate.replace('{name}', item) : item}

@@ -38,7 +38,7 @@ Twelve blocks. Dark and light alternate. Each block pushes toward the quote.
 
 1. Nav, transparent over the video, frosted glass on scroll.
 2. Hero (dark). Full-bleed muted loop, left scrim, headline, two buttons, three glass service cards.
-3. Sector marquee. `E-COMMERCE · FASHION · BEAUTY · FOOD & BEVERAGE · AUTOMOTIVE`. No client logos.
+3. Work marquee. `Motion · Stills · Automotive · UGC`. No client logos.
 4. Services (dark). Three panels.
 5. Before / after (light). Drag slider, optional tabs.
 6. Why Arktic Fox (light). Four benefits, no statistics.

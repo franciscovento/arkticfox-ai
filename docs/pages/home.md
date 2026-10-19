@@ -67,10 +67,10 @@ Muted looping fox film, full bleed, dark scrim on the left third for legibility.
 
 | Slot | Key | EN | ES |
 |---|---|---|---|
-| Marquee | `home.marquee.label` | `E-COMMERCE · FASHION · BEAUTY · FOOD & BEVERAGE · AUTOMOTIVE` **PDF** | `E-COMMERCE · MODA · BELLEZA · ALIMENTACIÓN · AUTOMOCIÓN` **PROPOSED** |
+| Marquee | `home.marquee.label` | `Motion · Stills · Automotive · UGC` **PROPOSED** | `Motion · Stills · Automoción · UGC` **PROPOSED** |
 | Hint | `home.marquee.hint` | `Click a word to see the work` **PROPOSED** | `Pulsa una palabra para ver el trabajo` **PROPOSED** |
 
-Continuous horizontal scroll, uppercase. No client logos, ever. The strip does not pause on hover. Each word opens a glass `WorkReel` (bottom-right, no dimmed backdrop) with a still or reel. Caption is `home.reel.note` (winter drop, not a mock disclaimer). A bottom-right hint (`home.marquee.hint`) says the words are clickable; it hides the moment the reel is open so it does not sit on the glass during the fade. `See the case` goes to the same case (`/work` · `/es/trabajo`).
+Continuous horizontal scroll, uppercase. No client logos, ever. The strip does not pause on hover. Motion, Stills, Automotive and UGC open a glass `WorkReel` (bottom-right, no dimmed backdrop) for Cadillac, Kia, Nissan and Jeep. The heading and caption are the project title and body. Cadillac and Jeep also keep the avatar note from their project cards. A bottom-right hint (`home.marquee.hint`) says the words are clickable; it hides the moment the reel is open so it does not sit on the glass during the fade. `See more` (`home.reel.more`) goes to `/projects` · `/es/proyectos`. The service strip under it is not a set of cases.
 
 ## 4. Services — dark
 

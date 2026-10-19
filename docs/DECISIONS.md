@@ -134,6 +134,7 @@
 - Context: A dimmed backdrop hid the dive. The reel needed to feel like a card in the scene, and a word click should lead to a project presentation — the same stand-in for every sector until real cases exist.
 - Decision: No backdrop scrim. The glass reel pins bottom-right and grows. `See the case` goes to `/work` · `/es/trabajo` (`WorkCase`): one winter-drop story, no client name, no statistics, `noindex`. Page copy reads as a project, not as a labelled mock.
 - Consequences: Every marquee word opens the same case page. Swap the media and copy in place when a real job can be shown.
+- Update (2026-10-19): The home strip is Motion, Stills, Automotive and UGC. Each word opens that project's real title, body and a frame from `public/media/projects/`. Cadillac and Jeep keep the avatar note. `See more` goes to `/projects` · `/es/proyectos`. `/work` stays the winter stand-in.
 
 ## ADR-020 — View transitions into a same-field work case
 

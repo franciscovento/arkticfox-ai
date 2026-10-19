@@ -66,18 +66,40 @@ const cards: {
   },
 ];
 
-const sectorClips = [
-  '/media/mocks/product-01.jpg',
-  '/media/mocks/fashion-01.jpg',
-  '/media/mocks/beauty-01.jpg',
-  '/media/mocks/food-01.jpg',
-  '/media/mocks/reel-02.mp4',
-];
+const avatarNote = t(locale, 'projects.ugcNote');
 
-const serviceClips = [
-  '/media/mocks/product-03.jpg',
-  '/media/mocks/reel-01.mp4',
-  '/media/mocks/ugc-01.jpg',
+function projectNote(body: UiKey, withAvatar = false) {
+  const text = t(locale, body);
+  return withAvatar ? `${text} ${avatarNote}` : text;
+}
+
+const sectorClips = [
+  {
+    src: '/media/projects/cadillac-2.mp4',
+    poster: '/media/projects/cadillac-2.jpg',
+    title: t(locale, 'projects.cadillac.title'),
+    note: projectNote('projects.cadillac.body', true),
+    alt: t(locale, 'projects.piece.dealsAlt'),
+  },
+  {
+    src: '/media/projects/kia-image-7.webp',
+    title: t(locale, 'projects.kia.title'),
+    note: projectNote('projects.kia.body'),
+    alt: t(locale, 'projects.piece.kiaAAlt'),
+  },
+  {
+    src: '/media/projects/autos-9x16-1.webp',
+    title: t(locale, 'projects.nissan.title'),
+    note: projectNote('projects.nissan.body'),
+    alt: t(locale, 'projects.piece.nissanAlt'),
+  },
+  {
+    src: '/media/projects/jeep-ugc.mp4',
+    poster: '/media/projects/jeep-ugc.jpg',
+    title: t(locale, 'projects.jeep.title'),
+    note: projectNote('projects.jeep.body', true),
+    alt: t(locale, 'projects.piece.jeepAlt'),
+  },
 ];
 ---
 
@@ -288,8 +310,6 @@ const serviceClips = [
           <Marquee
             class="text-white/70"
             label={t(locale, 'home.marquee.services')}
-            clips={serviceClips}
-            openTemplate={t(locale, 'home.reel.open')}
             reverse
             pauseOnHover={false}
           />
@@ -305,10 +325,8 @@ const serviceClips = [
   </div>
   <WorkReel
     closeLabel={t(locale, 'home.reel.close')}
-    note={t(locale, 'home.reel.note')}
     moreLabel={t(locale, 'home.reel.more')}
-    moreHref={getPath(locale, 'work')}
-    poster="/media/mocks/fashion-01.jpg"
+    moreHref={getPath(locale, 'projects')}
   />
   <SnowDive />
   <GlassSheen />

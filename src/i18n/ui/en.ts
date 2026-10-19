@@ -91,8 +91,7 @@ export const en = {
   'home.ugcBody':
     'Hyperrealistic UGC-style videos with AI creators: testimonials, unboxings and tutorials, each with alternative hooks to test.',
   'home.ugcNote': 'All creators are AI-generated avatars.',
-  'home.marquee.label':
-    'E-commerce · Fashion · Beauty · Food & beverage · Automotive',
+  'home.marquee.label': 'Motion · Stills · Automotive · UGC',
   'home.marquee.services': 'Product images · Ad videos · Hyperreal UGC',
   'home.marquee.hint': 'Click a word to see the work',
   'home.why.eyebrow': 'Why Arktic Fox',
@@ -115,7 +114,7 @@ export const en = {
   'home.reel.note':
     'Winter drop. New rooms for the pack, and a short film for the feed.',
   'home.reel.open': 'View work: {name}',
-  'home.reel.more': 'See the case',
+  'home.reel.more': 'See more',
   'work.title': 'Arktic Fox | Winter drop',
   'work.description':
     'Stills, a short film and a talk to camera for a winter fashion drop, built from existing pack shots.',

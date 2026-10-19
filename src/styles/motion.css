@@ -376,7 +376,9 @@ html:has([data-work-reel][open]) [data-marquee-hint] {
 }
 
 .work-reel__media {
+  display: flex;
   flex: 1 1 auto;
+  justify-content: center;
   min-height: 0;
   overflow: hidden;
   border-radius: var(--radius-card-sm);
@@ -384,10 +386,10 @@ html:has([data-work-reel][open]) [data-marquee-hint] {
 
 .work-reel__shot {
   display: block;
-  width: 100%;
-  height: 100%;
-  max-height: 38svh;
-  object-fit: cover;
+  width: min(100%, 33.75rem, calc(38svh * 9 / 16));
+  height: auto;
+  aspect-ratio: 9 / 16;
+  object-fit: contain;
   opacity: 0.92;
 }
 
@@ -499,7 +501,7 @@ html:has([data-work-reel][open]) [data-marquee-hint] {
   }
 
   .work-reel__shot {
-    max-height: 72svh;
+    width: min(100%, 33.75rem, calc(72svh * 9 / 16));
   }
 
   .work-reel__meta {

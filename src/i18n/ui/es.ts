@@ -95,8 +95,7 @@ export const es = {
   'home.ugcBody':
     'Vídeos con aire de UGC hiperrealista y creadores de IA: testimonios, unboxings y tutoriales, cada uno con ganchos distintos para probar.',
   'home.ugcNote': 'Todos los creadores son avatares generados con IA.',
-  'home.marquee.label':
-    'E-commerce · Moda · Belleza · Alimentación · Automoción',
+  'home.marquee.label': 'Motion · Stills · Automoción · UGC',
   'home.marquee.services':
     'Imágenes de producto · Vídeos publicitarios · UGC hiperrealista',
   'home.marquee.hint': 'Pulsa una palabra para ver el trabajo',
@@ -121,7 +120,7 @@ export const es = {
   'home.reel.note':
     'Drop de invierno. El pack en habitaciones nuevas y un film corto para el feed.',
   'home.reel.open': 'Ver trabajo: {name}',
-  'home.reel.more': 'Ver el caso',
+  'home.reel.more': 'Ver más',
   'work.title': 'Arktic Fox | Drop de invierno',
   'work.description':
     'Stills, un film corto y un UGC a cámara para un drop de moda de invierno, a partir de las fotos de producto que ya existían.',
