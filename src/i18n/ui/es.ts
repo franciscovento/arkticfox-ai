@@ -102,8 +102,11 @@ export const es = {
   'home.ugcBody':
     'Vídeos con aire de UGC hiperrealista y creadores de IA: testimonios, unboxings y tutoriales, cada uno con ganchos distintos para probar.',
   'home.ugcNote': 'Todos los creadores son avatares generados con IA.',
-  'home.marquee.label':
-    'E-commerce · Moda · Belleza · Alimentación · Automoción',
+  'home.marquee.label': 'Motion · Stills · Automoción · UGC',
+  'home.case.motion': 'Motion',
+  'home.case.stills': 'Stills',
+  'home.case.automotive': 'Automoción',
+  'home.case.ugc': 'UGC',
   'home.marquee.services':
     'Imágenes de producto · Vídeos publicitarios · UGC hiperrealista',
   'home.marquee.hint': 'Pulsa una palabra para ver el trabajo',
@@ -128,7 +131,7 @@ export const es = {
   'home.reel.note':
     'Drop de invierno. El pack en habitaciones nuevas y un film corto para el feed.',
   'home.reel.open': 'Ver trabajo: {name}',
-  'home.reel.more': 'Ver el caso',
+  'home.reel.more': 'Ver más',
   'work.title': 'Arktic Fox | Drop de invierno',
   'work.description':
     'Stills, un film corto y un UGC a cámara para un drop de moda de invierno, a partir de las fotos de producto que ya existían.',
@@ -160,6 +163,28 @@ export const es = {
   'work.card2Title': 'Otras habitaciones',
   'work.card3Title': 'El film',
   'work.card4Title': 'Corte cerrado',
+  'projects.cadillac.title': 'Spot, oferta y stills',
+  'projects.cadillac.body':
+    'Un film cuadrado del Lyriq, un vertical de ofertas, un UGC a cámara desde el asiento y stills con niebla roja. Uno de los stills lleva la oferta dentro del encuadre.',
+  'projects.kia.title': 'Stills en rojo',
+  'projects.kia.body':
+    'Dos stills de un Kia con luz roja, sin texto encima de la imagen.',
+  'projects.nissan.title': 'La oferta en el encuadre',
+  'projects.nissan.body':
+    'Un still vertical de la parrilla. La línea Best 2026 New Nissan Prices va dentro de la imagen, así que el still es el anuncio.',
+  'projects.jeep.title': 'A cámara',
+  'projects.jeep.body':
+    'Una mujer en un Jeep, con montañas detrás, y un selfie en el espejo con un producto de labios. El selfie es otra pieza UGC, esta de belleza.',
+  'projects.ugcNote': 'Quien sale a cámara es un avatar de IA.',
+  'projects.piece.lyriqAlt': 'Anuncio cuadrado de un Cadillac Lyriq.',
+  'projects.piece.dealsAlt':
+    'Anuncio vertical de un Cadillac sobre ofertas de fin de año.',
+  'projects.piece.kiaAAlt': 'Still de un Kia con luz roja.',
+  'projects.piece.kiaBAlt': 'Still de un Kia con luz roja, otro encuadre.',
+  'projects.piece.nissanAlt':
+    'Still vertical de la parrilla de un Nissan. En el encuadre se lee Best 2026 New Nissan Prices.',
+  'projects.piece.jeepAlt':
+    'Una mujer en un Jeep, con montañas detrás, habla a cámara.',
   'shared.email': 'hello@arkticfox.ai',
   'shared.instagram': '@arkticfox.ai',
   'shared.instagramUrl': 'https://instagram.com/arkticfox.ai',

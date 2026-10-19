@@ -1,6 +1,16 @@
 ---
-interface Props {
+interface ReelItem {
   label: string;
+  src?: string;
+  title?: string;
+  note?: string;
+  poster?: string;
+  alt?: string;
+}
+
+interface Props {
+  label?: string;
+  items?: ReelItem[];
   reverse?: boolean;
   pauseOnHover?: boolean;
   clips?: string[];
@@ -8,44 +18,70 @@ interface Props {
   class?: string;
 }
 
-const { label, reverse = false, pauseOnHover = false, clips, openTemplate, class: className } =
-  Astro.props;
-const items = label.split(/\s*·\s*/).filter(Boolean);
+const {
+  label = '',
+  items,
+  reverse = false,
+  pauseOnHover = false,
+  clips,
+  openTemplate,
+  class: className,
+} = Astro.props;
+
+const row: ReelItem[] =
+  items ??
+  label
+    .split(/\s*·\s*/)
+    .filter(Boolean)
+    .map((item, index) => ({
+      label: item,
+      src: clips?.[index],
+      title: item,
+    }));
 ---
 
-<div class:list={['marquee', reverse && 'marquee--reverse', pauseOnHover && 'marquee--pause', className]}>
+<div
+  class:list={[
+    'marquee',
+    reverse && 'marquee--reverse',
+    pauseOnHover && 'marquee--pause',
+    className,
+  ]}
+>
   <div class="marquee__track">
     {
       [false, true].map((copy) => (
         <div class="label marquee__group" aria-hidden={copy ? 'true' : undefined}>
           <span>
-            {
-              items.map((item, index) => {
-                const clip = clips?.[index];
-                return (
-                  <>
-                    {index > 0 ? ' · ' : ''}
-                    {clip ? (
-                      <button
-                        type="button"
-                        class="label marquee__item"
-                        data-reel
-                        data-reel-src={clip}
-                        data-reel-title={item}
-                        aria-haspopup="dialog"
-                        aria-controls="work-reel"
-                        aria-label={openTemplate ? openTemplate.replace('{name}', item) : item}
-                        tabindex={copy ? -1 : 0}
-                      >
-                        {item}
-                      </button>
-                    ) : (
-                      <span class="label marquee__item">{item}</span>
-                    )}
-                  </>
-                );
-              })
-            }
+            {row.map((item, index) => (
+              <>
+                {index > 0 ? ' · ' : ''}
+                {item.src ? (
+                  <button
+                    type="button"
+                    class="label marquee__item"
+                    data-reel
+                    data-reel-src={item.src}
+                    data-reel-title={item.title ?? item.label}
+                    data-reel-note={item.note}
+                    data-reel-poster={item.poster}
+                    data-reel-alt={item.alt}
+                    aria-haspopup="dialog"
+                    aria-controls="work-reel"
+                    aria-label={
+                      openTemplate
+                        ? openTemplate.replace('{name}', item.title ?? item.label)
+                        : item.label
+                    }
+                    tabindex={copy ? -1 : 0}
+                  >
+                    {item.label}
+                  </button>
+                ) : (
+                  <span class="label marquee__item">{item.label}</span>
+                )}
+              </>
+            ))}
           </span>
         </div>
       ))

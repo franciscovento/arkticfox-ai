@@ -67,10 +67,20 @@ Muted looping fox film, full bleed, dark scrim on the left third for legibility.
 
 | Slot | Key | EN | ES |
 |---|---|---|---|
-| Marquee | `home.marquee.label` | `E-COMMERCE · FASHION · BEAUTY · FOOD & BEVERAGE · AUTOMOTIVE` **PDF** | `E-COMMERCE · MODA · BELLEZA · ALIMENTACIÓN · AUTOMOCIÓN` **PROPOSED** |
+| Marquee | `home.case.motion` · `home.case.stills` · `home.case.automotive` · `home.case.ugc` | `MOTION · STILLS · AUTOMOTIVE · UGC` **PROPOSED** | `MOTION · STILLS · AUTOMOCIÓN · UGC` **PROPOSED** |
 | Hint | `home.marquee.hint` | `Click a word to see the work` **PROPOSED** | `Pulsa una palabra para ver el trabajo` **PROPOSED** |
+| Reel link | `home.reel.more` | `See more` **PROPOSED** | `Ver más` **PROPOSED** |
 
-Continuous horizontal scroll, uppercase. No client logos, ever. The strip does not pause on hover. Each word opens a glass `WorkReel` (bottom-right, no dimmed backdrop) with a still or reel. Caption is `home.reel.note` (winter drop, not a mock disclaimer). A bottom-right hint (`home.marquee.hint`) says the words are clickable; it hides the moment the reel is open so it does not sit on the glass during the fade. `See the case` goes to the same case (`/work` · `/es/trabajo`).
+Continuous horizontal scroll, uppercase. No client logos in the strip. The strip does not pause on hover. Each word opens a glass `WorkReel` (bottom-right, no dimmed backdrop). The words are the kind of work, not an industry list. The PDF line was `E-COMMERCE · FASHION · BEAUTY · FOOD & BEVERAGE · AUTOMOTIVE`. The live strip uses the four projects from the projects page.
+
+| Label | Project | Title and body | Frame |
+|---|---|---|---|
+| Motion | Cadillac | `projects.cadillac.title` / `projects.cadillac.body` | `cadillac-1.mp4` |
+| Stills | Kia | `projects.kia.title` / `projects.kia.body` | `kia-image-7.webp` |
+| Automotive | Nissan | `projects.nissan.title` / `projects.nissan.body` | `autos-9x16-1.webp` |
+| UGC | Jeep | `projects.jeep.title` / `projects.jeep.body` | `jeep-ugc.mp4` |
+
+The dialog heading is the project title. The caption is the project body. Cadillac and Jeep also show `projects.ugcNote`, because those cases include a person on camera. The second strip keeps the service words and opens another frame from the same projects (Kia still, Cadillac deals film, Jeep). `See more` goes to `/projects` · `/es/proyectos`. That page is the projects gallery. A bottom-right hint (`home.marquee.hint`) says the words are clickable; it hides the moment the reel is open so it does not sit on the glass during the fade.
 
 ## 4. Services — dark
 

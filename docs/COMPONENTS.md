@@ -16,7 +16,7 @@ Update this table in the same task that creates or changes a component.
 | FoxDivider | `src/components/chrome/FoxDivider.astro` | `class` | footer | built (white mark on a polar-night chip, so it reads on light and dark) |
 | Badge | — | — | — | planned |
 | Reveal | `src/components/motion/Reveal.astro` | `stagger` (ms), `as`, `class` | styleguide | built |
-| Marquee | `src/components/motion/Marquee.astro` | `label`, `reverse`, `pauseOnHover`, `clips`, `openTemplate`, `class` | styleguide, HomeEntry | built (`clips` turns words into reel buttons) |
+| Marquee | `src/components/motion/Marquee.astro` | `label` or `items` (`label`, `src`, `title`, `note`, `poster`, `alt`), `reverse`, `pauseOnHover`, `clips`, `openTemplate`, `class` | styleguide, HomeEntry | built (`items` or `clips` turn words into reel buttons) |
 | SnowCanvas | `src/components/motion/SnowCanvas.astro` | `class` | styleguide, WorkCase | built (behind plates; pointer drifts the fall, same source as the home) |
 | Seo | `src/components/seo/Seo.astro` | `title`, `description`, `siteName`, `noindex`, `robots`, `image` | BaseLayout | built (default OG image is `/media/brand/og.jpg`) |
 | Hreflang | `src/components/seo/Hreflang.astro` | `pageKey` | BaseLayout | built |
@@ -42,7 +42,7 @@ Update this table in the same task that creates or changes a component.
 | FaqList | `src/components/sections/FaqList.astro` | `locale`, `items`, `heading`, `tone` | home, services, pricing | built (native `details`, no React) |
 | FinalCta | `src/components/sections/FinalCta.astro` | `locale` | home, services, pricing | built |
 | HomeEntry | `src/components/home/HomeEntry.astro` | `locale`, `variant` (`loop` or `scrub`) | `/`, `/es/`, `/v2`, `/es/v2` | built (`loop` plays `hero-loop.mp4`; `scrub` steps `public/media/scrub/` with scroll; v2 is noindex) |
-| WorkReel | `src/components/home/WorkReel.astro` | `closeLabel`, `note`, `moreLabel`, `moreHref`, `poster` | HomeEntry | built (glass card, bottom-right; mobile stacks note then CTA so the pill stays on one line) |
+| WorkReel | `src/components/home/WorkReel.astro` | `closeLabel`, `note`, `moreLabel`, `moreHref`, `poster` | HomeEntry | built (glass card, bottom-right; each button can pass its own title, note, poster and alt; mobile stacks note then CTA) |
 | WorkCase | `src/components/home/WorkCase.astro` | `locale` | `/work` and `/es/trabajo` | built (frost field, glass process beats, large plates) |
 | SnowDive | `src/components/motion/SnowDive.astro` | none | HomeEntry | built (looping video on `/`; scroll-scrubbed frames on `/v2`; snow direction is `data-snow-direction`: `fall` or `dive`) |
 | FrostField | `src/components/motion/FrostField.astro` | `fixed`, `class` | WorkCase | built (procedural blue-hour sky; off the home during the video look test) |

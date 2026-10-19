@@ -20,16 +20,20 @@ const { closeLabel, note, moreLabel, moreHref, poster } = Astro.props;
       <video
         class="work-reel__shot"
         data-reel-video
+        data-fallback-poster={poster}
         poster={poster}
         muted
         playsinline
         controls
+        preload="none"
         hidden
       ></video>
       <img class="work-reel__shot" data-reel-image alt="" hidden />
     </div>
     <div class="work-reel__meta">
-      <p class="work-reel__note font-sans text-xs text-white/70">{note}</p>
+      <p class="work-reel__note font-sans text-xs text-white/70" data-reel-note>
+        {note}
+      </p>
       <a
         class="hover-fox inline-flex items-center rounded-pill border border-white px-4 py-2 font-sans text-xs font-medium text-white"
         href={moreHref}
@@ -105,19 +109,32 @@ const { closeLabel, note, moreLabel, moreHref, poster } = Astro.props;
     dialog.addEventListener('transitionend', onEnd);
   }
 
-  function open(src: string, title: string) {
+  function open(
+    src: string,
+    title: string,
+    note?: string,
+    poster?: string,
+    alt?: string,
+  ) {
     const { dialog, video, image, heading } = reelNodes();
     if (!dialog || !video || !image || !heading) return;
+    const caption = dialog.querySelector<HTMLElement>('[data-reel-note]');
     heading.textContent = title;
+    if (caption && note) caption.textContent = note;
     if (isVideo(src)) {
       image.hidden = true;
+      image.removeAttribute('src');
       video.hidden = false;
+      video.poster = poster || video.dataset.fallbackPoster || '';
       video.src = src;
     } else {
+      video.pause();
+      video.removeAttribute('src');
+      video.load();
       video.hidden = true;
       image.hidden = false;
       image.src = src;
-      image.alt = title;
+      image.alt = alt || title;
     }
     dialog.showModal();
     requestAnimationFrame(() => dialog.classList.add('is-open'));
@@ -146,7 +163,13 @@ const { closeLabel, note, moreLabel, moreHref, poster } = Astro.props;
       event.preventDefault();
       const src = trigger.dataset.reelSrc;
       if (!src) return;
-      open(src, trigger.dataset.reelTitle ?? '');
+      open(
+        src,
+        trigger.dataset.reelTitle ?? '',
+        trigger.dataset.reelNote,
+        trigger.dataset.reelPoster,
+        trigger.dataset.reelAlt,
+      );
     });
 
     document.addEventListener('click', (event) => {

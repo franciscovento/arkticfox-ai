@@ -30,4 +30,4 @@ All copy is **PROPOSED**. Written as a winter fashion drop so the page can be sh
 | Card 04 | `work.card4Title` | `Locked cut` | `Corte cerrado` |
 | Close | `work.note` | `It begins with a look.` | `Empieza con una mirada.` |
 | Reel note | `home.reel.note` | `Winter drop. New rooms for the pack, and a short film for the feed.` | `Drop de invierno. El pack en habitaciones nuevas y un film corto para el feed.` |
-| Reel link | `home.reel.more` | `See the case` | `Ver el caso` |
+| Reel link | `home.reel.more` | `See more` → `/projects` | `Ver más` → `/es/proyectos` |

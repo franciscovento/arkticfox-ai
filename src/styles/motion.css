@@ -380,6 +380,7 @@ html:has([data-work-reel][open]) [data-marquee-hint] {
   min-height: 0;
   overflow: hidden;
   border-radius: var(--radius-card-sm);
+  background: var(--color-polar-night);
 }
 
 .work-reel__shot {
@@ -387,7 +388,7 @@ html:has([data-work-reel][open]) [data-marquee-hint] {
   width: 100%;
   height: 100%;
   max-height: 38svh;
-  object-fit: cover;
+  object-fit: contain;
   opacity: 0.92;
 }
 
@@ -400,6 +401,8 @@ html:has([data-work-reel][open]) [data-marquee-hint] {
 }
 
 .work-reel__note {
+  flex: 1 1 auto;
+  min-width: 0;
   margin: 0;
 }
 

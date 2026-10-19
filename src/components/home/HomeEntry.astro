@@ -62,19 +62,74 @@ const cards: {
   },
 ];
 
-const sectorClips = [
-  '/media/mocks/product-01.jpg',
-  '/media/mocks/fashion-01.jpg',
-  '/media/mocks/beauty-01.jpg',
-  '/media/mocks/food-01.jpg',
-  '/media/mocks/reel-02.mp4',
+function withAvatar(body: string) {
+  return `${body} ${t(locale, 'projects.ugcNote')}`;
+}
+
+const caseItems = [
+  {
+    label: t(locale, 'home.case.motion'),
+    title: t(locale, 'projects.cadillac.title'),
+    note: withAvatar(t(locale, 'projects.cadillac.body')),
+    src: '/media/projects/cadillac-1.mp4',
+    poster: '/media/projects/cadillac-1.jpg',
+    alt: t(locale, 'projects.piece.lyriqAlt'),
+  },
+  {
+    label: t(locale, 'home.case.stills'),
+    title: t(locale, 'projects.kia.title'),
+    note: t(locale, 'projects.kia.body'),
+    src: '/media/projects/kia-image-7.webp',
+    alt: t(locale, 'projects.piece.kiaAAlt'),
+  },
+  {
+    label: t(locale, 'home.case.automotive'),
+    title: t(locale, 'projects.nissan.title'),
+    note: t(locale, 'projects.nissan.body'),
+    src: '/media/projects/autos-9x16-1.webp',
+    alt: t(locale, 'projects.piece.nissanAlt'),
+  },
+  {
+    label: t(locale, 'home.case.ugc'),
+    title: t(locale, 'projects.jeep.title'),
+    note: withAvatar(t(locale, 'projects.jeep.body')),
+    src: '/media/projects/jeep-ugc.mp4',
+    poster: '/media/projects/jeep-ugc.jpg',
+    alt: t(locale, 'projects.piece.jeepAlt'),
+  },
 ];
 
-const serviceClips = [
-  '/media/mocks/product-03.jpg',
-  '/media/mocks/reel-01.mp4',
-  '/media/mocks/ugc-01.jpg',
+const serviceLabels = t(locale, 'home.marquee.services')
+  .split(/\s*·\s*/)
+  .filter(Boolean);
+
+const serviceMedia = [
+  {
+    title: t(locale, 'projects.kia.title'),
+    note: t(locale, 'projects.kia.body'),
+    src: '/media/projects/kia-image-9.webp',
+    alt: t(locale, 'projects.piece.kiaBAlt'),
+  },
+  {
+    title: t(locale, 'projects.cadillac.title'),
+    note: withAvatar(t(locale, 'projects.cadillac.body')),
+    src: '/media/projects/cadillac-2.mp4',
+    poster: '/media/projects/cadillac-2.jpg',
+    alt: t(locale, 'projects.piece.dealsAlt'),
+  },
+  {
+    title: t(locale, 'projects.jeep.title'),
+    note: withAvatar(t(locale, 'projects.jeep.body')),
+    src: '/media/projects/jeep-ugc.mp4',
+    poster: '/media/projects/jeep-ugc.jpg',
+    alt: t(locale, 'projects.piece.jeepAlt'),
+  },
 ];
+
+const serviceItems = serviceLabels.flatMap((label, index) => {
+  const media = serviceMedia[index];
+  return media ? [{ label, ...media }] : [];
+});
 ---
 
 <BaseLayout
@@ -213,15 +268,13 @@ const serviceClips = [
         <div class="flex flex-col gap-2">
           <Marquee
             class="text-white"
-            label={t(locale, 'home.marquee.label')}
-            clips={sectorClips}
+            items={caseItems}
             openTemplate={t(locale, 'home.reel.open')}
             pauseOnHover={false}
           />
           <Marquee
             class="text-white/70"
-            label={t(locale, 'home.marquee.services')}
-            clips={serviceClips}
+            items={serviceItems}
             openTemplate={t(locale, 'home.reel.open')}
             reverse
             pauseOnHover={false}
@@ -241,8 +294,8 @@ const serviceClips = [
     closeLabel={t(locale, 'home.reel.close')}
     note={t(locale, 'home.reel.note')}
     moreLabel={t(locale, 'home.reel.more')}
-    moreHref={getPath(locale, 'work')}
-    poster="/media/mocks/fashion-01.jpg"
+    moreHref={getPath(locale, 'projects')}
+    poster="/media/projects/cadillac-1.jpg"
   />
   <SnowDive />
   <GlassSheen />
