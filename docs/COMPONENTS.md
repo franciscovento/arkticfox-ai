@@ -15,20 +15,21 @@ Update this table in the same task that creates or changes a component.
 | Heading | — | — | — | planned |
 | FoxDivider | — | placeholder SVG is inline on the styleguide | styleguide | planned |
 | Badge | — | — | — | planned |
-| Reveal | `src/components/motion/Reveal.astro` | `stagger` (ms), `as`, `class` | styleguide | built |
-| Marquee | `src/components/motion/Marquee.astro` | `label`, `reverse`, `pauseOnHover`, `clips`, `openTemplate`, `class` | styleguide, HomeEntry | built (`clips` turns words into reel buttons) |
-| SnowCanvas | `src/components/motion/SnowCanvas.astro` | `class` | styleguide, WorkCase | built (behind plates; pointer drifts the fall, same source as the home) |
+| Reveal | `src/components/motion/Reveal.astro` | `stagger` (ms), `as`, `class` | styleguide, ProjectsGallery | built |
+| Marquee | `src/components/motion/Marquee.astro` | `label`, `reverse`, `pauseOnHover`, `clips` (src, title, note, alt, poster), `openTemplate`, `class` | styleguide, HomeEntry, ProjectsGallery | built (`clips` turns words into reel buttons) |
+| SnowCanvas | `src/components/motion/SnowCanvas.astro` | `class` | styleguide, WorkCase, ProjectsGallery | built (behind plates; pointer drifts the fall, same source as the home) |
 | Seo | `src/components/seo/Seo.astro` | `title`, `description`, `siteName`, `noindex` | BaseLayout | built |
 | Hreflang | `src/components/seo/Hreflang.astro` | `pageKey` | BaseLayout | built |
-| LanguageSwitcher | — | — | — | planned |
-| Nav | — | — | — | planned |
+| LanguageSwitcher | `src/components/SiteHeader.astro` | part of the header (`pageKey` keeps the switch on the current page) | HomeEntry, ProjectsGallery, WorkCase | built (bar from `lg`; inside the mobile menu below that) |
+| Nav | `src/components/SiteHeader.astro` | `locale`, `pageKey`, `markKey`, `fixed`, `quote` (`outline` or `gradient`) | HomeEntry, ProjectsGallery, WorkCase | built (services left, mark centered, Projects + language + quote right, from `lg`) |
 | Footer | — | — | — | planned |
-| MobileMenu | — | — | — | planned |
+| MobileMenu | `src/components/SiteHeader.astro` | same header; dialog below `lg` | HomeEntry, ProjectsGallery, WorkCase | built (full-screen glass dialog, one gradient quote, focus trap, Escape, scroll lock) |
 | WhatsAppButton | — | — | — | planned |
-| PageShell | `src/components/pages/PageShell.astro` | `locale`, `pageKey`, `titleKey`, `descriptionKey`, `headingKey` | every public route except home, EN and ES | built (shell only, no page design) |
+| PageShell | `src/components/pages/PageShell.astro` | `locale`, `pageKey`, `titleKey`, `descriptionKey`, `headingKey` | public routes except home, `/work`, and `/projects` | built (shell only, no page design) |
 | HomeEntry | `src/components/home/HomeEntry.astro` | `locale`, `variant` (`loop` or `scrub`) | `/`, `/es/`, `/v2`, `/es/v2` | built (`loop` plays `hero-loop.mp4`; `scrub` steps `public/media/scrub/` with scroll; v2 is noindex) |
-| WorkReel | `src/components/home/WorkReel.astro` | `closeLabel`, `note`, `moreLabel`, `moreHref`, `poster` | HomeEntry | built (glass card, bottom-right; mobile stacks note then CTA so the pill stays on one line) |
+| WorkReel | `src/components/home/WorkReel.astro` | `closeLabel`, `moreLabel`, `moreHref` | HomeEntry | built (glass card, bottom-right; copy and media come from the marquee button; mobile stacks note then CTA so the pill stays on one line) |
 | WorkCase | `src/components/home/WorkCase.astro` | `locale` | `/work` and `/es/trabajo` | built (frost field, glass process beats, large plates) |
+| ProjectsGallery | `src/components/pages/ProjectsGallery.astro` | `locale` | `/projects` and `/es/proyectos` | built (frost field, sticky glass case cards, labelled frame rows, snap strips below `lg`, lazy muted videos with posters) |
 | SnowDive | `src/components/motion/SnowDive.astro` | none | HomeEntry | built (looping video on `/`; scroll-scrubbed frames on `/v2`; snow direction is `data-snow-direction`: `fall` or `dive`) |
-| FrostField | `src/components/motion/FrostField.astro` | `fixed`, `class` | WorkCase | built (procedural blue-hour sky; off the home during the video look test) |
-| GlassSheen | `src/components/motion/GlassSheen.astro` | none | HomeEntry | built (pointer sheen on `[data-sheen]`) |
+| FrostField | `src/components/motion/FrostField.astro` | `fixed`, `class` | WorkCase, ProjectsGallery | built (procedural blue-hour sky; off the home during the video look test) |
+| GlassSheen | `src/components/motion/GlassSheen.astro` | none | HomeEntry, WorkCase, ProjectsGallery | built (pointer sheen on `[data-sheen]`) |

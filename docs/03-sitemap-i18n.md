@@ -1,12 +1,13 @@
 # Sitemap and i18n
 
-Ten pages per language. English lives at the root. Spanish lives under `/es/` with translated slugs. Each page links to its twin. There is **no automatic language redirect**.
+Eleven pages per language. English lives at the root. Spanish lives under `/es/` with translated slugs. Each page links to its twin. There is **no automatic language redirect**.
 
 | Page | English | Spanish | Goal |
 |---|---|---|---|
 | Home | `/` | `/es/` | Impact, summary, quote |
 | Home V2 (trial, noindex) | `/v2` | `/es/v2` | Image-led cut, not in the sitemap |
 | Sample work (mock, noindex) | `/work` | `/es/trabajo` | One stand-in case from the home marquee |
+| Projects | `/projects` | `/es/proyectos` | Real ad films, stills and UGC pieces |
 | Product images | `/product-images` | `/es/imagenes-de-producto` | Sell product images |
 | Ad videos | `/ad-videos` | `/es/videos-publicitarios` | Sell ad films |
 | Hyperreal UGC | `/ugc-videos` | `/es/videos-ugc` | Sell AI UGC videos |
@@ -27,7 +28,9 @@ Desktop, split:
 - Center: fox mark.
 - Right: Pricing, EN/ES, "Get a quote" gradient button.
 
-Mobile: mark on the left, quote button and a full-screen hamburger on the right.
+The header that is built today lists the three services on the left from the `lg` breakpoint. Projects (`nav.projects`) sits with the language switch and the quote button on the right, also from `lg`, so the centered mark stays clear. Below `lg` that row is a menu button. The overlay lists the three services, Projects, the language switch, and one gradient quote. The services dropdown, Process, Pricing in the bar, and the footer are still the step 3 layout.
+
+Mobile: mark on the left, menu button on the right. The menu is a full-screen glass sheet.
 
 ## Home section order
 
@@ -35,7 +38,7 @@ Twelve blocks. Dark and light alternate. Each block pushes toward the quote.
 
 1. Nav, transparent over the video, frosted glass on scroll.
 2. Hero (dark). Full-bleed muted loop, left scrim, headline, two buttons, three glass service cards.
-3. Sector marquee. `E-COMMERCE · FASHION · BEAUTY · FOOD & BEVERAGE · AUTOMOTIVE`. No client logos.
+3. Work marquee. `Motion · Stills · Automotive · UGC`. No client logos.
 4. Services (dark). Three panels.
 5. Before / after (light). Drag slider, optional tabs.
 6. Why Arktic Fox (light). Four benefits, no statistics.

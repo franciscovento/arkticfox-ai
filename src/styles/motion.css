@@ -341,6 +341,61 @@ html:not(.js) [data-loader] {
   background: transparent;
 }
 
+html.menu-open {
+  overflow: hidden;
+}
+
+.site-menu {
+  box-sizing: border-box;
+  color: var(--color-white);
+  opacity: 0;
+  transform: translateY(1rem);
+  transition-property: opacity, transform;
+  transition-duration: var(--dur-reveal);
+  transition-timing-function: var(--ease-fox);
+}
+
+/* `:modal` beats the user-agent dialog box, which otherwise caps width and centers the sheet. */
+.site-menu:modal {
+  display: flex;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  padding:
+    max(0.75rem, env(safe-area-inset-top))
+    max(0.75rem, env(safe-area-inset-right))
+    max(0.75rem, env(safe-area-inset-bottom))
+    max(0.75rem, env(safe-area-inset-left));
+  border: 0;
+  background: transparent;
+  overflow: hidden;
+}
+
+.site-menu.is-open {
+  opacity: 1;
+  transform: none;
+}
+
+.site-menu::backdrop {
+  background-color: var(--color-scrim);
+  opacity: 0;
+  transition-property: opacity;
+  transition-duration: var(--dur-reveal);
+  transition-timing-function: var(--ease-fox);
+}
+
+.site-menu.is-open::backdrop {
+  opacity: 1;
+}
+
+.site-menu__sheet {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
 /* The reel fades in from opacity 0 in the same corner as the hint. Hide the hint
    on `[open]` (set before the fade) so the ice label does not sit on the glass. */
 html:has([data-work-reel][open]) [data-marquee-hint] {
@@ -376,7 +431,9 @@ html:has([data-work-reel][open]) [data-marquee-hint] {
 }
 
 .work-reel__media {
+  display: flex;
   flex: 1 1 auto;
+  justify-content: center;
   min-height: 0;
   overflow: hidden;
   border-radius: var(--radius-card-sm);
@@ -384,10 +441,10 @@ html:has([data-work-reel][open]) [data-marquee-hint] {
 
 .work-reel__shot {
   display: block;
-  width: 100%;
-  height: 100%;
-  max-height: 38svh;
-  object-fit: cover;
+  width: min(100%, 33.75rem, calc(38svh * 9 / 16));
+  height: auto;
+  aspect-ratio: 9 / 16;
+  object-fit: contain;
   opacity: 0.92;
 }
 
@@ -499,7 +556,7 @@ html:has([data-work-reel][open]) [data-marquee-hint] {
   }
 
   .work-reel__shot {
-    max-height: 72svh;
+    width: min(100%, 33.75rem, calc(72svh * 9 / 16));
   }
 
   .work-reel__meta {
@@ -596,14 +653,18 @@ html:has([data-work-reel][open]) [data-marquee-hint] {
   }
 
   .work-reel,
-  .work-reel.is-open {
+  .work-reel.is-open,
+  .site-menu,
+  .site-menu.is-open {
     opacity: 1;
     transform: none;
     transition: none;
   }
 
   .work-reel::backdrop,
-  .work-reel.is-open::backdrop {
+  .work-reel.is-open::backdrop,
+  .site-menu::backdrop,
+  .site-menu.is-open::backdrop {
     opacity: 1;
     transition: none;
   }

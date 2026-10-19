@@ -29,5 +29,4 @@ All copy is **PROPOSED**. Written as a winter fashion drop so the page can be sh
 | Card 03 | `work.card3Title` | `The film` | `El film` |
 | Card 04 | `work.card4Title` | `Locked cut` | `Corte cerrado` |
 | Close | `work.note` | `It begins with a look.` | `Empieza con una mirada.` |
-| Reel note | `home.reel.note` | `Winter drop. New rooms for the pack, and a short film for the feed.` | `Drop de invierno. El pack en habitaciones nuevas y un film corto para el feed.` |
-| Reel link | `home.reel.more` | `See the case` | `Ver el caso` |
+The home reel no longer opens this page. `See more` goes to the projects gallery. `home.reel.note` remains the winter line and is not shown on the home reel.

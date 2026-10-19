@@ -1,0 +1,606 @@
+---
+import FrostField from '@/components/motion/FrostField.astro';
+import GlassSheen from '@/components/motion/GlassSheen.astro';
+import SiteHeader from '@/components/SiteHeader.astro';
+import Marquee from '@/components/motion/Marquee.astro';
+import Reveal from '@/components/motion/Reveal.astro';
+import SnowCanvas from '@/components/motion/SnowCanvas.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import type { Locale } from '@/i18n/routes';
+import type { UiKey } from '@/i18n/ui/en';
+import { getPath, t } from '@/i18n/utils';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const media = '/media/projects';
+
+type Ratio = 'story' | 'square';
+
+/**
+ * CSS cap for one frame so width × 2 stays inside the file's native pixels.
+ * hd 1080→540, tight 1072→536, uhd 2160→1080, selfie 1024→512.
+ */
+type Cap = 'hd' | 'tight' | 'uhd' | 'selfie';
+
+type Piece = {
+  src: string;
+  poster?: string;
+  kind: 'image' | 'video';
+  ratio: Ratio;
+  cap: Cap;
+  width: number;
+  height: number;
+  label: UiKey;
+  title: UiKey;
+  alt: UiKey;
+  /** Sit this frame lower than its neighbours, the way the approved row does. */
+  drop?: boolean;
+};
+
+type Row = {
+  label: UiKey;
+  /** overlap tucks frames. gap keeps even spacing. spec pairs one frame with a note. */
+  layout: 'overlap' | 'gap' | 'spec';
+  recipe: 'motion' | 'stills' | 'kia' | 'nissan' | 'jeep';
+  pieces: Piece[];
+};
+
+type Case = {
+  id: string;
+  eyebrow: UiKey;
+  title: UiKey;
+  body: UiKey;
+  note?: UiKey;
+  formats: Ratio[];
+  rows: Row[];
+};
+
+const capClass: Record<Cap, string> = {
+  hd: 'max-w-[33.75rem]',
+  tight: 'max-w-[33.5rem]',
+  uhd: 'max-w-[67.5rem]',
+  selfie: 'max-w-[32rem]',
+};
+
+const formatKey: Record<Ratio, UiKey> = {
+  story: 'projects.format.story',
+  square: 'projects.format.square',
+};
+
+const cases: Case[] = [
+  {
+    id: 'cadillac',
+    eyebrow: 'projects.cadillac.eyebrow',
+    title: 'projects.cadillac.title',
+    body: 'projects.cadillac.body',
+    note: 'projects.ugcNote',
+    formats: ['story', 'square'],
+    rows: [
+      {
+        label: 'projects.row.motion',
+        layout: 'overlap',
+        recipe: 'motion',
+        pieces: [
+          {
+            src: `${media}/cadillac-2.mp4`,
+            poster: `${media}/cadillac-2.jpg`,
+            kind: 'video',
+            ratio: 'story',
+            cap: 'hd',
+            width: 1080,
+            height: 1920,
+            label: 'projects.kind.ad',
+            title: 'projects.piece.deals',
+            alt: 'projects.piece.dealsAlt',
+          },
+          {
+            src: `${media}/cadillac-1.mp4`,
+            poster: `${media}/cadillac-1.jpg`,
+            kind: 'video',
+            ratio: 'square',
+            cap: 'hd',
+            width: 1080,
+            height: 1080,
+            label: 'projects.kind.ad',
+            title: 'projects.piece.lyriq',
+            alt: 'projects.piece.lyriqAlt',
+            drop: true,
+          },
+          {
+            src: `${media}/cadillac-ugc.mp4`,
+            poster: `${media}/cadillac-ugc.jpg`,
+            kind: 'video',
+            ratio: 'story',
+            cap: 'hd',
+            width: 1080,
+            height: 1920,
+            label: 'projects.kind.ugc',
+            title: 'projects.piece.driver',
+            alt: 'projects.piece.driverAlt',
+          },
+        ],
+      },
+      {
+        label: 'projects.row.stills',
+        layout: 'gap',
+        recipe: 'stills',
+        pieces: [
+          {
+            src: `${media}/cadillac-image-9.webp`,
+            kind: 'image',
+            ratio: 'story',
+            cap: 'tight',
+            width: 1072,
+            height: 1920,
+            label: 'projects.kind.still',
+            title: 'projects.piece.fogA',
+            alt: 'projects.piece.fogAAlt',
+          },
+          {
+            src: `${media}/cadillac-image-12.webp`,
+            kind: 'image',
+            ratio: 'story',
+            cap: 'uhd',
+            width: 2160,
+            height: 3840,
+            label: 'projects.kind.still',
+            title: 'projects.piece.fogB',
+            alt: 'projects.piece.fogBAlt',
+          },
+          {
+            src: `${media}/cadillac-image-14.webp`,
+            kind: 'image',
+            ratio: 'story',
+            cap: 'uhd',
+            width: 2160,
+            height: 3840,
+            label: 'projects.kind.still',
+            title: 'projects.piece.fogC',
+            alt: 'projects.piece.fogCAlt',
+          },
+          {
+            src: `${media}/autos-9x16-2.webp`,
+            kind: 'image',
+            ratio: 'story',
+            cap: 'hd',
+            width: 1080,
+            height: 1920,
+            label: 'projects.kind.ad',
+            title: 'projects.piece.cadillacOffer',
+            alt: 'projects.piece.cadillacOfferAlt',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'kia',
+    eyebrow: 'projects.kia.eyebrow',
+    title: 'projects.kia.title',
+    body: 'projects.kia.body',
+    formats: ['story'],
+    rows: [
+      {
+        label: 'projects.kind.still',
+        layout: 'overlap',
+        recipe: 'kia',
+        pieces: [
+          {
+            src: `${media}/kia-image-7.webp`,
+            kind: 'image',
+            ratio: 'story',
+            cap: 'uhd',
+            width: 2160,
+            height: 3840,
+            label: 'projects.kind.still',
+            title: 'projects.piece.kiaA',
+            alt: 'projects.piece.kiaAAlt',
+          },
+          {
+            src: `${media}/kia-image-9.webp`,
+            kind: 'image',
+            ratio: 'story',
+            cap: 'uhd',
+            width: 2160,
+            height: 3840,
+            label: 'projects.kind.still',
+            title: 'projects.piece.kiaB',
+            alt: 'projects.piece.kiaBAlt',
+            drop: true,
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'nissan',
+    eyebrow: 'projects.nissan.eyebrow',
+    title: 'projects.nissan.title',
+    body: 'projects.nissan.body',
+    formats: ['story'],
+    rows: [
+      {
+        label: 'projects.row.nissan',
+        layout: 'spec',
+        recipe: 'nissan',
+        pieces: [
+          {
+            src: `${media}/autos-9x16-1.webp`,
+            kind: 'image',
+            ratio: 'story',
+            cap: 'hd',
+            width: 1080,
+            height: 1920,
+            label: 'projects.kind.ad',
+            title: 'projects.piece.nissan',
+            alt: 'projects.piece.nissanAlt',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'jeep',
+    eyebrow: 'projects.jeep.eyebrow',
+    title: 'projects.jeep.title',
+    body: 'projects.jeep.body',
+    note: 'projects.ugcNote',
+    formats: ['story', 'square'],
+    rows: [
+      {
+        label: 'projects.kind.ugc',
+        layout: 'overlap',
+        recipe: 'jeep',
+        pieces: [
+          {
+            src: `${media}/jeep-ugc.mp4`,
+            poster: `${media}/jeep-ugc.jpg`,
+            kind: 'video',
+            ratio: 'story',
+            cap: 'hd',
+            width: 1080,
+            height: 1920,
+            label: 'projects.kind.ugc',
+            title: 'projects.piece.jeep',
+            alt: 'projects.piece.jeepAlt',
+          },
+          {
+            src: `${media}/selfie-mirror.webp`,
+            kind: 'image',
+            ratio: 'square',
+            cap: 'selfie',
+            width: 1024,
+            height: 1024,
+            label: 'projects.kind.ugc',
+            title: 'projects.piece.selfie',
+            alt: 'projects.piece.selfieAlt',
+            drop: true,
+          },
+        ],
+      },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  locale={locale}
+  pageKey="projects"
+  title={t(locale, 'projects.title')}
+  description={t(locale, 'projects.description')}
+  bodyClass="bg-polar-night"
+>
+  <FrostField fixed />
+  <div class="work-snow" aria-hidden="true">
+    <SnowCanvas />
+  </div>
+  <SiteHeader locale={locale} pageKey="projects" markKey="home" />
+
+  <main class="relative z-10">
+    <section class="px-5 pt-10 pb-6 md:px-10 md:pt-16">
+      <Reveal>
+        <p class="label text-ice-blue">{t(locale, 'projects.eyebrow')}</p>
+        <h1 class="mt-4 max-w-3xl font-serif text-4xl leading-none text-white md:text-6xl lg:text-7xl">
+          {t(locale, 'projects.headingLead')}{' '}
+          <em class="italic">{t(locale, 'projects.headingEmphasis')}</em>
+        </h1>
+        <p class="mt-5 max-w-xl font-sans text-sm leading-relaxed text-white/85 md:text-base">
+          {t(locale, 'projects.lead')}
+        </p>
+      </Reveal>
+    </section>
+
+    <Marquee class="py-4 text-white/80" label={t(locale, 'projects.marquee')} />
+
+    {cases.map((item) => (
+      <section
+        class="case-grid border-t border-glass-border px-5 py-12 md:px-10 lg:py-16"
+        aria-labelledby={`${item.id}-title`}
+      >
+        <div class="lg:sticky lg:top-7 lg:self-start">
+          <Reveal>
+            <article class="glass sheen max-w-2xl p-5 md:p-6 lg:max-w-none" data-sheen>
+              <p class="label text-ice-blue">{t(locale, item.eyebrow)}</p>
+              <h2
+                id={`${item.id}-title`}
+                class="mt-3 font-serif text-3xl leading-tight text-white md:text-5xl"
+              >
+                {t(locale, item.title)}
+              </h2>
+              <p class="mt-4 font-sans text-sm leading-relaxed text-white/85 md:text-base">
+                {t(locale, item.body)}
+              </p>
+              {item.note && (
+                <p class="mt-4 font-sans text-sm text-white/85">
+                  {t(locale, item.note)}
+                </p>
+              )}
+            </article>
+            <ul class="mt-4 flex flex-wrap gap-2">
+              {item.formats.map((format) => (
+                <li class="rounded-pill border border-glass-border bg-glass px-2.5 py-1 font-sans text-xs text-white">
+                  {t(locale, formatKey[format])}
+                </li>
+              ))}
+            </ul>
+          </Reveal>
+        </div>
+        <div class="case-cluster mt-8 flex min-w-0 flex-col gap-9 lg:mt-0 lg:gap-14">
+          {item.rows.map((row) => (
+            <Reveal>
+              <div class="mb-4 flex items-center gap-3">
+                <p class="label text-white/70">{t(locale, row.label)}</p>
+                <span class="h-px flex-1 bg-glass-border"></span>
+              </div>
+              <div
+                class:list={[
+                  'case-row flex items-end gap-3.5',
+                  row.layout === 'overlap' ? 'lg:gap-0' : 'lg:gap-5',
+                  row.recipe === 'stills' && 'case-row-stills',
+                  row.recipe === 'nissan' && 'lg:items-center',
+                ]}
+              >
+                {row.pieces.map((piece, index) => (
+                  <figure
+                    class:list={[
+                      'piece relative shrink-0 snap-start',
+                      row.layout === 'overlap' &&
+                        index > 0 &&
+                        (row.recipe === 'motion' ? 'lg:-ml-2.5' : 'lg:-ml-3.5'),
+                      piece.drop && row.recipe === 'motion' && 'z-10 lg:translate-y-11',
+                      piece.drop && row.recipe === 'kia' && 'z-10 lg:translate-y-12',
+                      piece.drop && row.recipe === 'jeep' && 'z-10 lg:translate-y-10',
+                    ]}
+                  >
+                    <div
+                      class:list={[
+                        'case-frame relative overflow-hidden rounded-card-sm border border-glass-border bg-ink',
+                        capClass[piece.cap],
+                        piece.ratio === 'square' ? 'aspect-square' : 'aspect-[9/16]',
+                        `case-frame-${row.recipe}${piece.ratio === 'square' ? '-square' : row.recipe === 'motion' || row.recipe === 'jeep' ? '-story' : ''}`,
+                      ]}
+                    >
+                      <span class="pointer-events-none absolute top-2.5 left-2.5 z-10 rounded-pill border border-glass-border bg-glass px-2 py-1 font-sans text-xs text-white">
+                        {t(locale, formatKey[piece.ratio])}
+                      </span>
+                      {piece.kind === 'video' ? (
+                        <video
+                          class="h-full w-full object-contain"
+                          poster={piece.poster}
+                          muted
+                          playsinline
+                          loop
+                          preload="none"
+                          controls
+                          data-project-video
+                          aria-label={t(locale, piece.alt)}
+                          width={piece.width}
+                          height={piece.height}
+                        >
+                          <source src={piece.src} type="video/mp4" />
+                          {t(locale, piece.title)}
+                        </video>
+                      ) : (
+                        <img
+                          class="h-full w-full object-contain"
+                          src={piece.src}
+                          alt={t(locale, piece.alt)}
+                          width={piece.width}
+                          height={piece.height}
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      )}
+                    </div>
+                    <figcaption class="mt-2 flex flex-col gap-1">
+                      <p class="label text-ice-blue">{t(locale, piece.label)}</p>
+                      <p class="font-sans text-sm text-white">
+                        {t(locale, piece.title)}
+                      </p>
+                    </figcaption>
+                  </figure>
+                ))}
+                {row.layout === 'spec' && item.id === 'nissan' && (
+                  <aside class="glass w-[min(78vw,18rem)] shrink-0 snap-start self-center p-5 lg:w-[18rem]">
+                    <p class="label text-ice-blue">{t(locale, 'projects.kind.ad')}</p>
+                    <h3 class="mt-3 font-serif text-2xl leading-tight text-white">
+                      {t(locale, 'projects.piece.nissan')}
+                    </h3>
+                    <p class="mt-3 font-sans text-sm leading-relaxed text-white/85">
+                      {t(locale, 'projects.piece.nissanAlt')}
+                    </p>
+                    <p class="mt-4 inline-flex rounded-pill border border-glass-border bg-glass px-2.5 py-1 font-sans text-xs text-white">
+                      {t(locale, 'projects.format.story')}
+                    </p>
+                  </aside>
+                )}
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+    ))}
+
+    <section class="px-5 py-16 md:px-10 md:py-24">
+      <Reveal>
+        <p class="max-w-xl font-serif text-3xl leading-tight text-white md:text-5xl">
+          {t(locale, 'projects.note')}
+        </p>
+        <a
+          class="hover-fox mt-6 inline-flex items-center rounded-pill border border-white px-6 py-3 font-sans text-sm font-medium text-white"
+          href={getPath(locale, 'quote')}
+        >
+          {t(locale, 'nav.quote')}
+        </a>
+      </Reveal>
+    </section>
+  </main>
+  <GlassSheen />
+</BaseLayout>
+
+<style>
+  .case-cluster {
+    container-type: inline-size;
+  }
+
+  .piece {
+    width: max-content;
+    max-width: 100%;
+  }
+
+  .piece figcaption {
+    width: 0;
+    min-width: 100%;
+  }
+
+  .case-row {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 1.25rem;
+    margin-inline: -1.25rem;
+    padding-inline: 1.25rem;
+    padding-bottom: 0.75rem;
+  }
+
+  .case-frame-motion-story { height: 22.5rem; }
+  .case-frame-motion-square { height: 18.75rem; }
+  .case-frame-stills { height: 21.25rem; }
+  .case-frame-kia { height: 25rem; }
+  .case-frame-nissan { height: 25rem; }
+  .case-frame-jeep-story { height: 25rem; }
+  .case-frame-jeep-square { height: 18.75rem; }
+
+  @media (min-width: 48rem) {
+    .case-row {
+      scroll-padding-inline: 2.5rem;
+      margin-inline: -2.5rem;
+      padding-inline: 2.5rem;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .case-grid {
+      display: grid;
+      grid-template-columns: minmax(16rem, 20.5rem) minmax(0, 1fr);
+      column-gap: 2.5rem;
+      align-items: start;
+    }
+
+    .case-row {
+      overflow: visible;
+      scroll-snap-type: none;
+      margin-inline: 0;
+      padding-inline: 0;
+      padding-bottom: 0;
+    }
+
+    /* Heights follow the approved row, and shrink to the column. Caps live on the frame. */
+    .case-frame-motion-story { height: min(26.875rem, calc(100cqi * 430 / 804)); }
+    .case-frame-motion-square { height: min(21.25rem, calc(100cqi * 340 / 804)); }
+    .case-frame-stills {
+      width: min(11.6016rem, calc((100cqi - 3.75rem) / 4));
+      height: auto;
+    }
+    .case-frame-kia { height: min(33.75rem, calc(100cqi * 540 / 594)); }
+    .case-frame-nissan { height: min(32.5rem, calc((100cqi - 19.5rem) * 16 / 9)); }
+    .case-frame-jeep-story { height: min(31.25rem, calc(100cqi * 500 / 597)); }
+    .case-frame-jeep-square { height: min(20.625rem, calc(100cqi * 330 / 597)); }
+
+    /* Four 9:16s only stay in one row when the column can hold the approved size. */
+    @container (max-width: 50.15rem) {
+      .case-row-stills {
+        flex-wrap: wrap;
+        overflow: visible;
+        scroll-snap-type: none;
+        margin-inline: 0;
+        padding-inline: 0;
+      }
+
+      .case-frame-stills {
+        width: min(33.5rem, calc((100cqi - 1.25rem) / 2));
+        height: auto;
+      }
+    }
+  }
+
+  @media (min-width: 80rem) {
+    .case-grid {
+      column-gap: 4rem;
+    }
+  }
+</style>
+
+<script>
+  import { prefersReducedMotion } from '../../motion/reduced';
+  import { onPageReady } from '../../motion/ready';
+
+  let videoObserver: IntersectionObserver | undefined;
+
+  function bootProjectVideos() {
+    videoObserver?.disconnect();
+    const videos = [
+      ...document.querySelectorAll<HTMLVideoElement>('[data-project-video]'),
+    ];
+
+    for (const video of videos) {
+      video.addEventListener('pause', () => {
+        if (video.dataset.driving === 'true') return;
+        video.dataset.hold = 'true';
+      });
+    }
+
+    if (prefersReducedMotion()) {
+      for (const video of videos) {
+        video.pause();
+        video.preload = 'none';
+        video.removeAttribute('autoplay');
+      }
+      return;
+    }
+
+    videoObserver = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          const video = entry.target as HTMLVideoElement;
+          video.dataset.driving = 'true';
+          if (entry.isIntersecting && video.dataset.hold !== 'true')
+            void video.play().catch(() => {});
+          else video.pause();
+          video.dataset.driving = 'false';
+        }
+      },
+      { threshold: 0.45 },
+    );
+
+    for (const video of videos) videoObserver.observe(video);
+  }
+
+  document.addEventListener('astro:before-swap', () =>
+    videoObserver?.disconnect(),
+  );
+  onPageReady(bootProjectVideos);
+</script>

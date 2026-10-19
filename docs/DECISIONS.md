@@ -134,6 +134,7 @@
 - Context: A dimmed backdrop hid the dive. The reel needed to feel like a card in the scene, and a word click should lead to a project presentation — the same stand-in for every sector until real cases exist.
 - Decision: No backdrop scrim. The glass reel pins bottom-right and grows. `See the case` goes to `/work` · `/es/trabajo` (`WorkCase`): one winter-drop story, no client name, no statistics, `noindex`. Page copy reads as a project, not as a labelled mock.
 - Consequences: Every marquee word opens the same case page. Swap the media and copy in place when a real job can be shown.
+- Update (2026-10-19): The home strip is Motion, Stills, Automotive and UGC. Each word opens that project's real title, body and a frame from `public/media/projects/`. Cadillac and Jeep keep the avatar note. `See more` goes to `/projects` · `/es/proyectos`. `/work` stays the winter stand-in.
 
 ## ADR-020 — View transitions into a same-field work case
 
@@ -148,4 +149,18 @@
 - Context: Glass cards on light stills failed contrast. The page chrome stuck while the process titles did not. Snow on top of the photos would hide the work.
 - Decision: The site header on `/work` scrolls away. Each beat title (The brief, Stills, The film, The cut) is `position: sticky` until the next beat pushes it off. Cards sit on `glass-deep` (ink, token) over a bottom scrim. `SnowCanvas` is a fixed layer under the plates, so flakes fall in the field around the frames, not on the images.
 - Consequences: Contrast holds on pale stills. The sticky menu is the process, not the nav.
+
+## ADR-022 — Projects is a public gallery; the winter case stays a mock
+
+- Date: 2026-10-18
+- Context: Real pieces arrived (Cadillac films and stills, Kia stills, a Nissan offer still, a Jeep UGC film, a beauty selfie). `/work` is still the noindex winter-drop stand-in. Some stills have English type baked into the picture. The built header is three service links; the planned dropdown and footer are not built.
+- Decision: Ship an indexed gallery at `/projects` and `/es/proyectos`. Copy is PROPOSED in `docs/pages/projects.md`. Media sits in `public/media/projects/` and is rendered as `<img>` or `<video>`, never as a CSS background. Videos are muted, `playsinline`, with a poster and `preload="none"`. They play when most of the frame is in view, and stay paused when reduced motion is requested. Brands are named only as they appear in the frame. The UGC case keeps the AI-avatar note. The built header gains a Projects link beside the language switch, from the `sm` breakpoint up, so the left service row and the centered mark stay clear. `/work` is unchanged. Each frame's CSS width stays at or under half its native pixel width, so a 2x screen does not upscale it. From `lg`, each brand is a case row: the glass card sticks on the left, and the frames sit in labelled rows on the right (motion, stills, a Nissan note beside its one still, the Jeep film beside the selfie). Below that, those rows scroll sideways with snap.
+- Consequences: The sitemap gains one EN/ES pair. Hreflang comes from the route map, the same way as the other pages. There is still no footer to repeat the link.
+
+## ADR-023 — Mobile nav is one glass dialog
+
+- Date: 2026-10-19
+- Context: Below `lg` the header wrapped. Projects sat on its own row under 640px, and from there to 1024px it shared the bar with EN/ES and “Pide presupuesto”, which collided with the wordmark. The same markup was copied in the home, projects, and work headers.
+- Decision: One `SiteHeader`. From `lg` the bar stays as it was: services on the left, mark centered, Projects, language, and the quote on the right. Home keeps the outline quote; projects and work keep the gradient quote. Below `lg` a menu button opens a native `<dialog>` (`showModal`) on a scrim with a `glass-deep` sheet. The sheet lists the three services and Projects in serif, then the language switch and one gradient quote. Escape, the close control, and a desktop resize dismiss it. Focus stays in the dialog, scroll locks, and Lenis pauses while it is open. Open and close animate opacity and transform with `--dur-reveal` and `--ease-fox`. Reduced motion skips the wait and the transition.
+- Consequences: The quote leaves the closed bar below `lg` and lives in the sheet, so a phone never shows two gradients. The services dropdown, Process, and the footer are still unbuilt.
 
