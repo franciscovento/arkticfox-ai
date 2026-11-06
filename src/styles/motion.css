@@ -85,12 +85,12 @@ button.marquee__item {
 }
 
 html.js [data-snow-dive] {
-  height: 440vh;
+  height: 300vh;
 }
 
 @media (min-width: 768px) {
   html.js [data-snow-dive] {
-    height: 680vh;
+    height: 420vh;
   }
 }
 
@@ -259,28 +259,15 @@ html.js [data-journey-beat][data-from='0'] {
   pointer-events: auto;
 }
 
-html.js [data-journey-row] {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-html.js [data-journey-piece] {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-}
-
-.journey-piece {
-  width: min(16.5rem, 100%);
-  transition-property: border-color;
-  transition-duration: var(--dur-slow);
+[data-site-header] {
+  transition-property: background-color, backdrop-filter;
+  transition-duration: var(--dur-hover);
   transition-timing-function: var(--ease-fox);
 }
 
-.journey-piece:hover,
-.journey-piece:focus-within {
-  border-color: var(--color-ice-blue);
+[data-site-header][data-scrolled='true'] {
+  background-color: var(--color-scrim);
+  backdrop-filter: blur(12px);
 }
 
 [data-loader-bar] {
@@ -302,293 +289,8 @@ html.js [data-journey-piece] {
   pointer-events: none;
 }
 
-[data-hero-frame] {
-  transition-property: opacity;
-  transition-duration: var(--dur-slow);
-  transition-timing-function: var(--ease-fox);
-}
-
-[data-hero-frame].is-sunk {
-  opacity: 0;
-}
-
 html:not(.js) [data-loader] {
   display: none;
-}
-
-.work-reel {
-  width: min(calc(100vw - 1.5rem), 48rem);
-  max-height: min(88svh, calc(100dvh - 1.5rem));
-  margin: 0;
-  inset: auto max(0.75rem, env(safe-area-inset-right)) max(0.75rem, env(safe-area-inset-bottom)) auto;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  overflow: hidden;
-  opacity: 0;
-  transform: translate(1.25rem, 1.25rem) scale(0.96);
-  transition-property: opacity, transform;
-  transition-duration: var(--dur-reveal);
-  transition-timing-function: var(--ease-fox);
-}
-
-.work-reel.is-open {
-  opacity: 1;
-  transform: none;
-}
-
-.work-reel::backdrop {
-  background: transparent;
-}
-
-html.menu-open {
-  overflow: hidden;
-}
-
-.site-menu {
-  box-sizing: border-box;
-  color: var(--color-white);
-  opacity: 0;
-  transform: translateY(1rem);
-  transition-property: opacity, transform;
-  transition-duration: var(--dur-reveal);
-  transition-timing-function: var(--ease-fox);
-}
-
-/* `:modal` beats the user-agent dialog box, which otherwise caps width and centers the sheet. */
-.site-menu:modal {
-  display: flex;
-  inset: 0;
-  width: 100%;
-  max-width: none;
-  height: 100%;
-  max-height: none;
-  margin: 0;
-  padding:
-    max(0.75rem, env(safe-area-inset-top))
-    max(0.75rem, env(safe-area-inset-right))
-    max(0.75rem, env(safe-area-inset-bottom))
-    max(0.75rem, env(safe-area-inset-left));
-  border: 0;
-  background: transparent;
-  overflow: hidden;
-}
-
-.site-menu.is-open {
-  opacity: 1;
-  transform: none;
-}
-
-.site-menu::backdrop {
-  background-color: var(--color-scrim);
-  opacity: 0;
-  transition-property: opacity;
-  transition-duration: var(--dur-reveal);
-  transition-timing-function: var(--ease-fox);
-}
-
-.site-menu.is-open::backdrop {
-  opacity: 1;
-}
-
-.site-menu__sheet {
-  flex: 1 1 auto;
-  min-height: 0;
-}
-
-/* The reel fades in from opacity 0 in the same corner as the hint. Hide the hint
-   on `[open]` (set before the fade) so the ice label does not sit on the glass. */
-html:has([data-work-reel][open]) [data-marquee-hint] {
-  opacity: 0;
-}
-
-.work-reel__frame {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  max-height: min(88svh, calc(100dvh - 1.5rem));
-  min-height: 0;
-  padding: 1rem;
-}
-
-.work-reel__bar {
-  display: flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.work-reel__bar h2 {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.work-reel__bar [data-reel-close] {
-  flex-shrink: 0;
-}
-
-.work-reel__media {
-  display: flex;
-  flex: 1 1 auto;
-  justify-content: center;
-  min-height: 0;
-  overflow: hidden;
-  border-radius: var(--radius-card-sm);
-}
-
-.work-reel__shot {
-  display: block;
-  width: min(100%, 33.75rem, calc(38svh * 9 / 16));
-  height: auto;
-  aspect-ratio: 9 / 16;
-  object-fit: contain;
-  opacity: 0.92;
-}
-
-.work-reel__meta {
-  display: flex;
-  flex-shrink: 0;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.75rem;
-}
-
-.work-reel__note {
-  margin: 0;
-}
-
-.work-reel__meta a {
-  flex-shrink: 0;
-  white-space: nowrap;
-}
-
-.work-snow {
-  position: fixed;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-}
-
-.work-beat {
-  position: relative;
-  z-index: 2;
-  min-height: 100svh;
-}
-
-.work-beat--hero,
-.work-beat--close {
-  display: flex;
-  align-items: flex-end;
-}
-
-.work-beat__intro {
-  position: relative;
-  z-index: 2;
-  padding: 4rem 1.25rem;
-}
-
-.work-beat__pin {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  margin: 0;
-  padding: 1.25rem 1.25rem 0.85rem;
-  line-height: 0.94;
-}
-
-.work-beat__pin::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background-image: var(--background-image-work-pin);
-  opacity: 0;
-  transition-property: opacity;
-  transition-duration: var(--dur-reveal);
-  transition-timing-function: var(--ease-fox);
-}
-
-.work-beat__pin.is-stuck::before {
-  opacity: 1;
-}
-
-.work-beat__plate {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  overflow: hidden;
-  background-color: var(--color-ink);
-}
-
-.work-beat__media {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.work-beat__scrim {
-  position: absolute;
-  inset: 0;
-  background-image: var(--background-image-hero-scrim-bottom);
-}
-
-.work-beat__card-wrap {
-  position: absolute;
-  z-index: 3;
-  left: 1.25rem;
-  bottom: 1.5rem;
-  width: min(26rem, calc(100% - 2.5rem));
-}
-
-.work-beat__card-wrap--end {
-  left: auto;
-  right: 1.25rem;
-}
-
-@media (min-width: 768px) {
-  .work-reel {
-    width: min(56vw, 52rem);
-    inset: auto 2.5rem 2rem auto;
-  }
-
-  .work-reel__shot {
-    width: min(100%, 33.75rem, calc(72svh * 9 / 16));
-  }
-
-  .work-reel__meta {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-  }
-
-  .work-beat__intro {
-    padding: 5rem 2.5rem 6rem;
-  }
-
-  .work-beat__pin {
-    padding-inline: 2.5rem;
-  }
-
-  .work-beat__plate {
-    inset: 0 1.5rem 1.5rem;
-    border-radius: var(--radius-card);
-    border: 1px solid var(--color-glass-border);
-  }
-
-  .work-beat__card-wrap {
-    left: 3rem;
-    bottom: 3rem;
-  }
-
-  .work-beat__card-wrap--end {
-    left: auto;
-    right: 3rem;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -616,20 +318,6 @@ html:has([data-work-reel][open]) [data-marquee-hint] {
     min-height: 100svh;
   }
 
-  html.js [data-journey-row] {
-    position: relative;
-    inset: auto;
-    pointer-events: auto;
-    margin-block: 1.5rem;
-  }
-
-  html.js [data-journey-piece] {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-    transform: none;
-  }
-
   .drift-layer {
     transform: none;
   }
@@ -649,23 +337,6 @@ html:has([data-work-reel][open]) [data-marquee-hint] {
 
   .marquee__track {
     animation: none;
-  }
-
-  .work-reel,
-  .work-reel.is-open,
-  .site-menu,
-  .site-menu.is-open {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
-
-  .work-reel::backdrop,
-  .work-reel.is-open::backdrop,
-  .site-menu::backdrop,
-  .site-menu.is-open::backdrop {
-    opacity: 1;
-    transition: none;
   }
 
   .hover-fox,

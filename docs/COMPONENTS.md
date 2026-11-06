@@ -15,21 +15,19 @@ Update this table in the same task that creates or changes a component.
 | Heading | — | — | — | planned |
 | FoxDivider | — | placeholder SVG is inline on the styleguide | styleguide | planned |
 | Badge | — | — | — | planned |
-| Reveal | `src/components/motion/Reveal.astro` | `stagger` (ms), `as`, `class` | styleguide, ProjectsGallery | built |
-| Marquee | `src/components/motion/Marquee.astro` | `label`, `reverse`, `pauseOnHover`, `clips` (src, title, note, alt, poster), `openTemplate`, `class` | styleguide, HomeEntry, ProjectsGallery | built (`clips` turns words into reel buttons) |
-| SnowCanvas | `src/components/motion/SnowCanvas.astro` | `class` | styleguide, WorkCase, ProjectsGallery | built (behind plates; pointer drifts the fall, same source as the home) |
+| Reveal | `src/components/motion/Reveal.astro` | `stagger` (ms), `class` | styleguide, VideoGallery, ServiceCards, QuoteForm | built |
+| Marquee | `src/components/motion/Marquee.astro` | `label`, `reverse`, `pauseOnHover`, `clips` (src, title, note, alt, poster), `openTemplate`, `class` | styleguide | built (not on the home any more; `clips` turns words into reel buttons, which needs a reel dialog that no longer exists) |
+| SnowCanvas | `src/components/motion/SnowCanvas.astro` | `class` | styleguide | built (pointer drifts the fall, same source as the home) |
 | Seo | `src/components/seo/Seo.astro` | `title`, `description`, `siteName`, `noindex` | BaseLayout | built |
 | Hreflang | `src/components/seo/Hreflang.astro` | `pageKey` | BaseLayout | built |
-| LanguageSwitcher | `src/components/SiteHeader.astro` | part of the header (`pageKey` keeps the switch on the current page) | HomeEntry, ProjectsGallery, WorkCase | built (bar from `lg`; inside the mobile menu below that) |
-| Nav | `src/components/SiteHeader.astro` | `locale`, `pageKey`, `markKey`, `fixed`, `quote` (`outline` or `gradient`) | HomeEntry, ProjectsGallery, WorkCase | built (mark centered, Projects + language + quote right, from `lg`; no service links in the bar or the mobile menu) |
+| LanguageSwitcher | `src/components/SiteHeader.astro` | part of the header (`pageKey` keeps the switch on the current page) | HomeEntry | built (EN / ES on the right at every width) |
+| Nav | `src/components/SiteHeader.astro` | `locale`, `pageKey`, `fixed` | HomeEntry | built (mark and EN / ES only; clear over the film, glass backing once the hero has scrolled away; no menu, no service links, no quote button because `QuoteFab` carries it) |
 | Footer | — | — | — | planned |
-| MobileMenu | `src/components/SiteHeader.astro` | same header; dialog below `lg` | HomeEntry, ProjectsGallery, WorkCase | built (full-screen glass dialog, one gradient quote, focus trap, Escape, scroll lock) |
-| WhatsAppButton | — | — | — | planned |
-| PageShell | `src/components/pages/PageShell.astro` | `locale`, `pageKey`, `titleKey`, `descriptionKey`, `headingKey` | public routes except home, `/work`, and `/projects` | built (shell only, no page design) |
-| HomeEntry | `src/components/home/HomeEntry.astro` | `locale` | `/`, `/es/` | built (the film is the still sequence in `public/media/scrub/`, stepped with scroll; indexable) |
-| WorkReel | `src/components/home/WorkReel.astro` | `closeLabel`, `moreLabel`, `moreHref` | HomeEntry | built (glass card, bottom-right; copy and media come from the marquee button; mobile stacks note then CTA so the pill stays on one line) |
-| WorkCase | `src/components/home/WorkCase.astro` | `locale` | `/work` and `/es/trabajo` | built (frost field, glass process beats, large plates) |
-| ProjectsGallery | `src/components/pages/ProjectsGallery.astro` | `locale` | `/projects` and `/es/proyectos` | built (frost field, sticky glass case cards, labelled frame rows, snap strips below `lg`, lazy muted videos with posters) |
-| SnowDive | `src/components/motion/SnowDive.astro` | none | HomeEntry | built (scroll-scrubbed frames on the home, loader waits for the first 10 and the rest stream in coarse to fine, nearest loaded frame is painted meanwhile; snow direction is `data-snow-direction`: `fall` or `dive`) |
-| FrostField | `src/components/motion/FrostField.astro` | `fixed`, `class` | WorkCase, ProjectsGallery | built (procedural blue-hour sky; off the home during the video look test) |
-| GlassSheen | `src/components/motion/GlassSheen.astro` | none | HomeEntry, WorkCase, ProjectsGallery | built (pointer sheen on `[data-sheen]`) |
+| HomeEntry | `src/components/home/HomeEntry.astro` | `locale` | `/`, `/es/` | built (section 1, the hero: the film is the still sequence in `public/media/scrub/`, stepped with scroll; composes the three sections below, `QuoteFab` and `SnowDive`) |
+| VideoGallery | `src/components/home/VideoGallery.astro` | `locale` | HomeEntry | built (section 2: four muted clips from `public/media/projects/` as stand-ins; play while in view, a clip the visitor pauses stays paused; reduced motion plays nothing on its own; keeps the AI-avatar note for UGC) |
+| ServiceCards | `src/components/home/ServiceCards.astro` | `locale` | HomeEntry | built (section 3: three glass cards on a `FrostField`; each button goes to `#contact` and pre-ticks its need in the form) |
+| QuoteForm | `src/components/home/QuoteForm.astro` | `locale` | HomeEntry | built (section 4, `id="contact"`: Netlify Forms `quote` with honeypot, sent with `fetch` and answered in place; light card on a dark section; the send button holds the section's one gradient) |
+| QuoteFab | `src/components/QuoteFab.astro` | `locale` | HomeEntry | built (white pill fixed bottom right on every screen, links to `#contact`; white on purpose so it never counts as a second gradient) |
+| SnowDive | `src/components/motion/SnowDive.astro` | none | HomeEntry | built (scroll-scrubbed frames on the hero (it only drives the pinned hero stage), loader waits for the first 10 and the rest stream in coarse to fine, nearest loaded frame is painted meanwhile; snow direction is `data-snow-direction`: `fall` or `dive`) |
+| FrostField | `src/components/motion/FrostField.astro` | `fixed`, `class` | ServiceCards | built (procedural blue-hour sky) |
+| GlassSheen | `src/components/motion/GlassSheen.astro` | none | HomeEntry | built (pointer sheen on `[data-sheen]`) |

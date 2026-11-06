@@ -41,7 +41,6 @@
     const layers = [...root.querySelectorAll<HTMLElement>('[data-drift-layer]')];
     const veil = root.querySelector<HTMLElement>('[data-dive-veil]');
     const beats = [...root.querySelectorAll<HTMLElement>('[data-journey-beat]')];
-    const pieces = [...root.querySelectorAll<HTMLElement>('[data-journey-piece]')];
     const mouse = pointer();
     let progress = 0;
     const scrubCanvas = root.querySelector<HTMLCanvasElement>('[data-scrub-frames]');
@@ -81,22 +80,6 @@
           beat.style.pointerEvents = shown ? 'auto' : 'none';
           beat.style.transform = `translateY(${(1 - opacity) * (leaving ? -64 : 20)}px)`;
         }
-        for (const piece of pieces) {
-          const opacity = pieceOpacity(
-            progress,
-            Number(piece.dataset.from),
-            Number(piece.dataset.to),
-            Number(piece.dataset.fade),
-          );
-          const shown = opacity > 0.04;
-          const rise = piece.dataset.enter === 'up';
-          piece.style.opacity = String(opacity);
-          piece.style.visibility = shown ? 'visible' : 'hidden';
-          piece.style.pointerEvents = shown ? 'auto' : 'none';
-          piece.style.transform = rise
-            ? `translateY(${(1 - opacity) * 28}px)`
-            : `translateX(${(1 - opacity) * 96}px)`;
-        }
       };
 
       diveTrigger = ScrollTrigger.create({
@@ -132,14 +115,6 @@
 
   document.addEventListener('astro:before-swap', teardownDive);
   onPageReady(bootDive);
-
-  function pieceOpacity(progress: number, from: number, to: number, fade = 0.1): number {
-    if (progress < from) return 0;
-    const fadeIn = Math.min(1, (progress - from) / (Number.isFinite(fade) && fade > 0 ? fade : 0.1));
-    if (Number.isNaN(to)) return fadeIn;
-    if (progress > to) return 0;
-    return Math.min(fadeIn, Math.min(1, (to - progress) / 0.08));
-  }
 
   function beatOpacity(progress: number, from: number, to: number, edge = 0.05): number {
     const fade = Number.isFinite(edge) && edge > 0 ? edge : 0.05;
@@ -255,6 +230,12 @@
     let inFlight = 0;
     const pump = () => {
       while (!disposed && inFlight < FRAME_CONCURRENCY && cursor < order.length) {
+        // Images started before `load` hold the page's load event (and the tab spinner) open.
+        // Only the gate frames may do that; the streamed rest waits until the page is done.
+        if (cursor >= gate && document.readyState !== 'complete') {
+          window.addEventListener('load', pump, { once: true });
+          return;
+        }
         const index = order[cursor];
         cursor += 1;
         inFlight += 1;

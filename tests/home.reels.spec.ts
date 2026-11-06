@@ -1,99 +1,24 @@
 import { expect, test } from '@playwright/test';
 
-test('marquee word opens glass work and the strip keeps moving', async ({ page }) => {
+async function openHome(page: import('@playwright/test').Page, path = '/') {
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto('/');
-  await page.locator('h1').waitFor();
-  await expect
-    .poll(async () => page.locator('[data-loader]').evaluate((n) => getComputedStyle(n).opacity), {
-      timeout: 15_000,
-    })
-    .toBe('0');
-
-  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight - window.innerHeight));
-  await page.waitForTimeout(1200);
-
-  const track = page.locator('.marquee__track').first();
-  const before = await track.evaluate((node) => getComputedStyle(node).animationPlayState);
-  expect(before).toBe('running');
-
-  const word = page.locator('[data-reel]').first();
-  await expect(word).toBeVisible();
-  await word.hover();
-  const hovered = await track.evaluate((node) => getComputedStyle(node).animationPlayState);
-  expect(hovered).toBe('running');
-
-  await word.click();
-
-  const dialog = page.locator('[data-work-reel]');
-  await expect(dialog).toBeVisible();
-  await expect(dialog).toHaveClass(/is-open/);
-  await expect(page.locator('[data-reel-image]')).toBeVisible();
-  await expect(page.locator('[data-work-reel] a[href="/work"]')).toBeVisible();
-
-  await page.locator('[data-reel-close]').click();
-  await expect(dialog).toBeHidden();
-});
-
-test('returning from work restarts the home dive', async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto('/');
-  await page.locator('h1').waitFor();
-  await expect
-    .poll(async () => page.locator('[data-loader]').evaluate((n) => getComputedStyle(n).opacity), {
-      timeout: 15_000,
-    })
-    .toBe('0');
-
-  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight - window.innerHeight));
-  await page.waitForTimeout(800);
-  await page.locator('[data-reel]').first().click();
-  await expect(page.locator('[data-work-reel]')).toHaveClass(/is-open/);
-  await page.locator('[data-reel-more]').click();
-  await page.waitForURL('**/work');
-  await expect(page.locator('h1')).toBeVisible();
-
-  await page.locator('a[href="/"]').first().click();
-  await page.waitForURL((url) => url.pathname === '/');
-
-  const state = await page.evaluate(() => ({
-    htmlOverflow: getComputedStyle(document.documentElement).overflow,
-    bodyOverflow: getComputedStyle(document.body).overflow,
-    dive: Boolean(document.querySelector('[data-snow-dive]')),
-    dialogOpen: Boolean(document.querySelector('dialog[open]')),
-    height: document.documentElement.scrollHeight,
-  }));
-  expect(state.htmlOverflow).not.toBe('hidden');
-  expect(state.bodyOverflow).not.toBe('hidden');
-  expect(state.dive).toBe(true);
-  expect(state.dialogOpen).toBe(false);
-  expect(state.height).toBeGreaterThan(2000);
-
-  await page.mouse.wheel(0, 1200);
-  await page.waitForTimeout(500);
-  expect(await page.evaluate(() => window.scrollY)).toBeGreaterThan(80);
-});
-
-test('sample work page presents the mock case', async ({ page }) => {
-  await page.goto('/work');
-  await expect(page.locator('h1')).toBeVisible();
-  await expect(page.locator('.work-beat__plate')).toHaveCount(4);
-  await expect(page.locator('.work-beat__card')).toHaveCount(4);
-});
-
-test('home scrubs film frames with scroll', async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto('/');
-  const frames = page.locator('[data-scrub-frames]');
-  await expect(frames).toHaveCount(1);
+  await page.goto(path);
+  await page.locator('main h1').waitFor();
   await expect
     .poll(async () => page.locator('[data-loader]').evaluate((n) => getComputedStyle(n).opacity), {
       timeout: 30_000,
     })
     .toBe('0');
+}
+
+test('home scrubs film frames with scroll', async ({ page }) => {
+  await openHome(page);
+  const frames = page.locator('[data-scrub-frames]');
+  await expect(frames).toHaveCount(1);
 
   await page.evaluate(() => {
-    window.scrollTo(0, (document.body.scrollHeight - window.innerHeight) * 0.55);
+    const stage = document.querySelector('[data-snow-dive]') as HTMLElement;
+    window.scrollTo(0, (stage.offsetHeight - window.innerHeight) * 0.55);
   });
   await expect
     .poll(async () => Number(await frames.getAttribute('data-frame')), { timeout: 8_000 })
@@ -103,4 +28,76 @@ test('home scrubs film frames with scroll', async ({ page }) => {
   await expect
     .poll(async () => Number(await frames.getAttribute('data-frame')), { timeout: 8_000 })
     .toBeLessThan(3);
+});
+
+test('home is one landing: hero, gallery, cards, contact form', async ({ page }) => {
+  await openHome(page);
+
+  // The hero keeps one quote button and no pricing link.
+  await expect(page.locator('main h1')).toBeVisible();
+  await expect(page.locator('[data-journey-beat] a[href="#contact"]')).toHaveCount(1);
+  await expect(page.locator('a[href*="pricing"], a[href*="precios"]')).toHaveCount(0);
+
+  const order = await page.evaluate(() => {
+    const top = (selector: string) =>
+      (document.querySelector(selector) as HTMLElement).getBoundingClientRect().top + window.scrollY;
+    return [top('[data-snow-dive]'), top('[data-gallery]'), top('#services-title'), top('#contact')];
+  });
+  expect([...order].sort((a, b) => a - b)).toEqual(order);
+
+  await expect(page.locator('[data-gallery-video]')).toHaveCount(4);
+  await expect(page.locator('article[data-sheen]')).toHaveCount(3);
+
+  const form = page.locator('form[name="quote"][data-netlify="true"]');
+  await expect(form).toHaveCount(1);
+  for (const name of ['name', 'email', 'company', 'website', 'brief', 'bot-field', 'form-name']) {
+    await expect(form.locator(`[name="${name}"]`)).toHaveCount(1);
+  }
+  await expect(form.locator('input[name="needs"]')).toHaveCount(4);
+});
+
+test('floating quote button stays in the corner and reaches the form', async ({ page }) => {
+  await openHome(page);
+  const fab = page.locator('[data-quote-fab]');
+  await expect(fab).toBeVisible();
+  await expect(fab).toHaveAttribute('href', '#contact');
+
+  const corner = async () =>
+    fab.evaluate((node) => {
+      const box = node.getBoundingClientRect();
+      return {
+        right: window.innerWidth - box.right,
+        bottom: window.innerHeight - box.bottom,
+      };
+    });
+  const atTop = await corner();
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  await page.waitForTimeout(600);
+  const atEnd = await corner();
+  expect(atEnd.right).toBeCloseTo(atTop.right, 0);
+  expect(atEnd.bottom).toBeCloseTo(atTop.bottom, 0);
+
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.waitForTimeout(400);
+  await fab.click();
+  await expect
+    .poll(async () => page.locator('#contact').evaluate((n) => n.getBoundingClientRect().top), {
+      timeout: 8_000,
+    })
+    .toBeLessThan(200);
+});
+
+test('a service card pre-ticks its need in the form', async ({ page }) => {
+  await openHome(page);
+  await page.locator('a[data-need="ad-videos"]').click();
+  await expect(page.locator('input[name="needs"][value="ad-videos"]')).toBeChecked();
+  await expect(page.locator('input[name="needs"][value="product-images"]')).not.toBeChecked();
+});
+
+test('the Spanish home carries the same sections and headline', async ({ page }) => {
+  await openHome(page, '/es/');
+  await expect(page.locator('main h1')).toContainText('No solo hacemos');
+  await expect(page.locator('main h1')).toContainText('anuncios ganadores');
+  await expect(page.locator('[data-quote-fab]')).toContainText('Pide presupuesto');
+  await expect(page.locator('form[name="quote"]')).toHaveCount(1);
 });

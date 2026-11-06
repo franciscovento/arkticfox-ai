@@ -1,0 +1,219 @@
+---
+import Reveal from '@/components/motion/Reveal.astro';
+import type { Locale } from '@/i18n/routes';
+import type { UiKey } from '@/i18n/ui/en';
+import { getPath, t } from '@/i18n/utils';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const needs: { value: string; label: UiKey }[] = [
+  { value: 'product-images', label: 'page.productImages.heading' },
+  { value: 'ad-videos', label: 'page.adVideos.heading' },
+  { value: 'ugc-videos', label: 'page.ugcVideos.heading' },
+  { value: 'not-sure', label: 'contact.form.notSure' },
+];
+
+const reassurance: UiKey[] = ['contact.reassurance.noCommitment', 'contact.reassurance.clearQuote'];
+
+const field =
+  'mt-2 block w-full rounded-card-sm border border-ink/40 bg-white px-4 py-3 font-sans text-sm text-ink';
+const labelClass = 'block font-sans text-sm font-medium text-ink';
+---
+
+<section
+  id="contact"
+  class="relative bg-polar-night px-5 py-20 md:px-10 md:py-28"
+  aria-labelledby="contact-title"
+>
+  <div class="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-16">
+    <Reveal class="lg:pt-4">
+      <p class="label text-ice-blue">{t(locale, 'contact.eyebrow')}</p>
+      <h2
+        id="contact-title"
+        class="mt-4 font-serif text-4xl leading-tight text-white md:text-6xl"
+      >
+        {t(locale, 'contact.headlineLead')}{' '}
+        <em class="italic">{t(locale, 'contact.headlineEmphasis')}</em>{t(locale, 'contact.headlineTail')}
+      </h2>
+      <p class="mt-5 max-w-md font-sans text-sm leading-relaxed text-white/85 md:text-base">
+        {t(locale, 'contact.subhead')}
+      </p>
+      <ul class="mt-8 flex max-w-md flex-col">
+        {
+          reassurance.map((key) => (
+            <li class="border-t border-glass-border py-3 font-sans text-sm text-white last:border-b">
+              {t(locale, key)}
+            </li>
+          ))
+        }
+      </ul>
+    </Reveal>
+
+    <Reveal stagger={120}>
+      <div class="rounded-card bg-snow-white p-6 text-ink md:p-8">
+        <form
+          name="quote"
+          method="POST"
+          action={getPath(locale, 'home')}
+          data-netlify="true"
+          data-netlify-honeypot="bot-field"
+          data-quote-form
+          data-sending-label={t(locale, 'contact.form.sending')}
+          data-needs-message={t(locale, 'contact.form.errorNeeds')}
+          class="flex flex-col gap-5"
+        >
+          <input type="hidden" name="form-name" value="quote" />
+          <input type="hidden" name="locale" value={locale} />
+          <p class="hidden" aria-hidden="true">
+            <label>
+              {t(locale, 'contact.form.honeypot')}
+              <input name="bot-field" tabindex="-1" autocomplete="off" />
+            </label>
+          </p>
+
+          <div class="grid gap-5 md:grid-cols-2">
+            <div>
+              <label class={labelClass} for="quote-name">{t(locale, 'contact.form.name')}</label>
+              <input class={field} id="quote-name" name="name" type="text" autocomplete="name" required />
+            </div>
+            <div>
+              <label class={labelClass} for="quote-email">{t(locale, 'contact.form.email')}</label>
+              <input class={field} id="quote-email" name="email" type="email" autocomplete="email" required />
+            </div>
+          </div>
+
+          <div class="grid gap-5 md:grid-cols-2">
+            <div>
+              <label class={labelClass} for="quote-company">
+                {t(locale, 'contact.form.company')}
+              </label>
+              <input class={field} id="quote-company" name="company" type="text" autocomplete="organization" required />
+            </div>
+            <div>
+              <label class={labelClass} for="quote-website">
+                {t(locale, 'contact.form.website')}
+                <span class="font-normal text-ink/70"> {t(locale, 'contact.form.optional')}</span>
+              </label>
+              <input class={field} id="quote-website" name="website" type="url" autocomplete="url" />
+            </div>
+          </div>
+
+          <fieldset>
+            <legend class={labelClass}>{t(locale, 'contact.form.needs')}</legend>
+            <div class="mt-3 grid gap-3 sm:grid-cols-2">
+              {
+                needs.map((need) => (
+                  <label class="flex items-center gap-3 font-sans text-sm text-ink">
+                    <input
+                      class="size-4 shrink-0 accent-fox-coral"
+                      type="checkbox"
+                      name="needs"
+                      value={need.value}
+                      data-need-box
+                    />
+                    {t(locale, need.label)}
+                  </label>
+                ))
+              }
+            </div>
+          </fieldset>
+
+          <div>
+            <label class={labelClass} for="quote-brief">{t(locale, 'contact.form.brief')}</label>
+            <textarea class={field} id="quote-brief" name="brief" rows="5" required></textarea>
+          </div>
+
+          <p class="font-sans text-sm text-ink" role="alert" data-quote-error hidden>
+            {t(locale, 'contact.form.errorSubmit')}
+          </p>
+
+          <button
+            type="submit"
+            class="hover-fox inline-flex w-full items-center justify-center rounded-pill bg-brand-gradient px-6 py-3.5 font-sans text-sm font-medium text-white disabled:opacity-60 md:w-fit"
+            data-quote-submit
+          >
+            {t(locale, 'contact.form.submit')}
+          </button>
+        </form>
+
+        <div class="py-6" role="status" tabindex="-1" data-quote-success hidden>
+          <p class="font-serif text-3xl leading-tight text-ink md:text-4xl">
+            {t(locale, 'contact.form.successTitle')}
+          </p>
+          <p class="mt-3 font-sans text-sm leading-relaxed text-ink">
+            {t(locale, 'contact.form.successBody')}
+          </p>
+        </div>
+      </div>
+    </Reveal>
+  </div>
+</section>
+
+<script>
+  import { onPageReady } from '../../motion/ready';
+
+  function bootQuoteForm() {
+    const form = document.querySelector<HTMLFormElement>('[data-quote-form]');
+    if (!form || form.dataset.bound === 'true') return;
+    form.dataset.bound = 'true';
+
+    const boxes = [...form.querySelectorAll<HTMLInputElement>('[data-need-box]')];
+    const submit = form.querySelector<HTMLButtonElement>('[data-quote-submit]');
+    const error = form.querySelector<HTMLElement>('[data-quote-error]');
+    const success = document.querySelector<HTMLElement>('[data-quote-success]');
+
+    // "What do you need?" needs at least one answer, which a native required cannot express
+    // for a group. The first box carries the message so the browser's own bubble shows it.
+    const syncNeeds = () => {
+      const any = boxes.some((box) => box.checked);
+      boxes[0]?.setCustomValidity(any ? '' : (form.dataset.needsMessage ?? ''));
+    };
+    for (const box of boxes) box.addEventListener('change', syncNeeds);
+    syncNeeds();
+
+    // The service cards pre-tick the matching need before the page glides to the form.
+    document.addEventListener('click', (event) => {
+      const trigger = (event.target as HTMLElement | null)?.closest<HTMLElement>('[data-need]');
+      if (!trigger) return;
+      const box = boxes.find((item) => item.value === trigger.dataset.need);
+      if (box) {
+        box.checked = true;
+        syncNeeds();
+      }
+    });
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (!submit) return;
+      const idleLabel = submit.textContent ?? '';
+      submit.disabled = true;
+      submit.textContent = form.dataset.sendingLabel ?? idleLabel;
+      if (error) error.hidden = true;
+
+      try {
+        const body = new URLSearchParams(new FormData(form) as unknown as Record<string, string>);
+        const response = await fetch('/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: body.toString(),
+        });
+        if (!response.ok) throw new Error(String(response.status));
+        form.hidden = true;
+        if (success) {
+          success.hidden = false;
+          success.focus();
+        }
+      } catch {
+        if (error) error.hidden = false;
+        submit.disabled = false;
+        submit.textContent = idleLabel;
+      }
+    });
+  }
+
+  onPageReady(bootQuoteForm);
+</script>

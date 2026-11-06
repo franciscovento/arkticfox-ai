@@ -4,19 +4,9 @@ export type Locale = (typeof locales)[number];
 
 export const defaultLocale: Locale = 'en';
 
+/** The site is one landing page per language. */
 export const routes = {
   home: { en: '/', es: '/es/' },
-  work: { en: '/work', es: '/es/trabajo' },
-  projects: { en: '/projects', es: '/es/proyectos' },
-  productImages: { en: '/product-images', es: '/es/imagenes-de-producto' },
-  adVideos: { en: '/ad-videos', es: '/es/videos-publicitarios' },
-  ugcVideos: { en: '/ugc-videos', es: '/es/videos-ugc' },
-  pricing: { en: '/pricing', es: '/es/precios' },
-  quote: { en: '/quote', es: '/es/presupuesto' },
-  thanks: { en: '/thanks', es: '/es/gracias' },
-  legalNotice: { en: '/legal-notice', es: '/es/aviso-legal' },
-  privacy: { en: '/privacy', es: '/es/privacidad' },
-  cookies: { en: '/cookies', es: '/es/cookies' },
 } as const;
 
 export type PageKey = keyof typeof routes;

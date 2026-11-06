@@ -1,0 +1,19 @@
+---
+import type { Locale } from '@/i18n/routes';
+import { t } from '@/i18n/utils';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+
+{/* White, not gradient: the hero CTA and the form's send button already hold the one gradient. */}
+<a
+  class="hover-fox fixed right-5 bottom-[max(1.25rem,env(safe-area-inset-bottom))] z-40 inline-flex items-center rounded-pill border border-ink/20 bg-white px-5 py-3 font-sans text-sm font-medium whitespace-nowrap text-ink md:right-8 md:bottom-[max(2rem,env(safe-area-inset-bottom))]"
+  href="#contact"
+  data-quote-fab
+>
+  {t(locale, 'nav.quote')}
+</a>

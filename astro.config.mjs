@@ -18,8 +18,7 @@ export default defineConfig({
   integrations: [
     react(),
     sitemap({
-      filter: (page) =>
-        !page.includes('/styleguide') && !page.includes('/work') && !page.includes('/trabajo'),
+      filter: (page) => !page.includes('/styleguide'),
       i18n: {
         defaultLocale: 'en',
         locales: {

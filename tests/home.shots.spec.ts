@@ -8,7 +8,7 @@ for (const width of widths) {
   test(`home journey ${width}`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.goto('/');
-    await page.locator('h1').waitFor();
+    await page.locator('main h1').waitFor();
     await page.addStyleTag({ content: 'astro-dev-toolbar { display: none !important; }' });
 
     // Wait out the preload loader so it never lands in a screenshot.
@@ -33,11 +33,11 @@ test('reduced motion flattens the journey', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.setViewportSize({ width: 390, height: 800 });
   await page.goto('/');
-  await page.locator('h1').waitFor();
+  await page.locator('main h1').waitFor();
 
-  // Every beat and card must be readable without any scroll scene driving them.
+  // Every beat must be readable without any scroll scene driving it.
   const hidden = await page
-    .locator('[data-journey-piece]')
+    .locator('[data-journey-beat]')
     .evaluateAll((nodes) => nodes.filter((n) => getComputedStyle(n).opacity !== '1').length);
   expect(hidden).toBe(0);
 
@@ -48,17 +48,17 @@ test('reduced motion flattens the journey', async ({ page }) => {
 test('home keeps falling snow over the film', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
-  await page.locator('h1').waitFor();
+  await page.locator('main h1').waitFor();
   await expect(page.locator('[data-dive-snow]')).toHaveCount(1);
   await expect(page.locator('[data-dive-snow]')).toHaveAttribute('data-snow-direction', 'fall');
 });
 
-test('header has no service links, only Projects, language and quote', async ({ page }) => {
+test('header holds only the mark and the language switch', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
   const header = page.locator('[data-site-header]');
-  await expect(header.locator('a[href="/product-images"]')).toHaveCount(0);
-  await expect(header.locator('a[href="/ad-videos"]')).toHaveCount(0);
-  await expect(header.locator('a[href="/ugc-videos"]')).toHaveCount(0);
-  await expect(header.locator('a[href="/projects"]')).toBeVisible();
+  await expect(header.locator('a')).toHaveCount(3);
+  await expect(header.locator('a[hreflang="en"]')).toBeVisible();
+  await expect(header.locator('a[hreflang="es"]')).toHaveAttribute('href', '/es/');
+  await expect(header.locator('button')).toHaveCount(0);
 });

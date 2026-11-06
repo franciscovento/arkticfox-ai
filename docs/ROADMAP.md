@@ -7,12 +7,12 @@ Page copy is specified per page in [`pages/`](./pages/README.md). Build steps 4�
 | 1 | Environment, tooling, guardrails, docs | done — pending approval |
 | 1b | Content specs per page (`docs/pages/`), EN + ES, provenance marked | done — Spanish and all `OPEN` items pending Nabil |
 | 2 | Design system build: tokens ← Claude Design handoff, primitives, FoxDivider, logo, `/styleguide` approved | todo |
-| 3 | Layout: Nav (split + mobile menu), Footer, language switcher, WhatsApp button, Seo/Hreflang | partial — `SiteHeader` is the split bar from `lg` and a full-screen menu below it; footer, services dropdown, and WhatsApp are still todo |
-| 4 | Home sections 1→12 (dark/light rhythm, hero video, marquee, sliders, masonry) | `/` is the scroll-scrubbed frame film (the old V1 loop and `/v2` are gone); dive through the marquee; Why and sections 5, 7–12 still todo |
-| 4b | Projects gallery | `/projects` · `/es/proyectos` indexed, linked from the built header |
-| 5 | Service page template + 3 services | todo |
-| 6 | Pricing page | todo |
-| 7 | Quote form + Thanks + legal template + cookie banner | todo |
-| 8 | Spanish version (`/es/`), content parity | shells exist; copy and design still todo |
+| 3 | Layout: Nav, language switcher, floating quote button, Seo/Hreflang | done for the single landing — no menu, no footer (see ADR-024) |
+| 4 | The landing: hero, video gallery, service cards, contact form, floating quote button | built — gallery clips are stand-ins until the final reels arrive |
+| 4b | Projects gallery | dropped — folded into the landing's video gallery |
+| 5 | Service page template + 3 services | dropped — one landing (ADR-024) |
+| 6 | Pricing page | dropped — one landing (ADR-024) |
+| 7 | Quote form + Thanks + legal template + cookie banner | form built in the landing; Thanks, privacy, legal notice and cookies are dropped, which still needs a legal decision (ADR-024) |
+| 8 | Spanish version (`/es/`), content parity | the landing exists in both languages |
 | 9 | SEO, OG images, sitemap, 404, performance + a11y pass, Netlify config | todo |
 | 10 | Launch checklist (legal texts, domain, HTTPS, form test EN+ES, Search Console) | todo |
