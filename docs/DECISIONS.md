@@ -120,6 +120,7 @@
 - Context: The blue-hour dive (V1) is cinematic but not locked. Nabil asked for a second cut closer to [Steven Popovich](https://www.stevenpopovich.com/): large, colourful plates, almost no chrome.
 - Decision: Keep V1 at `/` and `/es/`. Ship V2 at `/v2` and `/es/v2`, `noindex`, out of the sitemap. Colour comes from the photographs. UI stays on tokens. The plates in `public/media/mocks/` are Unsplash stand-ins, labelled as such, never as client work.
 - Update (2026-10-14): The parked image grid is gone. `/v2` and `/es/v2` are the home again, `noindex`, with the second film as scroll-scrubbed 1080p stills in `public/media/scrub/`. `/` keeps the looping `hero-loop.mp4`.
+- Update (2026-11-05, weight): The 380 stills are 1080p lossy WebP at about 147 KB each, 54 MB in total. Re-encoding at a visually equal quality (q90) saves only about 6%, and q85 saves about 28% but shows in the fine snow, so the files stay as they are. The cost was the loader, which waited for all 380. Now the loader waits for the first 10 frames (about 1.5 MB) and the rest streams behind the page, four requests at a time, coarse to fine (every 8th frame, then 4th, 2nd, all). A scroll position whose frame has not arrived paints the nearest frame that has, so the canvas is never blank. Measured at 10 Mbps: the page opens in about 4 s with 2 MB loaded, instead of waiting for 54 MB. `hero-loop.mp4` (25 MB) is still the lighter way to ship the same film if `/v2` is promoted.
 
 ## ADR-018 — Marquee words open glass work, V2 stays a parked grid
 
