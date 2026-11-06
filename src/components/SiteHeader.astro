@@ -7,7 +7,7 @@ interface Props {
   locale: Locale;
   /** Page the language switch stays on. */
   pageKey: PageKey;
-  /** Wordmark target. Home v2 keeps its own URL; other pages return home. */
+  /** Wordmark target. Defaults to the current page; inner pages pass `home`. */
   markKey?: PageKey;
   /** Home stays fixed over the film. Work and projects scroll away. */
   fixed?: boolean;
@@ -20,14 +20,7 @@ interface Props {
 
 const { locale, pageKey, markKey = pageKey, fixed = false, quote = 'gradient' } = Astro.props;
 
-const services: { pageKey: PageKey; label: UiKey }[] = [
-  { pageKey: 'productImages', label: 'page.productImages.heading' },
-  { pageKey: 'adVideos', label: 'page.adVideos.heading' },
-  { pageKey: 'ugcVideos', label: 'page.ugcVideos.heading' },
-];
-
 const menuLinks: { pageKey: PageKey; label: UiKey }[] = [
-  ...services,
   { pageKey: 'projects', label: 'nav.projects' },
 ];
 
@@ -39,24 +32,11 @@ const quoteClass =
 
 <header
   class:list={[
-    'flex flex-wrap items-center justify-between gap-y-3 px-5 py-5 md:px-10',
+    'flex flex-wrap items-center justify-between gap-y-3 px-5 py-5 md:px-10 lg:justify-end',
     fixed ? 'fixed inset-x-0 top-0 z-30' : 'relative z-20',
   ]}
   data-site-header
 >
-  <nav class="hidden items-center gap-6 lg:flex" aria-label={t(locale, 'home.navLabel')}>
-    {
-      services.map((item) => (
-        <a
-          class="label hover-fox text-white"
-          href={getPath(locale, item.pageKey)}
-          aria-current={pageKey === item.pageKey ? 'page' : undefined}
-        >
-          {t(locale, item.label)}
-        </a>
-      ))
-    }
-  </nav>
   <a
     class="label shrink-0 whitespace-nowrap text-white lg:absolute lg:left-1/2 lg:-translate-x-1/2"
     href={getPath(locale, markKey)}

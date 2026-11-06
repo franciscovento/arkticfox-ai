@@ -41,43 +41,24 @@ test('reduced motion flattens the journey', async ({ page }) => {
     .evaluateAll((nodes) => nodes.filter((n) => getComputedStyle(n).opacity !== '1').length);
   expect(hidden).toBe(0);
 
-  const video = page.locator('[data-dive-video]');
-  await expect(video).toHaveCount(1);
-  const pausedAtStart = await video.evaluate((node) => {
-    const film = node as HTMLVideoElement;
-    return film.paused && film.currentTime < 0.05;
-  });
-  expect(pausedAtStart).toBe(true);
+  // The film is a single still on the canvas when motion is reduced.
+  await expect(page.locator('[data-scrub-frames]')).toHaveCount(1);
 });
 
-test('background video loops independent of scroll', async ({ page }) => {
+test('home keeps falling snow over the film', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
   await page.locator('h1').waitFor();
-  await expect
-    .poll(async () => page.locator('[data-loader]').evaluate((n) => getComputedStyle(n).opacity), {
-      timeout: 15_000,
-    })
-    .toBe('0');
-
-  const video = page.locator('[data-dive-video]');
-  await expect(video).toHaveCount(1);
-  await expect
-    .poll(async () => video.evaluate((node) => (node as HTMLVideoElement).paused), { timeout: 8_000 })
-    .toBe(false);
-
-  const before = await video.evaluate((node) => (node as HTMLVideoElement).currentTime);
-  await page.waitForTimeout(700);
-  const after = await video.evaluate((node) => (node as HTMLVideoElement).currentTime);
-  expect(after).toBeGreaterThan(before);
-
-  await page.evaluate(() => {
-    window.scrollTo(0, (document.body.scrollHeight - window.innerHeight) * 0.55);
-  });
-  await page.waitForTimeout(400);
-  const mid = await video.evaluate((node) => (node as HTMLVideoElement).currentTime);
-  expect(mid).toBeLessThan(8);
-
   await expect(page.locator('[data-dive-snow]')).toHaveCount(1);
   await expect(page.locator('[data-dive-snow]')).toHaveAttribute('data-snow-direction', 'fall');
+});
+
+test('header has no service links, only Projects, language and quote', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  const header = page.locator('[data-site-header]');
+  await expect(header.locator('a[href="/product-images"]')).toHaveCount(0);
+  await expect(header.locator('a[href="/ad-videos"]')).toHaveCount(0);
+  await expect(header.locator('a[href="/ugc-videos"]')).toHaveCount(0);
+  await expect(header.locator('a[href="/projects"]')).toBeVisible();
 });

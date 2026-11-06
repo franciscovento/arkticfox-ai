@@ -6,7 +6,6 @@ export const defaultLocale: Locale = 'en';
 
 export const routes = {
   home: { en: '/', es: '/es/' },
-  homeV2: { en: '/v2', es: '/es/v2' },
   work: { en: '/work', es: '/es/trabajo' },
   projects: { en: '/projects', es: '/es/proyectos' },
   productImages: { en: '/product-images', es: '/es/imagenes-de-producto' },

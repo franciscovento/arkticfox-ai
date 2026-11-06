@@ -6,7 +6,7 @@
   import { pointer } from '../../motion/pointer';
   import { prefersReducedMotion } from '../../motion/reduced';
 
-  /** Frames the /v2 loader waits for before the page opens (about 1.5 MB). */
+  /** Frames the home loader waits for before the page opens (about 1.5 MB). */
   const FRAME_GATE = 10;
   /** Background passes after the gate, coarse to fine. */
   const FRAME_STRIDES = [8, 4, 2, 1];
@@ -16,7 +16,6 @@
   let diveTrigger: ScrollTrigger | undefined;
   let diveFrame = 0;
   let stopSnow: (() => void) | undefined;
-  let stopVideo: (() => void) | undefined;
   let stopFrames: (() => void) | undefined;
 
   function teardownDive() {
@@ -26,8 +25,6 @@
     diveFrame = 0;
     stopSnow?.();
     stopSnow = undefined;
-    stopVideo?.();
-    stopVideo = undefined;
     stopFrames?.();
     stopFrames = undefined;
     stopSmoothScroll();
@@ -43,8 +40,6 @@
     const canvas = root.querySelector<HTMLCanvasElement>('[data-dive-snow]');
     const layers = [...root.querySelectorAll<HTMLElement>('[data-drift-layer]')];
     const veil = root.querySelector<HTMLElement>('[data-dive-veil]');
-    const video = root.querySelector<HTMLVideoElement>('[data-dive-video]');
-    stopVideo = bindDiveVideo(video);
     const beats = [...root.querySelectorAll<HTMLElement>('[data-journey-beat]')];
     const pieces = [...root.querySelectorAll<HTMLElement>('[data-journey-piece]')];
     const mouse = pointer();
@@ -154,33 +149,8 @@
     return Math.min(fadeIn, fadeOut);
   }
 
-  /** Background loop. Scroll does not seek it. Reduced motion and a hidden tab leave it paused. */
-  function bindDiveVideo(video: HTMLVideoElement | null) {
-    if (!video) return () => {};
-
-    video.muted = true;
-    video.loop = true;
-    if (prefersReducedMotion()) {
-      video.pause();
-      return () => video.pause();
-    }
-
-    const onVisibility = () => {
-      if (document.hidden) video.pause();
-      else void video.play();
-    };
-
-    document.addEventListener('visibilitychange', onVisibility);
-    void video.play();
-
-    return () => {
-      document.removeEventListener('visibilitychange', onVisibility);
-      video.pause();
-    };
-  }
-
   /**
-   * Scroll-scrubbed stills for the /v2 cut. Each frame is a full 1080p image, so the film
+   * Scroll-scrubbed stills for the home film. Each frame is a full 1080p image, so the film
    * advances with scroll position instead of playing on its own.
    */
   function bindScrubFrames(canvas: HTMLCanvasElement | null, readProgress: () => number) {

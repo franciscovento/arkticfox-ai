@@ -81,9 +81,9 @@ test('sample work page presents the mock case', async ({ page }) => {
   await expect(page.locator('.work-beat__card')).toHaveCount(4);
 });
 
-test('v2 scrubs film frames with scroll', async ({ page }) => {
+test('home scrubs film frames with scroll', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto('/v2');
+  await page.goto('/');
   const frames = page.locator('[data-scrub-frames]');
   await expect(frames).toHaveCount(1);
   await expect

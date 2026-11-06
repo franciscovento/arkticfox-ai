@@ -76,9 +76,9 @@ export const es = {
   'styleguide.swatch.ink': 'Ink',
   'home.eyebrow': 'Estudio creativo con IA',
   'home.line1Lead': 'No solo hacemos',
-  'home.line1Emphasis': 'creatividades chulas',
-  'home.line2Lead': 'hacemos',
-  'home.line2Emphasis': 'anuncios que ganan',
+  'home.line1Emphasis': 'creatividades geniales',
+  'home.line2Lead': 'Creamos',
+  'home.line2Emphasis': 'anuncios ganadores',
   'home.subhead':
     'Imágenes de producto, vídeos publicitarios y UGC hiperrealistas creados con IA, para marcas que necesitan más creatividades, más rápido y sin el coste de un rodaje.',
   'home.loading': 'Cargando',
@@ -113,11 +113,6 @@ export const es = {
     'Varios hooks y variaciones por concepto, para que encuentres el que funciona.',
   'home.why.qualityTitle': 'Calidad de marca',
   'home.why.qualityBody': 'Revisado por personas, fiel a tu marca siempre.',
-  'home.versionField': 'V1',
-  'home.versionPop': 'V2',
-  'home.v2.title': 'Arktic Fox | Scroll',
-  'home.v2.description':
-    'La misma home, con el vídeo avanzando fotograma a fotograma al hacer scroll.',
   'home.reel.close': 'Cerrar',
   'home.reel.note':
     'Drop de invierno. El pack en habitaciones nuevas y un film corto para el feed.',

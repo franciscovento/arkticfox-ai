@@ -638,7 +638,6 @@ html:has([data-work-reel][open]) [data-marquee-hint] {
     display: none;
   }
 
-  [data-dive-video],
   [data-scrub-frames] {
     height: 100svh;
     bottom: auto;

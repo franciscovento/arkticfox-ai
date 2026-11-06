@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| URLs | `/` · `/es/` (V1, dive). Parked V2: `/v2` · `/es/v2` (noindex, unlinked). |
+| URLs | `/` · `/es/` (scroll-scrubbed frame film). The old V1 loop and `/v2` were removed on 2026-11-05. |
 | Goal | Impact, a summary of everything, a quote request. |
 | Rhythm | Twelve blocks alternating dark (cinema) and light (snow). Every block pushes toward the quote. |
 | Roadmap | Step 4. Blocks 1–2 exist as `HomeEntry` + `SnowDive`; 3–12 are still to do. |
@@ -39,7 +39,7 @@ Dropdown items reuse the service page titles from block 4.
 | Slot | Key | EN | ES |
 |---|---|---|---|
 | Eyebrow | `home.hero.eyebrow` | `AI CREATIVE STUDIO` **PDF** | `ESTUDIO CREATIVO CON IA` **PROPOSED** |
-| Headline | `home.line1Lead` + `line1Emphasis` + `line2Lead` + `line2Emphasis` | `We don't only make *cool creatives*, we make *winning ads*.` Client, 2026-10-14 | `No solo hacemos *creatividades chulas*, hacemos *anuncios que ganan*.` **PROPOSED** |
+| Headline | `home.line1Lead` + `line1Emphasis` + `line2Lead` + `line2Emphasis` | `We don't only make *cool creatives*. We make *winning ads*.` Client, 2026-11-05 (two sentences) | `No solo hacemos *creatividades geniales*. Creamos *anuncios ganadores*.` Client, 2026-11-05 |
 | Subheadline | `home.hero.subhead` | `AI-crafted product images, ad films and hyperreal UGC videos for brands that need more creative, faster, without the cost of a shoot.` **PDF** | `Imágenes de producto, vídeos publicitarios y UGC hiperrealistas creados con IA, para marcas que necesitan más creatividades, más rápido y sin el coste de un rodaje.` **PDF** |
 | Primary CTA | `shared.cta.quote` | `Get a quote` **PDF** | `Pide presupuesto` **PDF** |
 | Secondary CTA | `shared.cta.work` | `See our work` **PDF** | `Ver nuestro trabajo` **PROPOSED** |

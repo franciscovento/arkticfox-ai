@@ -73,7 +73,7 @@ export const en = {
   'home.eyebrow': 'AI creative studio',
   'home.line1Lead': "We don't only make",
   'home.line1Emphasis': 'cool creatives',
-  'home.line2Lead': 'we make',
+  'home.line2Lead': 'We make',
   'home.line2Emphasis': 'winning ads',
   'home.subhead':
     'AI-crafted product images, ad films and hyperreal UGC videos for brands that need more creative, faster, without the cost of a shoot.',
@@ -107,11 +107,6 @@ export const en = {
     'Multiple hooks and variations per concept, so you can find the winner.',
   'home.why.qualityTitle': 'Brand-safe quality',
   'home.why.qualityBody': 'Reviewed by humans, on-brand every time.',
-  'home.versionField': 'V1',
-  'home.versionPop': 'V2',
-  'home.v2.title': 'Arktic Fox | Scroll',
-  'home.v2.description':
-    'The same home, with the film stepped through as you scroll.',
   'home.reel.close': 'Close',
   'home.reel.note':
     'Winter drop. New rooms for the pack, and a short film for the feed.',

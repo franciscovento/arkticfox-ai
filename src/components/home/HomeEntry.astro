@@ -13,19 +13,15 @@ import { join } from 'node:path';
 
 interface Props {
   locale: Locale;
-  /** `loop` is the home film. `scrub` is the /v2 still sequence tied to scroll. */
-  variant?: 'loop' | 'scrub';
 }
 
-const { locale, variant = 'loop' } = Astro.props;
-const scrub = variant === 'scrub';
-const pageKey: PageKey = scrub ? 'homeV2' : 'home';
+const { locale } = Astro.props;
+const pageKey: PageKey = 'home';
 
-const frameCount = scrub
-  ? readdirSync(join(process.cwd(), 'public/media/scrub')).filter((name) =>
-      name.endsWith('.webp'),
-    ).length
-  : 0;
+// The film is a still sequence in public/media/scrub, stepped with scroll.
+const frameCount = readdirSync(join(process.cwd(), 'public/media/scrub')).filter((name) =>
+  name.endsWith('.webp'),
+).length;
 
 const cards: {
   from: string;
@@ -101,12 +97,8 @@ const sectorClips = [
 <BaseLayout
   locale={locale}
   pageKey={pageKey}
-  title={t(locale, scrub ? 'home.v2.title' : 'meta.homeTitle')}
-  description={t(
-    locale,
-    scrub ? 'home.v2.description' : 'meta.homeDescription',
-  )}
-  noindex={scrub}
+  title={t(locale, 'meta.homeTitle')}
+  description={t(locale, 'meta.homeDescription')}
   bodyClass="bg-polar-night"
 >
   <div data-snow-dive class="relative">
@@ -125,28 +117,13 @@ const sectorClips = [
     <SiteHeader locale={locale} pageKey={pageKey} fixed quote="outline" />
 
     <div class="relative z-20 min-h-svh" data-journey-stage>
-      {scrub ? (
-        <canvas
-          class="pointer-events-none absolute inset-0 z-0 h-full w-full"
-          data-scrub-frames
-          data-frame-base="/media/scrub/frame-"
-          data-frame-count={frameCount}
-          aria-hidden="true"
-        />
-      ) : (
-        <video
-          class="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover"
-          data-dive-video
-          src="/media/hero-loop.mp4?v=2"
-          poster="/media/hero-loop.jpg?v=2"
-          muted
-          loop
-          playsinline
-          preload="auto"
-          disablepictureinpicture
-          aria-hidden="true"
-        />
-      )}
+      <canvas
+        class="pointer-events-none absolute inset-0 z-0 h-full w-full"
+        data-scrub-frames
+        data-frame-base="/media/scrub/frame-"
+        data-frame-count={frameCount}
+        aria-hidden="true"
+      />
       <div class="video-shade bg-video-shade" aria-hidden="true"></div>
       <div
         class="drift-veil bg-dive-veil"
@@ -170,7 +147,7 @@ const sectorClips = [
         <h1 class="mt-4 max-w-3xl font-serif text-4xl leading-tight text-white md:text-5xl lg:text-6xl">
           <span class="block">
             {t(locale, 'home.line1Lead')}{' '}
-            <em class="italic">{t(locale, 'home.line1Emphasis')}</em>,
+            <em class="italic">{t(locale, 'home.line1Emphasis')}</em>.
           </span>
           <span class="block">
             {t(locale, 'home.line2Lead')}{' '}
@@ -268,31 +245,10 @@ const sectorClips = [
 <script>
   import { onPageReady } from '../../motion/ready';
 
-  function bootHomeEntry() {
-    const root = document.querySelector<HTMLElement>('[data-snow-dive]');
-    if (!root || root.dataset.booted === 'true') return;
-    root.dataset.booted = 'true';
-
-    const loader = root.querySelector<HTMLElement>('[data-loader]');
-    const bar = root.querySelector<HTMLElement>('[data-loader-bar]');
-    if (!loader || !bar) return;
-    if (root.querySelector('[data-scrub-frames]')) return;
-
-    const finish = () => {
-      loader.classList.add('is-done');
-      loader.setAttribute('aria-hidden', 'true');
-    };
-
-    bar.style.transform = 'scaleX(1)';
-    window.setTimeout(
-      finish,
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 280,
-    );
-  }
-
+  // The first visit shows the loader while the first frames arrive (SnowDive closes it).
+  // Coming back from another page the frames are cached, so close it straight away.
   let firstLoad = true;
   const onPage = () => {
-    bootHomeEntry();
     const loader = document.querySelector<HTMLElement>('[data-loader]');
     if (!firstLoad && loader) {
       loader.classList.add('is-done');
