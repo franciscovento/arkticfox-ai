@@ -116,7 +116,6 @@ export const en = {
   'contact.form.needs': 'What do you need?',
   'contact.form.notSure': 'Not sure yet',
   'contact.form.brief': 'Your product, in a line',
-  'contact.form.briefPlaceholder': 'e.g. a vegan skincare line launching on TikTok',
   'contact.form.consent': 'I agree to be contacted about this request.',
   'contact.form.submit': 'Send request',
   'contact.form.sending': 'Sending…',

@@ -294,6 +294,19 @@ const copies = loop && items.length > 1 ? [0, 1, 2] : [0];
         }).observe(host, { attributes: true, attributeFilter: ['style'] });
       }
 
+      // Inside a `stagger` beat of the home stage, the scroll drives the entrance: the cards
+      // arrive one by one, then the arrows. Elsewhere everything is simply in.
+      const navs = [prev, next].filter((n): n is HTMLButtonElement => Boolean(n));
+      host?.addEventListener('journey:enter', (event) => {
+        const value = Number((event as CustomEvent<number>).detail);
+        carousel.setReveal(value);
+        const arrows = Math.min(1, Math.max(0, (value - 0.8) / 0.2));
+        for (const nav of navs) {
+          nav.style.opacity = String(arrows);
+          nav.style.pointerEvents = arrows > 0.5 ? '' : 'none';
+        }
+      });
+
       prev?.addEventListener('click', () => carousel.prev());
       next?.addEventListener('click', () => carousel.next());
     });

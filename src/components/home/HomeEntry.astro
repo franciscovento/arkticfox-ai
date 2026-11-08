@@ -206,15 +206,15 @@ const reelCards = [
           </a>
         </div>
       </div>
-      {/* Reels: slide in from the side after the hero and hold for a long stretch of scroll. */}
+      {/* Reels: the three visible cards come in one by one, then the arrows; then a long hold. */}
       <div class="z-20 flex items-center justify-center pt-20" data-journey-row>
         <div
           class="w-full"
           data-journey-piece
-          data-enter="side"
+          data-enter="stagger"
           data-from="0.2"
           data-to="0.62"
-          data-fade="0.08"
+          data-span="0.12"
         >
           <VideoCarousel
             items={reelCards}

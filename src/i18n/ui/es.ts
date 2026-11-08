@@ -121,7 +121,6 @@ export const es = {
   'contact.form.needs': '¿Qué necesitas?',
   'contact.form.notSure': 'Aún no lo sé',
   'contact.form.brief': 'Tu producto, en una línea',
-  'contact.form.briefPlaceholder': 'p. ej. una línea de cosmética vegana que se lanza en TikTok',
   'contact.form.consent': 'Acepto que me contactéis para responder a esta solicitud.',
   'contact.form.submit': 'Enviar solicitud',
   'contact.form.sending': 'Enviando…',

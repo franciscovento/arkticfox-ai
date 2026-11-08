@@ -82,6 +82,22 @@
           beat.style.transform = `translateY(${(1 - opacity) * (leaving ? -64 : 20)}px)`;
         }
         for (const piece of pieces) {
+          if (piece.dataset.enter === 'stagger') {
+            // The piece only fades out at its end; its children run their own entrance from
+            // `journey:enter` (0 → 1 over `data-span` of progress), e.g. the reels one by one.
+            const from = Number(piece.dataset.from);
+            const to = Number(piece.dataset.to);
+            const span = Number(piece.dataset.span) || 0.12;
+            const enter = Math.min(1, Math.max(0, (progress - from) / span));
+            const leave = Number.isNaN(to) ? 1 : Math.min(1, Math.max(0, (to - progress) / 0.08));
+            const visible = progress >= from && enter > 0 && leave > 0;
+            piece.style.opacity = String(visible ? leave : 0);
+            piece.style.visibility = visible ? 'visible' : 'hidden';
+            piece.style.pointerEvents = visible && enter >= 1 ? 'auto' : 'none';
+            piece.style.transform = `translateY(${((1 - leave) * -40).toFixed(2)}px)`;
+            piece.dispatchEvent(new CustomEvent('journey:enter', { detail: enter }));
+            continue;
+          }
           const opacity = pieceOpacity(
             progress,
             Number(piece.dataset.from),

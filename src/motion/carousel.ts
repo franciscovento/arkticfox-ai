@@ -22,6 +22,11 @@ interface CarouselOptions {
 }
 
 export interface CenterCarousel {
+  /**
+   * Entrance, 0 → 1. The visible slides arrive one by one from the right, left to right,
+   * like the service cards. 1 (the default) is fully in.
+   */
+  setReveal: (value: number) => void;
   /** Index of the slide closest to the centre. */
   current: () => number;
   goTo: (index: number) => void;
@@ -56,6 +61,7 @@ export function initCenterCarousel(
   let glide = 0;
   // Where a running glide is heading, so repeated next/prev clicks keep stepping forward.
   let heading = -1;
+  let reveal = 1;
 
   const layout = () => {
     frame = 0;
@@ -75,10 +81,15 @@ export function initCenterCarousel(
       const scale = 1 - shrink * t;
       // Pull toward the centre by what the shrinking slides gave up: d²/2 until one step, then linear.
       const pull = shrink * width * (d < 1 ? (d * d) / 2 : d - 0.5);
-      slide.style.transform = `translateX(${-Math.sign(signed) * pull}px) scale(${scale})`;
+      // Entrance order by place: left neighbour 0, centre 1, right neighbour 2. Each takes half
+      // of the reveal, starting a quarter apart, and slides 96px in from the right.
+      const place = Math.min(2, Math.max(0, signed + 1));
+      const arrive = Math.min(1, Math.max(0, (reveal - place * 0.25) / 0.5));
+      const enterX = (1 - arrive) * 96;
+      slide.style.transform = `translateX(${-Math.sign(signed) * pull + enterX}px) scale(${scale})`;
       // Past the last neighbour a slide fades out over half a step, so only a few show at once.
       const beyond = Math.min(1, Math.max(0, (d - neighbours) / 0.5));
-      const opacity = (1 - (1 - sideOpacity) * t) * (1 - beyond);
+      const opacity = (1 - (1 - sideOpacity) * t) * (1 - beyond) * arrive;
       slide.style.opacity = String(opacity);
       slide.style.visibility = opacity < 0.02 ? 'hidden' : '';
       slide.style.zIndex = String(100 - Math.round(d * 10));
@@ -265,6 +276,12 @@ export function initCenterCarousel(
   layout();
 
   return {
+    setReveal: (value: number) => {
+      const next = Math.min(1, Math.max(0, value));
+      if (next === reveal) return;
+      reveal = next;
+      schedule();
+    },
     current: () => active,
     goTo,
     next,

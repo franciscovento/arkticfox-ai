@@ -342,9 +342,16 @@ html:not(.js) [data-loader] {
   background: transparent;
 }
 
-html.menu-open,
-html.quote-open {
+html.menu-open {
   overflow: hidden;
+}
+
+/* The quote modal keeps the scrollbar on desktop (hiding it shifts the page); the wheel is
+   blocked in script instead. Touch has no scrollbar width, so the lock costs nothing there. */
+@media (pointer: coarse) {
+  html.quote-open {
+    overflow: hidden;
+  }
 }
 
 .site-menu {
