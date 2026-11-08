@@ -21,8 +21,7 @@ export function startSmoothScroll(): void {
   }
   registerGsap();
 
-  // `anchors` lets the quote buttons glide to #contact instead of jumping past the film.
-  lenis = new Lenis({ lerp: 0.085, smoothWheel: true, anchors: true });
+  lenis = new Lenis({ lerp: 0.085, smoothWheel: true });
   lenis.on('scroll', ScrollTrigger.update);
 
   ticker = (time) => {
@@ -41,4 +40,13 @@ export function stopSmoothScroll(): void {
   document.documentElement.classList.remove('lenis', 'lenis-smooth', 'lenis-scrolling', 'lenis-stopped');
   document.documentElement.style.removeProperty('overflow');
   document.body.style.removeProperty('overflow');
+}
+
+/** Freeze the page under a modal: Lenis stops reading the wheel; touch is held by CSS. */
+export function pauseSmoothScroll(): void {
+  lenis?.stop();
+}
+
+export function resumeSmoothScroll(): void {
+  lenis?.start();
 }

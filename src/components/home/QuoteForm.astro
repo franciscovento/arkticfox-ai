@@ -1,5 +1,11 @@
 ---
-import Reveal from '@/components/motion/Reveal.astro';
+/**
+ * The quote form as a glass modal. Any `[data-quote-jump]` (floating pill, hero pill) opens it
+ * wherever the visitor is, without moving the page. It drops in from above like a curtain over
+ * a blurred backdrop, inside the same thick glass bezel as the VideoCard. Asks only what a first
+ * quote needs: name, email, brand, needs, one line about the product, and consent. Netlify Forms
+ * `quote`, sent with fetch and answered in place.
+ */
 import type { Locale } from '@/i18n/routes';
 import type { UiKey } from '@/i18n/ui/en';
 import { getPath, t } from '@/i18n/utils';
@@ -17,144 +23,401 @@ const needs: { value: string; label: UiKey }[] = [
   { value: 'not-sure', label: 'contact.form.notSure' },
 ];
 
-const reassurance: UiKey[] = ['contact.reassurance.noCommitment', 'contact.reassurance.clearQuote'];
-
-const field =
-  'mt-2 block w-full rounded-card-sm border border-ink/40 bg-white px-4 py-3 font-sans text-sm text-ink';
-const labelClass = 'block font-sans text-sm font-medium text-ink';
+const labelClass = 'block font-sans text-xs font-medium text-white/80';
 ---
 
-<section
-  id="contact"
-  class="relative bg-polar-night px-5 py-20 md:px-10 md:py-28"
-  aria-labelledby="contact-title"
->
-  <div class="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-16">
-    <Reveal class="lg:pt-4">
-      <p class="label text-ice-blue">{t(locale, 'contact.eyebrow')}</p>
-      <h2
-        id="contact-title"
-        class="mt-4 font-serif text-4xl leading-tight text-white md:text-6xl"
+<dialog id="contact" class="quote-dialog" aria-labelledby="contact-title" data-quote-dialog>
+  <div class="quote-card">
+    <div class="quote-card__panel sheen" data-sheen>
+      <button
+        type="button"
+        class="quote-close"
+        aria-label={t(locale, 'contact.close')}
+        data-quote-close
       >
-        {t(locale, 'contact.headlineLead')}{' '}
-        <em class="italic">{t(locale, 'contact.headlineEmphasis')}</em>{t(locale, 'contact.headlineTail')}
-      </h2>
-      <p class="mt-5 max-w-md font-sans text-sm leading-relaxed text-white/85 md:text-base">
-        {t(locale, 'contact.subhead')}
-      </p>
-      <ul class="mt-8 flex max-w-md flex-col">
-        {
-          reassurance.map((key) => (
-            <li class="border-t border-glass-border py-3 font-sans text-sm text-white last:border-b">
-              {t(locale, key)}
-            </li>
-          ))
-        }
-      </ul>
-    </Reveal>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18"></path>
+        </svg>
+      </button>
 
-    <Reveal stagger={120}>
-      <div class="rounded-card bg-snow-white p-6 text-ink md:p-8">
-        <form
-          name="quote"
-          method="POST"
-          action={getPath(locale, 'home')}
-          data-netlify="true"
-          data-netlify-honeypot="bot-field"
-          data-quote-form
-          data-sending-label={t(locale, 'contact.form.sending')}
-          data-needs-message={t(locale, 'contact.form.errorNeeds')}
-          class="flex flex-col gap-5"
-        >
-          <input type="hidden" name="form-name" value="quote" />
-          <input type="hidden" name="locale" value={locale} />
-          <p class="hidden" aria-hidden="true">
-            <label>
-              {t(locale, 'contact.form.honeypot')}
-              <input name="bot-field" tabindex="-1" autocomplete="off" />
-            </label>
+      <div class="quote-grid">
+        <div class="quote-intro">
+          <p class="label text-ice-blue">{t(locale, 'contact.eyebrow')}</p>
+          <h2 id="contact-title" class="mt-3 font-serif text-3xl leading-tight text-white md:text-5xl">
+            {t(locale, 'contact.headlineLead')}{' '}
+            <em class="italic">{t(locale, 'contact.headlineEmphasis')}</em>{t(locale, 'contact.headlineTail')}
+          </h2>
+          <p class="mt-3 max-w-sm font-sans text-sm leading-relaxed text-white/85">
+            {t(locale, 'contact.subhead')}
           </p>
+          <p class="mt-4 hidden font-sans text-xs font-medium text-white/70 md:block">
+            {t(locale, 'contact.reassurance')}
+          </p>
+        </div>
 
-          <div class="grid gap-5 md:grid-cols-2">
-            <div>
-              <label class={labelClass} for="quote-name">{t(locale, 'contact.form.name')}</label>
-              <input class={field} id="quote-name" name="name" type="text" autocomplete="name" required />
-            </div>
-            <div>
-              <label class={labelClass} for="quote-email">{t(locale, 'contact.form.email')}</label>
-              <input class={field} id="quote-email" name="email" type="email" autocomplete="email" required />
-            </div>
-          </div>
+        <div>
+          <form
+            name="quote"
+            method="POST"
+            action={getPath(locale, 'home')}
+            data-netlify="true"
+            data-netlify-honeypot="bot-field"
+            data-quote-form
+            data-sending-label={t(locale, 'contact.form.sending')}
+            data-needs-message={t(locale, 'contact.form.errorNeeds')}
+            aria-labelledby="contact-title"
+            class="flex flex-col gap-4"
+          >
+            <input type="hidden" name="form-name" value="quote" />
+            <input type="hidden" name="locale" value={locale} />
+            <p class="hidden" aria-hidden="true">
+              <label>
+                {t(locale, 'contact.form.honeypot')}
+                <input name="bot-field" tabindex="-1" autocomplete="off" />
+              </label>
+            </p>
 
-          <div class="grid gap-5 md:grid-cols-2">
+            <div class="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label class={labelClass} for="quote-name">{t(locale, 'contact.form.name')}</label>
+                <input class="quote-field" id="quote-name" name="name" type="text" autocomplete="name" required />
+              </div>
+              <div>
+                <label class={labelClass} for="quote-email">{t(locale, 'contact.form.email')}</label>
+                <input class="quote-field" id="quote-email" name="email" type="email" autocomplete="email" required />
+              </div>
+            </div>
+
             <div>
               <label class={labelClass} for="quote-company">
                 {t(locale, 'contact.form.company')}
+                <span class="font-normal text-white/60"> {t(locale, 'contact.form.optional')}</span>
               </label>
-              <input class={field} id="quote-company" name="company" type="text" autocomplete="organization" required />
+              <input class="quote-field" id="quote-company" name="company" type="text" autocomplete="organization" />
             </div>
+
+            <fieldset>
+              <legend class={labelClass}>{t(locale, 'contact.form.needs')}</legend>
+              <div class="mt-2 flex flex-wrap gap-2">
+                {
+                  needs.map((need) => (
+                    <label class="quote-chip">
+                      <input class="sr-only" type="checkbox" name="needs" value={need.value} data-need-box />
+                      <span>{t(locale, need.label)}</span>
+                    </label>
+                  ))
+                }
+              </div>
+            </fieldset>
+
             <div>
-              <label class={labelClass} for="quote-website">
-                {t(locale, 'contact.form.website')}
-                <span class="font-normal text-ink/70"> {t(locale, 'contact.form.optional')}</span>
-              </label>
-              <input class={field} id="quote-website" name="website" type="url" autocomplete="url" />
+              <label class={labelClass} for="quote-brief">{t(locale, 'contact.form.brief')}</label>
+              <textarea
+                class="quote-field quote-field--area"
+                id="quote-brief"
+                name="brief"
+                rows="2"
+                placeholder={t(locale, 'contact.form.briefPlaceholder')}
+                required></textarea>
             </div>
+
+            <label class="flex items-start gap-3 font-sans text-xs leading-snug text-white/80">
+              <input class="mt-0.5 size-4 shrink-0 accent-fox-coral" type="checkbox" name="consent" value="yes" required />
+              {t(locale, 'contact.form.consent')}
+            </label>
+
+            <p class="font-sans text-xs text-white" role="alert" data-quote-error hidden>
+              {t(locale, 'contact.form.errorSubmit')}
+            </p>
+
+            {/* The one gradient on screen: the backdrop blurs the hero pill and the floating pill. */}
+            <button
+              type="submit"
+              class="hover-fox inline-flex w-full items-center justify-center rounded-pill bg-brand-gradient px-6 py-3.5 font-sans text-sm font-medium text-white disabled:opacity-60"
+              data-quote-submit
+            >
+              {t(locale, 'contact.form.submit')}
+            </button>
+          </form>
+
+          <div class="py-10 text-center" role="status" tabindex="-1" data-quote-success hidden>
+            <p class="font-serif text-4xl leading-tight text-white">
+              {t(locale, 'contact.form.successTitle')}
+            </p>
+            <p class="mt-3 font-sans text-sm leading-relaxed text-white/85">
+              {t(locale, 'contact.form.successBody')}
+            </p>
           </div>
-
-          <fieldset>
-            <legend class={labelClass}>{t(locale, 'contact.form.needs')}</legend>
-            <div class="mt-3 grid gap-3 sm:grid-cols-2">
-              {
-                needs.map((need) => (
-                  <label class="flex items-center gap-3 font-sans text-sm text-ink">
-                    <input
-                      class="size-4 shrink-0 accent-fox-coral"
-                      type="checkbox"
-                      name="needs"
-                      value={need.value}
-                      data-need-box
-                    />
-                    {t(locale, need.label)}
-                  </label>
-                ))
-              }
-            </div>
-          </fieldset>
-
-          <div>
-            <label class={labelClass} for="quote-brief">{t(locale, 'contact.form.brief')}</label>
-            <textarea class={field} id="quote-brief" name="brief" rows="5" required></textarea>
-          </div>
-
-          <p class="font-sans text-sm text-ink" role="alert" data-quote-error hidden>
-            {t(locale, 'contact.form.errorSubmit')}
-          </p>
-
-          <button
-            type="submit"
-            class="hover-fox inline-flex w-full items-center justify-center rounded-pill bg-brand-gradient px-6 py-3.5 font-sans text-sm font-medium text-white disabled:opacity-60 md:w-fit"
-            data-quote-submit
-          >
-            {t(locale, 'contact.form.submit')}
-          </button>
-        </form>
-
-        <div class="py-6" role="status" tabindex="-1" data-quote-success hidden>
-          <p class="font-serif text-3xl leading-tight text-ink md:text-4xl">
-            {t(locale, 'contact.form.successTitle')}
-          </p>
-          <p class="mt-3 font-sans text-sm leading-relaxed text-ink">
-            {t(locale, 'contact.form.successBody')}
-          </p>
         </div>
       </div>
-    </Reveal>
+    </div>
   </div>
-</section>
+</dialog>
+
+<style>
+  /* `:modal` beats the user-agent dialog box (white fill, border, capped size). */
+  .quote-dialog:modal {
+    width: min(calc(100vw - 1.5rem), 60rem);
+    max-width: none;
+    max-height: calc(100dvh - 1.5rem);
+    margin: auto;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--color-white);
+    overflow: visible;
+  }
+
+  /* Curtain: drops from above and settles; leaves the same way. */
+  .quote-dialog {
+    opacity: 0;
+    transform: translateY(-3rem) scale(0.98);
+    transition-property: opacity, transform;
+    transition-duration: var(--dur-reveal);
+    transition-timing-function: var(--ease-fox);
+  }
+
+  .quote-dialog.is-open {
+    opacity: 1;
+    transform: none;
+  }
+
+  .quote-dialog::backdrop {
+    background-color: var(--color-scrim);
+    backdrop-filter: blur(14px) saturate(120%);
+    opacity: 0;
+    transition-property: opacity;
+    transition-duration: var(--dur-reveal);
+    transition-timing-function: var(--ease-fox);
+  }
+
+  .quote-dialog.is-open::backdrop {
+    opacity: 1;
+  }
+
+  /* Same bezel as the VideoCard: a thick frosted rim around a frosted panel. */
+  .quote-card {
+    padding: 0.5rem;
+    border-radius: var(--radius-frame);
+    border: 1px solid var(--color-glass-border);
+    background: var(--color-glass);
+    backdrop-filter: blur(24px) saturate(140%);
+    box-shadow:
+      inset 0 1px 0 var(--color-glass-border),
+      0 40px 80px -24px var(--color-scrim);
+  }
+
+  .quote-card__panel {
+    position: relative;
+    max-height: calc(100dvh - 3.5rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 1.5rem 1.25rem 1.25rem;
+    border-radius: var(--radius-frame-inner);
+    border: 1px solid var(--color-glass-border);
+    background: var(--color-glass);
+  }
+
+  @media (min-width: 768px) {
+    .quote-card__panel {
+      padding: 2.5rem;
+    }
+  }
+
+  .quote-grid {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  @media (min-width: 1024px) {
+    .quote-grid {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+      gap: 3rem;
+      align-items: center;
+    }
+  }
+
+  .quote-intro {
+    padding-right: 2.5rem;
+  }
+
+  .quote-close {
+    position: absolute;
+    top: 0.875rem;
+    right: 0.875rem;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--color-glass-border);
+    background: var(--color-glass);
+    color: var(--color-white);
+    transition-property: transform, opacity;
+    transition-duration: var(--dur-hover);
+    transition-timing-function: var(--ease-fox);
+  }
+
+  .quote-close svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .quote-close:hover {
+    transform: rotate(90deg);
+  }
+
+  .quote-close:focus-visible {
+    outline: 2px solid var(--color-fox-coral);
+    outline-offset: 2px;
+  }
+
+  .quote-field {
+    display: block;
+    width: 100%;
+    margin-top: 0.375rem;
+    padding: 0.7rem 1.1rem;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--color-glass-border);
+    background: var(--color-glass);
+    color: var(--color-white);
+    font: inherit;
+    font-size: 0.875rem;
+    transition-property: border-color, opacity;
+    transition-duration: var(--dur-hover);
+    transition-timing-function: var(--ease-fox);
+  }
+
+  .quote-field--area {
+    border-radius: var(--radius-card-sm);
+    resize: none;
+  }
+
+  .quote-field::placeholder {
+    color: color-mix(in oklab, var(--color-white) 45%, transparent);
+  }
+
+  .quote-field:hover {
+    border-color: color-mix(in oklab, var(--color-white) 35%, transparent);
+  }
+
+  .quote-field:focus-visible {
+    outline: none;
+    border-color: var(--color-fox-coral);
+  }
+
+  /* Needs are glass pills that turn solid white when picked, like the VideoCard sound pill. */
+  .quote-chip span {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 0.95rem;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--color-glass-border);
+    background: var(--color-glass);
+    color: var(--color-white);
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition-property: background-color, color, border-color;
+    transition-duration: var(--dur-hover);
+    transition-timing-function: var(--ease-fox);
+  }
+
+  .quote-chip:hover span {
+    border-color: color-mix(in oklab, var(--color-white) 35%, transparent);
+  }
+
+  .quote-chip input:checked + span {
+    border-color: var(--color-white);
+    background: var(--color-white);
+    color: var(--color-ink);
+  }
+
+  .quote-chip input:focus-visible + span {
+    outline: 2px solid var(--color-fox-coral);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .quote-dialog,
+    .quote-dialog::backdrop,
+    .quote-close,
+    .quote-field,
+    .quote-chip span {
+      transition: none;
+    }
+
+    .quote-dialog,
+    .quote-close:hover {
+      transform: none;
+    }
+  }
+</style>
 
 <script>
+  import { pauseSmoothScroll, resumeSmoothScroll } from '../../motion/lenis';
   import { onPageReady } from '../../motion/ready';
+  import { prefersReducedMotion } from '../../motion/reduced';
+
+  function bootQuoteDialog() {
+    const dialog = document.querySelector<HTMLDialogElement>('[data-quote-dialog]');
+    if (!dialog || dialog.dataset.bound === 'true') return;
+    dialog.dataset.bound = 'true';
+
+    const open = () => {
+      if (dialog.open) return;
+      dialog.showModal();
+      document.documentElement.classList.add('quote-open');
+      pauseSmoothScroll();
+      requestAnimationFrame(() => dialog.classList.add('is-open'));
+    };
+
+    const finish = () => {
+      if (dialog.open) dialog.close();
+      document.documentElement.classList.remove('quote-open');
+      resumeSmoothScroll();
+    };
+
+    const close = () => {
+      if (!dialog.open) return;
+      dialog.classList.remove('is-open');
+      if (prefersReducedMotion()) {
+        finish();
+        return;
+      }
+      const onEnd = (event: TransitionEvent) => {
+        if (event.target !== dialog || event.propertyName !== 'opacity') return;
+        dialog.removeEventListener('transitionend', onEnd);
+        finish();
+      };
+      dialog.addEventListener('transitionend', onEnd);
+    };
+
+    document.addEventListener('click', (event) => {
+      const target = event.target as HTMLElement | null;
+      if (target?.closest('[data-quote-jump]')) {
+        event.preventDefault();
+        open();
+        return;
+      }
+      if (target?.closest('[data-quote-close]')) close();
+    });
+
+    // A click on the blurred backdrop lands on the dialog element itself.
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) close();
+    });
+
+    // Escape: animate out instead of the instant native close.
+    dialog.addEventListener('cancel', (event) => {
+      event.preventDefault();
+      close();
+    });
+
+    if (window.location.hash === '#contact') open();
+  }
 
   function bootQuoteForm() {
     const form = document.querySelector<HTMLFormElement>('[data-quote-form]');
@@ -174,17 +437,6 @@ const labelClass = 'block font-sans text-sm font-medium text-ink';
     };
     for (const box of boxes) box.addEventListener('change', syncNeeds);
     syncNeeds();
-
-    // The service cards pre-tick the matching need before the page glides to the form.
-    document.addEventListener('click', (event) => {
-      const trigger = (event.target as HTMLElement | null)?.closest<HTMLElement>('[data-need]');
-      if (!trigger) return;
-      const box = boxes.find((item) => item.value === trigger.dataset.need);
-      if (box) {
-        box.checked = true;
-        syncNeeds();
-      }
-    });
 
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
@@ -215,5 +467,8 @@ const labelClass = 'block font-sans text-sm font-medium text-ink';
     });
   }
 
-  onPageReady(bootQuoteForm);
+  onPageReady(() => {
+    bootQuoteDialog();
+    bootQuoteForm();
+  });
 </script>

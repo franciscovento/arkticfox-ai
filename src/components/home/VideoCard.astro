@@ -1,0 +1,360 @@
+---
+/**
+ * Portrait video inside a thick frosted-glass bezel. The lower part of the film sits under a
+ * progressive blur with the title, the description, a tag, a play/pause button and a pill that
+ * turns the sound on.
+ * Lazy: the file only loads and plays once the card scrolls into view. Reduced motion never
+ * autoplays; the pill then starts the film with sound.
+ */
+interface Props {
+  src: string;
+  poster: string;
+  title: string;
+  description: string;
+  /** Short line bottom-left, e.g. the AI avatar note. */
+  tag?: string;
+  soundOnLabel: string;
+  soundOffLabel: string;
+  pauseLabel: string;
+  playLabel: string;
+  /**
+   * A parent (VideoCarousel) decides when the film plays via `video-card:active` /
+   * `video-card:inactive`, and sets the poster from `data-poster` when the card is near view.
+   */
+  managed?: boolean;
+  class?: string;
+}
+
+const {
+  src,
+  poster,
+  title,
+  description,
+  tag,
+  soundOnLabel,
+  soundOffLabel,
+  pauseLabel,
+  playLabel,
+  managed = false,
+  class: className,
+} = Astro.props;
+---
+
+<article
+  class:list={['video-card', className]}
+  data-video-card
+  data-video-card-managed={managed ? '' : undefined}
+>
+  <div class="video-card__screen">
+    <video
+      class="video-card__film"
+      data-video-card-film
+      data-src={src}
+      poster={managed ? undefined : poster}
+      data-poster={managed ? poster : undefined}
+      muted
+      loop
+      playsinline
+      preload="none"
+      aria-hidden="true"
+    ></video>
+
+    <div class="video-card__blur" aria-hidden="true">
+      <span></span><span></span><span></span><span></span>
+    </div>
+    <div class="video-card__fade bg-video-card-fade" aria-hidden="true"></div>
+
+    <div class="video-card__caption">
+      <h3 class="font-sans text-lg leading-tight font-medium tracking-tight text-white">{title}</h3>
+      <p class="mt-1 line-clamp-2 font-sans text-xs leading-snug text-white/80">{description}</p>
+      <div class="mt-3 flex items-center gap-2">
+        {tag && <p class="mr-auto font-sans text-[0.6875rem] font-medium text-white/80">{tag}</p>}
+        <button
+          type="button"
+          class="video-card__btn video-card__play ml-auto inline-flex size-8 items-center justify-center rounded-pill border border-glass-border bg-glass text-white backdrop-blur-md"
+          data-video-card-play
+          data-label-pause={pauseLabel}
+          data-label-play={playLabel}
+          aria-label={pauseLabel}
+          aria-pressed="false"
+        >
+          <svg class="size-3.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <g data-icon-pause>
+              <rect x="6" y="5" width="4" height="14" rx="1"></rect>
+              <rect x="14" y="5" width="4" height="14" rx="1"></rect>
+            </g>
+            <g data-icon-play>
+              <path d="M8 5.5v13a1 1 0 0 0 1.5.86l10-6.5a1 1 0 0 0 0-1.72l-10-6.5A1 1 0 0 0 8 5.5z"></path>
+            </g>
+          </svg>
+        </button>
+        <button
+          type="button"
+          class="video-card__btn video-card__sound inline-flex h-8 items-center gap-1.5 rounded-pill bg-white px-3.5 font-sans text-xs font-medium text-ink"
+          data-video-card-sound
+          aria-pressed="false"
+        >
+          {/* Both labels share one grid cell, so the pill keeps the wider width in both states. */}
+          <span class="video-card__labels">
+            <span data-label-on>{soundOnLabel}</span>
+            <span data-label-off>{soundOffLabel}</span>
+          </span>
+          <svg
+            class="size-3.5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"></path>
+            <g data-icon-muted>
+              <path d="M16 9.5l5 5M21 9.5l-5 5"></path>
+            </g>
+            <g data-icon-sound>
+              <path d="M16 9a4.5 4.5 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"></path>
+            </g>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</article>
+
+<style>
+  .video-card {
+    position: relative;
+    width: min(100%, 22rem);
+    padding: 0.5rem;
+    border-radius: var(--radius-frame);
+    border: 1px solid var(--color-glass-border);
+    background: var(--color-glass);
+    backdrop-filter: blur(24px) saturate(140%);
+    box-shadow:
+      inset 0 1px 0 var(--color-glass-border),
+      0 30px 60px -20px var(--color-scrim);
+  }
+
+  .video-card__screen {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 9 / 16;
+    border-radius: var(--radius-frame-inner);
+    background: var(--color-ink);
+    /* keeps the rounded clip on Safari while children use backdrop-filter */
+    isolation: isolate;
+  }
+
+  .video-card__film {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Progressive blur: stacked layers, each blurs harder and is masked lower. */
+  .video-card__blur {
+    position: absolute;
+    /* 8rem lower than the fade so the film's own subtitles stay sharp; capped for small cards. */
+    inset: min(calc(64% + 8rem), 86%) 0 0;
+    pointer-events: none;
+  }
+
+  .video-card__blur span {
+    position: absolute;
+    inset: 0;
+  }
+
+  .video-card__blur span:nth-child(1) {
+    backdrop-filter: blur(2px);
+    mask-image: linear-gradient(180deg, transparent 0%, black 25%, black 50%, transparent 75%);
+  }
+
+  .video-card__blur span:nth-child(2) {
+    backdrop-filter: blur(6px);
+    mask-image: linear-gradient(180deg, transparent 25%, black 50%, black 75%, transparent 100%);
+  }
+
+  .video-card__blur span:nth-child(3) {
+    backdrop-filter: blur(12px);
+    mask-image: linear-gradient(180deg, transparent 50%, black 75%);
+  }
+
+  .video-card__blur span:nth-child(4) {
+    backdrop-filter: blur(24px);
+    mask-image: linear-gradient(180deg, transparent 70%, black 90%);
+  }
+
+  .video-card__fade {
+    position: absolute;
+    inset: 64% 0 0;
+    pointer-events: none;
+  }
+
+  .video-card__caption {
+    position: absolute;
+    inset: auto 0 0;
+    padding: 1rem 1rem 0.875rem;
+  }
+
+  .video-card__labels {
+    display: inline-grid;
+  }
+
+  .video-card__labels > span {
+    grid-area: 1 / 1;
+    text-align: center;
+  }
+
+  .video-card__sound [data-label-off],
+  .video-card__sound[aria-pressed='true'] [data-label-on] {
+    visibility: hidden;
+  }
+
+  .video-card__sound[aria-pressed='true'] [data-label-off] {
+    visibility: visible;
+  }
+
+  /* icons follow the pressed state */
+  .video-card__sound [data-icon-sound],
+  .video-card__sound[aria-pressed='true'] [data-icon-muted],
+  .video-card__play [data-icon-play],
+  .video-card__play[aria-pressed='true'] [data-icon-pause] {
+    display: none;
+  }
+
+  .video-card__sound[aria-pressed='true'] [data-icon-sound],
+  .video-card__play[aria-pressed='true'] [data-icon-play] {
+    display: inline;
+  }
+
+  .video-card__btn {
+    transition-property: transform, opacity;
+    transition-duration: var(--dur-hover);
+    transition-timing-function: var(--ease-fox);
+  }
+
+  .video-card__btn:hover {
+    transform: scale(1.04);
+  }
+
+  .video-card__btn:focus-visible {
+    outline: 2px solid var(--color-fox-coral);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .video-card__btn,
+    .video-card__btn:hover {
+      transition: none;
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  import { prefersReducedMotion } from '../../motion/reduced';
+  import { onPageReady } from '../../motion/ready';
+
+  function bootVideoCards() {
+    document.querySelectorAll<HTMLElement>('[data-video-card]').forEach((card) => {
+      if (card.dataset.bound) return;
+      card.dataset.bound = 'true';
+
+      const film = card.querySelector<HTMLVideoElement>('[data-video-card-film]');
+      const sound = card.querySelector<HTMLButtonElement>('[data-video-card-sound]');
+      const play = card.querySelector<HTMLButtonElement>('[data-video-card-play]');
+      if (!film || !sound) return;
+
+      const reduce = prefersReducedMotion();
+      const managed = card.hasAttribute('data-video-card-managed');
+      // Unmanaged cards are always eligible; managed ones only while their parent marks them active.
+      let active = !managed;
+      let visible = false;
+      // Set by the viewer; scrolling back into view must not override a manual pause.
+      let userPaused = reduce;
+
+      const load = () => {
+        if (!film.src && film.dataset.src) {
+          film.src = film.dataset.src;
+          film.preload = 'auto';
+        }
+      };
+
+      const render = () => {
+        const on = !film.muted && !film.paused;
+        sound.setAttribute('aria-pressed', String(on));
+        if (play) {
+          const paused = film.paused;
+          play.setAttribute('aria-pressed', String(paused));
+          play.setAttribute(
+            'aria-label',
+            paused ? (play.dataset.labelPlay ?? '') : (play.dataset.labelPause ?? ''),
+          );
+        }
+      };
+
+      new IntersectionObserver(
+        ([entry]) => {
+          visible = entry?.isIntersecting ?? false;
+          // The carousel may mark the slide active before this card has bound its listeners.
+          if (managed && card.closest('[data-carousel-slide][data-active]')) active = true;
+          if (visible && active) {
+            load();
+            if (!userPaused) void film.play().catch(() => undefined);
+          } else {
+            film.pause();
+          }
+          render();
+        },
+        { rootMargin: '200px 0px' },
+      ).observe(card);
+
+      sound.addEventListener('click', () => {
+        load();
+        film.muted = !film.muted;
+        if (!film.muted && film.paused) {
+          userPaused = false;
+          void film.play().catch(() => undefined);
+        }
+        render();
+      });
+
+      play?.addEventListener('click', () => {
+        load();
+        if (film.paused) {
+          userPaused = false;
+          void film.play().catch(() => undefined);
+        } else {
+          userPaused = true;
+          film.pause();
+        }
+        render();
+      });
+
+      card.addEventListener('video-card:active', () => {
+        active = true;
+        load();
+        if (visible && !userPaused) void film.play().catch(() => undefined);
+        render();
+      });
+
+      card.addEventListener('video-card:inactive', () => {
+        active = false;
+        film.pause();
+        film.muted = true;
+        render();
+      });
+
+      film.addEventListener('play', render);
+      film.addEventListener('pause', render);
+      // A parent may hand over the sound state (VideoCarousel's loop swaps twin cards).
+      film.addEventListener('volumechange', render);
+    });
+  }
+
+  onPageReady(bootVideoCards);
+</script>

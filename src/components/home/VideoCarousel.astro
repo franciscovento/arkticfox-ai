@@ -1,0 +1,303 @@
+---
+/**
+ * Row of VideoCards on a scroll-snap track. The centred card is full size and the only one
+ * playing; the side cards shrink and dim (src/motion/carousel.ts). Two floating glass buttons,
+ * swipe, trackpad, mouse drag, arrow keys, or a click on a side card move it. By default it loops:
+ * three copies of the items in a shuffled order, so there are always films on both sides.
+ */
+import VideoCard from '@/components/home/VideoCard.astro';
+
+interface Item {
+  src: string;
+  poster: string;
+  title: string;
+  description: string;
+  tag?: string;
+}
+
+interface Props {
+  items: Item[];
+  label: string;
+  prevLabel: string;
+  nextLabel: string;
+  soundOnLabel: string;
+  soundOffLabel: string;
+  pauseLabel: string;
+  playLabel: string;
+  /** Endless row: renders the items three times and re-centres quietly. On by default. */
+  loop?: boolean;
+  class?: string;
+}
+
+const {
+  items,
+  label,
+  prevLabel,
+  nextLabel,
+  soundOnLabel,
+  soundOffLabel,
+  pauseLabel,
+  playLabel,
+  loop = true,
+  class: className,
+} = Astro.props;
+
+// Three copies for the loop. The order is shuffled on the client, the same way in each copy.
+const copies = loop && items.length > 1 ? [0, 1, 2] : [0];
+
+---
+
+<div
+  class:list={['video-carousel', className]}
+  data-video-carousel
+  role="region"
+  aria-roledescription="carousel"
+  aria-label={label}
+>
+  <div class="video-carousel__track" data-carousel-track>
+    {
+      copies.map((copy) =>
+        items.map((item, index) => (
+          <div class="video-carousel__slide" data-carousel-slide data-copy={copy} data-item={index}>
+            <VideoCard {...item} {soundOnLabel} {soundOffLabel} {pauseLabel} {playLabel} managed />
+          </div>
+        )),
+      )
+    }
+  </div>
+
+  <button
+    type="button"
+    class="video-carousel__nav video-carousel__nav--prev glass"
+    data-carousel-nav="prev"
+    aria-label={prevLabel}
+  >
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M15 5l-7 7 7 7"></path>
+    </svg>
+  </button>
+  <button
+    type="button"
+    class="video-carousel__nav video-carousel__nav--next glass"
+    data-carousel-nav="next"
+    aria-label={nextLabel}
+  >
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M9 5l7 7-7 7"></path>
+    </svg>
+  </button>
+</div>
+
+<style>
+  .video-carousel {
+    /* Narrow enough that the whole card fits under the header on short screens. */
+    --slide-width: min(72vw, 22rem, calc((100svh - 10rem) * 0.5625 + 1rem));
+    --nav-size: 2.75rem;
+    position: relative;
+  }
+
+  .video-carousel__track {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    padding-block: 2rem;
+    padding-inline: calc(50% - var(--slide-width) / 2);
+    cursor: grab;
+  }
+
+  .video-carousel__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .video-carousel__track:focus-visible {
+    outline: 2px solid var(--color-fox-coral);
+    outline-offset: -2px;
+  }
+
+  .video-carousel__track:global(.is-dragging),
+  .video-carousel__track:global(.is-gliding) {
+    scroll-snap-type: none;
+  }
+
+  .video-carousel__track:global(.is-dragging) {
+    cursor: grabbing;
+    user-select: none;
+  }
+
+  .video-carousel__slide {
+    flex: 0 0 var(--slide-width);
+    scroll-snap-align: center;
+    transform-origin: center;
+    will-change: transform, opacity;
+  }
+
+  .video-carousel__slide > :global(.video-card) {
+    width: 100%;
+  }
+
+  /* Side cards are a target to centre, not a set of controls. */
+  .video-carousel__slide:not([data-active]) :global(button) {
+    pointer-events: none;
+  }
+
+  /* Floating at the sides of the centred card, never over it. On phones they sit on the edges. */
+  .video-carousel__nav {
+    position: absolute;
+    top: 50%;
+    z-index: 200;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--nav-size);
+    height: var(--nav-size);
+    border-radius: var(--radius-pill);
+    color: var(--color-white);
+    transform: translateY(-50%);
+    transition-property: transform, opacity;
+    transition-duration: var(--dur-hover);
+    transition-timing-function: var(--ease-fox);
+  }
+
+  .video-carousel__nav svg {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+
+  .video-carousel__nav--prev {
+    left: max(0.5rem, calc(50% - var(--slide-width) / 2 - var(--nav-size) - 1.5rem));
+  }
+
+  .video-carousel__nav--next {
+    right: max(0.5rem, calc(50% - var(--slide-width) / 2 - var(--nav-size) - 1.5rem));
+  }
+
+  .video-carousel__nav:hover {
+    transform: translateY(-50%) scale(1.06);
+  }
+
+  .video-carousel__nav:focus-visible {
+    outline: 2px solid var(--color-fox-coral);
+    outline-offset: 3px;
+  }
+
+  .video-carousel__nav:disabled {
+    opacity: 0.35;
+    cursor: default;
+    transform: translateY(-50%);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .video-carousel__nav,
+    .video-carousel__nav:hover {
+      transition: none;
+      transform: translateY(-50%);
+    }
+  }
+</style>
+
+<script>
+  import { initCenterCarousel } from '../../motion/carousel';
+  import { onPageReady } from '../../motion/ready';
+
+  function bootCarousels() {
+    document.querySelectorAll<HTMLElement>('[data-video-carousel]').forEach((root) => {
+      if (root.dataset.bound) return;
+      root.dataset.bound = 'true';
+      const track = root.querySelector<HTMLElement>('[data-carousel-track]');
+      const prev = root.querySelector<HTMLButtonElement>('[data-carousel-nav="prev"]');
+      const next = root.querySelector<HTMLButtonElement>('[data-carousel-nav="next"]');
+      if (!track) return;
+      // A scrollable region must be reachable by keyboard; arrow keys move it once focused.
+      track.tabIndex = 0;
+
+      // Shuffle once per visit: one random order, applied to every copy so twins stay aligned.
+      const all = Array.from(track.querySelectorAll<HTMLElement>('[data-carousel-slide]'));
+      const count = all.filter((slide) => slide.dataset.copy === '0').length;
+      const copies = all.length / count;
+      const order = Array.from({ length: count }, (_, i) => i);
+      for (let i = order.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [order[i], order[j]] = [order[j] as number, order[i] as number];
+      }
+      for (let copy = 0; copy < copies; copy += 1) {
+        for (const item of order) {
+          const slide = all.find((n) => n.dataset.copy === String(copy) && n.dataset.item === String(item));
+          if (slide) track.appendChild(slide);
+        }
+      }
+      const slides = Array.from(track.querySelectorAll<HTMLElement>('[data-carousel-slide]'));
+      const looping = copies === 3;
+
+      // Inside the pinned home stage the carousel is hidden (visibility) until its beat arrives.
+      // Nothing may load or play until it is actually shown.
+      const host = root.closest<HTMLElement>('[data-journey-piece]');
+      const shown = () => !host || getComputedStyle(host).visibility !== 'hidden';
+      const filmOf = (slide: HTMLElement | undefined) =>
+        slide?.querySelector<HTMLVideoElement>('[data-video-card-film]') ?? null;
+      let last = -1;
+
+      const sync = (index: number) => {
+        const live = shown();
+        // A loop jump lands on the twin of the film being watched: carry its time and sound over.
+        const before = filmOf(slides[last]);
+        const after = filmOf(slides[index]);
+        const twin = before && after && before !== after && before.dataset.src === after.dataset.src;
+        const handOver = twin ? { time: before.currentTime, muted: before.muted } : undefined;
+
+        slides.forEach((slide, i) => {
+          const card = slide.querySelector('[data-video-card]');
+          const on = live && i === index;
+          card?.dispatchEvent(new CustomEvent(on ? 'video-card:active' : 'video-card:inactive'));
+          // Only the centred card is exposed; the rest are scenery until they are centred.
+          slide.toggleAttribute('aria-hidden', i !== index);
+          slide.querySelectorAll('button').forEach((button) => {
+            button.tabIndex = i === index ? 0 : -1;
+          });
+          // Posters load only for cards that can be on screen.
+          const film = filmOf(slide);
+          if (film && !film.poster && Math.abs(i - index) <= 2 && film.dataset.poster) {
+            film.poster = film.dataset.poster;
+          }
+        });
+
+        if (handOver && after && live) {
+          after.currentTime = handOver.time;
+          after.muted = handOver.muted;
+        }
+        last = index;
+        if (!looping) {
+          if (prev) prev.disabled = index === 0;
+          if (next) next.disabled = index === slides.length - 1;
+        }
+      };
+
+      const carousel = initCenterCarousel(track, {
+        onActive: (index) => sync(index),
+        loop: looping ? count : 0,
+        start: looping ? count + Math.floor(count / 2) : undefined,
+        // Three cards at a time: the centre and one on each side.
+        neighbours: 1,
+      });
+
+      if (host) {
+        let wasShown = shown();
+        new MutationObserver(() => {
+          const now = shown();
+          if (now === wasShown) return;
+          wasShown = now;
+          sync(carousel.current());
+        }).observe(host, { attributes: true, attributeFilter: ['style'] });
+      }
+
+      prev?.addEventListener('click', () => carousel.prev());
+      next?.addEventListener('click', () => carousel.next());
+    });
+  }
+
+  onPageReady(bootCarousels);
+</script>

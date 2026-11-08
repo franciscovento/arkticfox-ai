@@ -48,9 +48,9 @@ Row labels for this case: `projects.row.motion` (`Ads and UGC` / `Anuncios y UGC
 
 | Piece | Kind | Ratio | File | Title key | EN title | ES title |
 |---|---|---|---|---|---|---|
-| Square Lyriq spot | Ad | 1:1 | `cadillac-1.mp4` + `cadillac-1.jpg` | `projects.piece.lyriq` | `Square Lyriq spot` | `Spot cuadrado del Lyriq` |
-| Vertical deals spot | Ad | 9:16 | `cadillac-2.mp4` + `cadillac-2.jpg` | `projects.piece.deals` | `Vertical deals spot` | `Spot vertical de ofertas` |
-| Driver UGC | UGC | 9:16 | `cadillac-ugc.mp4` + `cadillac-ugc.jpg` | `projects.piece.driver` | `From the driver seat` | `Desde el asiento` |
+| Square Lyriq spot | Ad | 1:1 | `cadillac-lyriq-square-spot.mp4` + `cadillac-lyriq-square-spot.jpg` | `projects.piece.lyriq` | `Square Lyriq spot` | `Spot cuadrado del Lyriq` |
+| Vertical deals spot | Ad | 9:16 | `cadillac-year-end-deals.mp4` + `cadillac-year-end-deals.jpg` | `projects.piece.deals` | `Vertical deals spot` | `Spot vertical de ofertas` |
+| Driver UGC | UGC | 9:16 | `cadillac-driver-seat-ugc.mp4` + `cadillac-driver-seat-ugc.jpg` | `projects.piece.driver` | `From the driver seat` | `Desde el asiento` |
 | Offer still | Ad | 9:16 | `autos-9x16-2.webp` | `projects.piece.cadillacOffer` | `Year-end offer` | `Oferta de fin de año` |
 | Fog still | Still | 9:16 | `cadillac-image-9.webp` | `projects.piece.fogA` | `Red fog` | `Niebla roja` |
 | Fog still | Still | 9:16 | `cadillac-image-12.webp` | `projects.piece.fogB` | `Red fog, second frame` | `Niebla roja, segundo encuadre` |
@@ -96,7 +96,7 @@ Row label: `projects.row.nissan` (`Static ad` / `Anuncio estático`) **PROPOSED*
 
 | Piece | Kind | Ratio | File | Title key | EN | ES |
 |---|---|---|---|---|---|---|
-| Jeep | UGC | 9:16 | `jeep-ugc.mp4` + `jeep-ugc.jpg` | `projects.piece.jeep` | `In the Jeep` | `En el Jeep` |
+| Jeep | UGC | 9:16 | `jeep-creator-to-camera-ugc.mp4` + `jeep-creator-to-camera-ugc.jpg` | `projects.piece.jeep` | `In the Jeep` | `En el Jeep` |
 | Selfie | UGC | 1:1 | `selfie-mirror.webp` | `projects.piece.selfie` | `Mirror selfie` | `Selfie en el espejo` |
 
 Kind labels: `projects.kind.ad` `Ad` / `Anuncio`, `projects.kind.still` `Still` / `Still`, `projects.kind.ugc` `UGC` / `UGC`. **PROPOSED**.

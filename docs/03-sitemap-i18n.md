@@ -13,28 +13,11 @@ The typed map is `src/i18n/routes.ts` and holds only `home`. `getAlternates()` e
 
 ## Navigation
 
-A fixed bar over the film: the wordmark (centered from `lg`, left below) and EN / ES on the right. There is no menu, no service links and no quote button in the bar. Once the hero has scrolled away the bar gets a glass backing.
+A fixed bar over the film: the wordmark (centered from `lg`, left below) and EN / ES on the right. There is no menu and no service links.
 
-The quote CTA is `QuoteFab`: a white pill fixed bottom right on every screen, linking to `#contact`.
+## Home
 
-## Home section order
-
-1. Hero (dark). The still-sequence film scrubbed by scroll, headline, one quote button (`#contact`). No pricing button.
-2. Video gallery (dark). Four muted clips that play while in view. Stand-ins from `public/media/projects/` until the final reels arrive.
-3. Service cards (blue hour). Product images, ad videos, hyperreal UGC. Each button goes to the form and pre-ticks that need.
-4. Contact form (dark, light card). Netlify Forms, answered in place.
-
-## Netlify Forms
-
-The form exists as static HTML at build time.
-
-- `name="quote"`, `data-netlify="true"`, honeypot `bot-field`
-- hidden `locale` field, so a submission says which page it came from
-- fields: name, work email, company or brand, website (optional), what do you need (at least one of four), and the brief
-- sent with `fetch` to the page itself; success replaces the form, failure shows the `hello@arkticfox.ai` fallback
-- **no privacy consent checkbox yet**: it must link to a privacy page, and that page was removed. Decide before launch.
-
-Not in the form compared with `docs/pages/quote.md`: country, package, budget, timeline, references. Packages and pricing no longer exist on the site.
+One pinned scroll scene over the film: the headline, the video slider, then the three service cards. The quote form is a glass modal (`#contact`) opened by the floating "Get a quote" pill or the hero pill, wherever the visitor is; `/#contact` opens it on load.
 
 ## Numbers
 

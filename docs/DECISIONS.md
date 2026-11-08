@@ -171,8 +171,61 @@
 
 - Date: 2026-11-06
 - Context: The site had a home, three service pages, pricing, projects, a sample case, quote, thanks and three legal pages per language. The client wants a single landing with four parts and a floating quote button.
-- Decision: Delete every page except the home (`/`, `/es/`). `/styleguide` stays as an internal, noindex page. Delete `PageShell`, `ProjectsGallery`, `WorkCase`, `WorkReel`, the mobile menu and their CSS and copy. The routes map holds only `home`. The home is four parts: (1) the hero, with the pricing button removed; (2) a video gallery of four muted clips, stand-ins from `public/media/projects/` until the final reels arrive; (3) the three service cards, now normal section content on a `FrostField`, whose buttons go to the form and pre-tick the matching need; (4) a contact form on Netlify Forms. The marquee and the work-reel section are removed. A white pill, `QuoteFab`, sits bottom right on every screen and links to `#contact`. The header keeps only the mark and EN / ES, with a glass backing once the hero has scrolled away.
-- Gradient budget: the hero button and the form's send button each hold the one gradient of their viewport. The floating button is white so it never adds a second one. The header quote button is gone.
-- Form: trimmed from `docs/pages/quote.md` to name, work email, company, website, needs, and brief, because packages, pricing and references no longer exist on the site. It posts with `fetch` and answers in place, since there is no thank-you page. The "reply within 24 h" point is left out: that SLA is unconfirmed (see the quote spec).
-- Open, needs the client: the form has no privacy consent, and the site has no privacy policy, legal notice or cookie page. A form that collects personal data for people in Spain and the EU needs a privacy notice and consent before launch. Decide whether to add a single section or a modal on the landing, or restore the pages.
-- Consequences: The sitemap lists the two homes. `docs/pages/*` specs for removed pages stay as reference only. The scroll scene drives only the hero stage, so the gallery, cards and form scroll natively. Lenis now handles anchors, so the quote buttons glide to `#contact`. Media that only the removed pages used (`public/media/mocks`, `journey`, `hero`, unused project stills, the snowfield film, GIFs) is still in `public/` and ships; it can be deleted.
+- Decision: Delete every page except the home (`/`, `/es/`). `/styleguide` stays as an internal, noindex page. Delete `PageShell`, `ProjectsGallery`, `WorkCase` and the mobile menu. The routes map holds only `home`. The pinned scroll stays as it was: the film, the headline leaving, the three cards sliding in from the right, then the marquee. The pricing button is gone. The header keeps the mark and EN / ES.
+- Update (2026-11-07): Pulling the cards out of the pinned stage broke the scroll. They are back inside it, with the same slide-in. The marquee is back too. The contact form and the floating quote button are gone. The hero quote pill and the card labels stay on screen and do not navigate, because the quote page, the service pages and the form are all gone.
+- Gradient budget: the hero quote pill is the one gradient on the home.
+- Consequences: The sitemap lists the two homes. `docs/pages/*` specs for removed pages stay as reference only. Media that only the removed pages used (`public/media/mocks`, `journey`, `hero`, unused project stills, the snowfield film, GIFs) is still in `public/` and ships; it can be deleted.
+
+## ADR-025 — VideoCard preview after the stage
+
+- Date: 2026-11-07
+- Context: The client shared a reference card (portrait photo in a thick glass bezel, blurred caption, white pill button) and asked for a video version at the end of the home to see how it looks.
+- Decision: `VideoCard` ports that look with tokens: `glass` bezel with `--radius-frame` / `--radius-frame-inner`, four stacked `backdrop-filter` layers for a progressive blur, and `--background-image-video-card-fade` under the caption. The caption is kept small and low (blur from 64% down) so it covers little of the film. Controls: a glass play/pause button and a white sound pill. The title uses Montserrat like the reference, not the serif headline face. The preview uses the Jeep UGC film with an "AI avatar" tag for transparency. The file loads only near the viewport and pauses off-screen; reduced motion never autoplays.
+- Consequences: Something follows the pinned stage again. If the card stays, decide its section and copy; otherwise delete the section in `HomeEntry`.
+- Update (2026-11-07): The single card became `VideoCarousel`: four films (Lyriq spot, driver seat UGC, Jeep UGC, deals spot) on a native scroll-snap track. The centred card is full size; side cards scale to 0.8 and fade to 55% with their distance, and are pulled inward so the gaps stay even. Only the centred film loads and plays; leaving the centre pauses and mutes it. Mouse drag, swipe, arrow keys and a click on a side card move it. No arrow buttons and no expand button, as in the reference.
+- Update (2026-11-07): The browser's smooth scroll felt abrupt. Buttons, keys, clicks and the end of a mouse drag now glide with `ease-fox` over `dur.reveal` (900ms), with snap off during the glide. A drag can throw one step at most. Two floating glass buttons (previous / next) sit beside the centred card, on the screen edges on phones, and are disabled at the ends. Touch keeps native scroll and snap.
+- Update (2026-11-07): The progressive blur starts 8rem (128px) below the ink fade, capped at 86% of the card height, because it covered the subtitles burned into the films. The fade stays at 64% so the caption still reads.
+
+## ADR-026 — Video slider inside the pinned stage, marquee removed
+
+- Date: 2026-11-07
+- Context: The client wants hero → video slider → service cards, all over the film rather than on a black section, and the marquee of sector words and reels removed. Visitors should be able to stay on the videos without the scroll throwing them to the next part.
+- Decision: The slider becomes a `data-journey-piece` with `data-enter="side"` (enters from 40vw to the right) between the headline (0–0.22) and the cards (0.66, 0.72, 0.78, and they stay). It holds from 0.2 to 0.62 of the 440vh/680vh stage, which is the "stick": a long stretch of scroll during which the slider stays put while the film keeps scrubbing behind it. The marquee beat and `WorkReel` are unmounted; the components stay in the repo. While its beat is hidden, the slider tells every card it is inactive, so no film loads during the hero. The slide width is also capped by the viewport height so a card always fits under the header.
+- Consequences: The stage height is unchanged. If the hold feels too long or short, move `data-from` / `data-to` on the slider piece and the cards' `from`. Marquee and reel CSS remain in `motion.css` and can be deleted along with `WorkReel` if they are not coming back.
+
+## ADR-027 — Quote form as the last beat, floating quote pill back
+
+- Date: 2026-11-07
+- Context: The client wants a creative glass contact form at the end of the page, asking only what a quote needs, on the same film background, plus a floating "Get a quote" button that takes you there.
+- Decision: `QuoteForm` is the last `data-journey-beat` (0.84–1) inside the pinned stage, with `id="contact"`. It reuses the VideoCard bezel, pill fields and glass pills for the needs. Fields: name, email, optional brand, needs (at least one), one-line brief, consent. The website field is dropped. Netlify Forms `quote` with a honeypot, sent with fetch and answered in place (there is no thanks page). `QuoteFab` returns as a glass pill, not a gradient, and hides while the form is visible. The hero pill becomes a link too. Both use `[data-quote-jump]`, which glides through Lenis (`scrollPageTo`, `dur.slow * 2`, `ease-fox`) to the end of the stage. On short screens the form scrolls inside its beat (`data-lenis-prevent`). The stage grows to 560vh / 860vh so the reels hold keeps its length. `ease-fox` as a JS function moved to `src/motion/easing.ts`.
+- Consequences: The consent line has no privacy link while there is no legal page; add it when the legal notice exists. The gradient budget holds: the hero pill and the send button are never on screen together.
+- Update (2026-11-07): The form wrapper had `overscroll-contain` and a permanent `data-lenis-prevent`. It covers almost the whole viewport, so the wheel and trackpad were trapped on the form and the page stopped scrolling. Now the wrapper only gets `data-lenis-prevent` while its content actually overflows, and it has no `overscroll-contain`. The inner panel's second `backdrop-filter` is gone too; nested blurs over the moving film were costly.
+
+## ADR-028 — New vertical clips are web files, not masters
+
+- Date: 2026-11-07
+- Context: Seven new vertical films arrived as 4K or 1080p HEVC `.mov` files, 9–87 MB each. They are only meant to play inside a phone-sized card.
+- Decision: Replace each master with an H.264 MP4 at 720×1280, CRF 26, AAC 128 kbps, `+faststart`. Names describe the picture: `subaru-forester-camping-ugc`, `buick-2026-ugc`, `kia-suv-lineup`, `subaru-outdoor-ugc`, `kia-dealership-pov-ugc`, `aurora-skin-cream-ugc`, `ugc-creator-camera-tap`. The masters are deleted. These files are not mounted on the page yet.
+- Consequences: The seven files together are about 24 MB instead of about 347 MB. A larger card later would need a new encode from the masters, which are no longer in the repo.
+
+## ADR-029 — Slider films match the phone-card encode
+
+- Date: 2026-11-07
+- Context: The four films already in the home slider were H.264, but still 1080p at about 2.5–4 Mbps: `cadillac-1` (5.9 MB), `cadillac-2` (3.8 MB), `cadillac-ugc` (12.9 MB) and `jeep-ugc` (14.4 MB). They only play inside a phone-sized card.
+- Decision: Re-encode them the same way as ADR-028 (H.264 High, CRF 26, AAC 128 kbps, `+faststart`). The square Lyriq spot is 720×720; the three vertical films are 720×1280. Rename them to `cadillac-lyriq-square-spot`, `cadillac-year-end-deals`, `cadillac-driver-seat-ugc` and `jeep-creator-to-camera-ugc`. Posters keep the same stem. The 1080p files are deleted. The slider paths in `HomeEntry` point at the new files.
+- Consequences: Those four films are about 11.6 MB instead of about 37 MB. A larger card later would need a new encode; the 1080p files are no longer in the repo.
+
+## ADR-028 — The quote form is a modal
+
+- Date: 2026-11-07
+- Context: The form as the last beat of the stage felt flat, and getting there meant a long glide through the film. The client wants the quote to open anywhere, without scrolling, as a glass panel over a blurred page.
+- Decision: `QuoteForm` is a native `<dialog id="contact">` opened with `showModal()` by any `[data-quote-jump]` (floating pill, hero pill) and by `/#contact` on load. It drops in from above (curtain) with opacity and transform over a scrim `::backdrop` with a backdrop blur. It closes with ×, Escape (animated) or a click on the backdrop. While open, Lenis is paused (`pauseSmoothScroll` / `resumeSmoothScroll`) and `html.quote-open` locks the page; the scroll position never changes. The panel scrolls inside itself on short screens. The stage goes back to three beats and 440vh / 680vh, with the earlier timings. `scrollPageTo` and the floating pill's hide-on-form logic are gone. This supersedes the stage-beat part of ADR-027; its field list and Netlify setup stay.
+- Consequences: The send button is the only gradient on screen while the modal is open, since the backdrop covers the hero pill and the floating pill.
+
+## ADR-029 — Endless shuffled reel slider, three cards at a time
+
+- Date: 2026-11-07
+- Context: The client added vertical films to `public/media/projects/` (and renamed the old ones) and wants the slider to always have films on both sides, endlessly, in a random order. With every card visible the row felt crowded.
+- Decision: No carousel library. Embla (`loop: true`, about 7 KB gzipped) would have meant rebuilding the scale, glide and drag we already have. Instead `VideoCarousel` renders the ten 9:16 films three times. The client shuffles one order and applies it to every copy. `carousel.ts` gains `loop`: once the centre settles within half a copy of either end, it jumps (snap off for that frame) to the twin slide one copy inward. `VideoCarousel` hands the playing film's time and sound state to the twin, so the jump is invisible. `neighbours: 1` fades everything beyond one card per side, so three cards show. Managed cards get their poster from `data-poster` only within two slides of the centre. Six films had no poster; JPG posters were cut at 1 s with ffmpeg. The square Lyriq spot is left out. All films with a person on camera carry the AI avatar tag; the deals spot and the Kia lineup carry the ad video tag.
+- Consequences: Without JavaScript the three copies show in source order. Adding a film means dropping MP4 + JPG into `public/media/projects/`, adding a row to `reelCards` in `HomeEntry`, and two copy keys per language.
+

@@ -1,4 +1,8 @@
 ---
+/**
+ * Floating "Get a quote" pill. Like every `[data-quote-jump]`, it opens the quote modal
+ * (QuoteForm), which sits above it in the top layer while open.
+ */
 import type { Locale } from '@/i18n/routes';
 import { t } from '@/i18n/utils';
 
@@ -9,11 +13,178 @@ interface Props {
 const { locale } = Astro.props;
 ---
 
-{/* White, not gradient: the hero CTA and the form's send button already hold the one gradient. */}
-<a
-  class="hover-fox fixed right-5 bottom-[max(1.25rem,env(safe-area-inset-bottom))] z-40 inline-flex items-center rounded-pill border border-ink/20 bg-white px-5 py-3 font-sans text-sm font-medium whitespace-nowrap text-ink md:right-8 md:bottom-[max(2rem,env(safe-area-inset-bottom))]"
-  href="#contact"
-  data-quote-fab
->
-  {t(locale, 'nav.quote')}
+{/*
+  Glass at rest; the brand gradient fades in only while hovered or focused. The hero pill is the
+  page's resting gradient, so the two can share a viewport only for the length of a hover.
+*/}
+<a class="quote-fab glass" href="#contact" data-quote-jump data-quote-fab>
+  <span class="quote-fab__label">{t(locale, 'nav.quote')}</span>
+  <span class="quote-fab__icon" aria-hidden="true">
+    {/* Two arrows: on hover the first leaves to the right while the second slides in. */}
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 12h14M13 6l6 6-6 6"></path>
+    </svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 12h14M13 6l6 6-6 6"></path>
+    </svg>
+  </span>
 </a>
+
+<style>
+  .quote-fab {
+    position: fixed;
+    right: 1.25rem;
+    bottom: max(1.25rem, env(safe-area-inset-bottom));
+    z-index: 40;
+    isolation: isolate;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.5rem 0.5rem 0.5rem 1.25rem;
+    border-radius: var(--radius-pill);
+    color: var(--color-white);
+    font-size: 0.875rem;
+    font-weight: 500;
+    white-space: nowrap;
+    box-shadow: 0 20px 40px -16px var(--color-scrim);
+    transition-property: opacity, transform;
+    transition-duration: var(--dur-reveal);
+    transition-timing-function: var(--ease-fox);
+  }
+
+  /* Gradient fill and a soft glow of the same gradient, both shown by opacity only. */
+  .quote-fab::before,
+  .quote-fab::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    z-index: -1;
+    border-radius: inherit;
+    background-image: var(--background-image-brand-gradient);
+    opacity: 0;
+    pointer-events: none;
+    transition-property: opacity;
+    transition-duration: var(--dur-reveal);
+    transition-timing-function: var(--ease-fox);
+  }
+
+  .quote-fab::after {
+    z-index: -2;
+    filter: blur(18px);
+    transform: translateY(6px) scale(0.9);
+  }
+
+  .quote-fab__label {
+    transition-property: transform;
+    transition-duration: var(--dur-reveal);
+    transition-timing-function: var(--ease-fox);
+  }
+
+  .quote-fab__icon {
+    position: relative;
+    display: inline-flex;
+    width: 2rem;
+    height: 2rem;
+    overflow: hidden;
+    border-radius: var(--radius-pill);
+    background: var(--color-white);
+    color: var(--color-ink);
+    transition-property: transform;
+    transition-duration: var(--dur-reveal);
+    transition-timing-function: var(--ease-fox);
+  }
+
+  .quote-fab__icon svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0.5rem;
+    transition-property: transform;
+    transition-duration: var(--dur-reveal);
+    transition-timing-function: var(--ease-fox);
+  }
+
+  .quote-fab__icon svg:last-child {
+    transform: translateX(-120%);
+  }
+
+  .quote-fab:hover,
+  .quote-fab:focus-visible {
+    transform: translateY(-2px);
+  }
+
+  .quote-fab:hover::before,
+  .quote-fab:focus-visible::before {
+    opacity: 1;
+  }
+
+  .quote-fab:hover::after,
+  .quote-fab:focus-visible::after {
+    opacity: 0.55;
+  }
+
+  .quote-fab:hover .quote-fab__label,
+  .quote-fab:focus-visible .quote-fab__label {
+    transform: translateX(-2px);
+  }
+
+  .quote-fab:hover .quote-fab__icon,
+  .quote-fab:focus-visible .quote-fab__icon {
+    transform: scale(1.08) rotate(-45deg);
+  }
+
+  .quote-fab:hover .quote-fab__icon svg:first-child,
+  .quote-fab:focus-visible .quote-fab__icon svg:first-child {
+    transform: translateX(120%);
+  }
+
+  .quote-fab:hover .quote-fab__icon svg:last-child,
+  .quote-fab:focus-visible .quote-fab__icon svg:last-child {
+    transform: translateX(0);
+  }
+
+  .quote-fab:active {
+    transform: translateY(0) scale(0.97);
+  }
+
+  .quote-fab:focus-visible {
+    outline: 2px solid var(--color-fox-coral);
+    outline-offset: 3px;
+  }
+
+  @media (min-width: 768px) {
+    .quote-fab {
+      right: 2rem;
+      bottom: max(2rem, env(safe-area-inset-bottom));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .quote-fab,
+    .quote-fab::before,
+    .quote-fab::after,
+    .quote-fab__label,
+    .quote-fab__icon,
+    .quote-fab__icon svg {
+      transition: none;
+    }
+
+    /* Keep the colour change, drop the movement. */
+    .quote-fab:hover,
+    .quote-fab:focus-visible,
+    .quote-fab:hover .quote-fab__label,
+    .quote-fab:focus-visible .quote-fab__label,
+    .quote-fab:hover .quote-fab__icon,
+    .quote-fab:focus-visible .quote-fab__icon,
+    .quote-fab:hover .quote-fab__icon svg:first-child,
+    .quote-fab:focus-visible .quote-fab__icon svg:first-child {
+      transform: none;
+    }
+
+    .quote-fab:hover .quote-fab__icon svg:last-child,
+    .quote-fab:focus-visible .quote-fab__icon svg:last-child {
+      display: none;
+    }
+  }
+</style>

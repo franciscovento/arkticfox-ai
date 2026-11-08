@@ -35,6 +35,9 @@
   --radius-card: 20px;
   --radius-card-sm: 16px;
   --radius-pill: 9999px;
+  /* VideoCard: thick glass bezel around a rounded film. Inner = outer minus the bezel. */
+  --radius-frame: 40px;
+  --radius-frame-inner: 32px;
 
   --tracking-label: 0.2em;
   --ease-fox: cubic-bezier(0.22, 1, 0.36, 1);
@@ -107,6 +110,13 @@
     transparent 0%,
     color-mix(in oklab, var(--color-snow-shade) 46%, transparent) 54%,
     color-mix(in oklab, var(--color-snow-shade) 84%, transparent) 100%
+  );
+  /* VideoCard: ink fade under the blurred caption so white type reads on any frame */
+  --background-image-video-card-fade: linear-gradient(
+    180deg,
+    transparent 0%,
+    color-mix(in oklab, var(--color-ink) 24%, transparent) 40%,
+    color-mix(in oklab, var(--color-ink) 72%, transparent) 100%
   );
   /* specular sheen that tracks the pointer across frosted glass */
   --background-image-glass-sheen: radial-gradient(
