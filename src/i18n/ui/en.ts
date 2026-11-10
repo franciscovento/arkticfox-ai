@@ -140,6 +140,10 @@ export const en = {
   'home.reels.subaru.body': 'A creator talks to camera beside the car on a quiet road.',
   'home.reels.tap.title': 'The camera tap',
   'home.reels.tap.body': 'A creator reaches for the lens to open the hook.',
+  'home.reels.kiss.title': 'A kiss to camera',
+  'home.reels.kiss.body': 'A creator leans in and kisses the lens, the way a selfie hook opens.',
+  'home.reels.auroraMacro.title': 'Aurora cream, macro',
+  'home.reels.auroraMacro.body': 'A fingertip breaks the surface of the pink cream. The product carries the spot.',
 } as const;
 
 export type UiKey = keyof typeof en;

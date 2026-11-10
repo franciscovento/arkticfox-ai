@@ -9,8 +9,6 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import type { Locale, PageKey } from '@/i18n/routes';
 import type { UiKey } from '@/i18n/ui/en';
 import { t } from '@/i18n/utils';
-import { readdirSync } from 'node:fs';
-import { join } from 'node:path';
 
 interface Props {
   locale: Locale;
@@ -18,11 +16,6 @@ interface Props {
 
 const { locale } = Astro.props;
 const pageKey: PageKey = 'home';
-
-// The film is a still sequence in public/media/scrub, stepped with scroll.
-const frameCount = readdirSync(join(process.cwd(), 'public/media/scrub')).filter((name) =>
-  name.endsWith('.webp'),
-).length;
 
 const cards: {
   from: string;
@@ -57,49 +50,15 @@ const cards: {
 const avatarTag = t(locale, 'home.videoCard.tag');
 const adTag = t(locale, 'home.carousel.adTag');
 
-// Vertical films in public/media/projects. The carousel shuffles them on each visit.
+// Vertical films in public/media/projects. `kind` is the subject the carousel spaces apart.
 const reelCards = [
-  {
-    src: '/media/projects/aurora-skin-cream-ugc.mp4',
-    poster: '/media/projects/aurora-skin-cream-ugc.jpg',
-    title: t(locale, 'home.reels.aurora.title'),
-    description: t(locale, 'home.reels.aurora.body'),
-    tag: avatarTag,
-  },
   {
     src: '/media/projects/buick-2026-ugc.mp4',
     poster: '/media/projects/buick-2026-ugc.jpg',
     title: t(locale, 'home.reels.buick.title'),
     description: t(locale, 'home.reels.buick.body'),
     tag: avatarTag,
-  },
-  {
-    src: '/media/projects/cadillac-driver-seat-ugc.mp4',
-    poster: '/media/projects/cadillac-driver-seat-ugc.jpg',
-    title: t(locale, 'projects.piece.driver'),
-    description: t(locale, 'home.carousel.driverBody'),
-    tag: avatarTag,
-  },
-  {
-    src: '/media/projects/cadillac-year-end-deals.mp4',
-    poster: '/media/projects/cadillac-year-end-deals.jpg',
-    title: t(locale, 'projects.piece.deals'),
-    description: t(locale, 'home.carousel.dealsBody'),
-    tag: adTag,
-  },
-  {
-    src: '/media/projects/jeep-creator-to-camera-ugc.mp4',
-    poster: '/media/projects/jeep-creator-to-camera-ugc.jpg',
-    title: t(locale, 'home.videoCard.title'),
-    description: t(locale, 'home.videoCard.body'),
-    tag: avatarTag,
-  },
-  {
-    src: '/media/projects/kia-dealership-pov-ugc.mp4',
-    poster: '/media/projects/kia-dealership-pov-ugc.jpg',
-    title: t(locale, 'home.reels.kiaPov.title'),
-    description: t(locale, 'home.reels.kiaPov.body'),
-    tag: avatarTag,
+    kind: 'auto',
   },
   {
     src: '/media/projects/kia-suv-lineup.mp4',
@@ -107,6 +66,23 @@ const reelCards = [
     title: t(locale, 'home.reels.kiaLineup.title'),
     description: t(locale, 'home.reels.kiaLineup.body'),
     tag: adTag,
+    kind: 'auto',
+  },
+  {
+    src: '/media/projects/aurora-skin-cream-ugc.mp4',
+    poster: '/media/projects/aurora-skin-cream-ugc.jpg',
+    title: t(locale, 'home.reels.aurora.title'),
+    description: t(locale, 'home.reels.aurora.body'),
+    tag: avatarTag,
+    kind: 'beauty',
+  },
+  {
+    src: '/media/projects/jeep-creator-to-camera-ugc.mp4',
+    poster: '/media/projects/jeep-creator-to-camera-ugc.jpg',
+    title: t(locale, 'home.videoCard.title'),
+    description: t(locale, 'home.videoCard.body'),
+    tag: avatarTag,
+    kind: 'auto',
   },
   {
     src: '/media/projects/subaru-forester-camping-ugc.mp4',
@@ -114,13 +90,7 @@ const reelCards = [
     title: t(locale, 'home.reels.forester.title'),
     description: t(locale, 'home.reels.forester.body'),
     tag: avatarTag,
-  },
-  {
-    src: '/media/projects/subaru-outdoor-ugc.mp4',
-    poster: '/media/projects/subaru-outdoor-ugc.jpg',
-    title: t(locale, 'home.reels.subaru.title'),
-    description: t(locale, 'home.reels.subaru.body'),
-    tag: avatarTag,
+    kind: 'auto',
   },
   {
     src: '/media/projects/ugc-creator-camera-tap.mp4',
@@ -128,6 +98,55 @@ const reelCards = [
     title: t(locale, 'home.reels.tap.title'),
     description: t(locale, 'home.reels.tap.body'),
     tag: avatarTag,
+    kind: 'face',
+  },
+  {
+    src: '/media/projects/subaru-outdoor-ugc.mp4',
+    poster: '/media/projects/subaru-outdoor-ugc.jpg',
+    title: t(locale, 'home.reels.subaru.title'),
+    description: t(locale, 'home.reels.subaru.body'),
+    tag: avatarTag,
+    kind: 'auto',
+  },
+  {
+    src: '/media/projects/cadillac-year-end-deals.mp4',
+    poster: '/media/projects/cadillac-year-end-deals.jpg',
+    title: t(locale, 'projects.piece.deals'),
+    description: t(locale, 'home.carousel.dealsBody'),
+    tag: adTag,
+    kind: 'auto',
+  },
+  {
+    src: '/media/projects/aurora-skin-cream-macro.mp4',
+    poster: '/media/projects/aurora-skin-cream-macro.jpg',
+    title: t(locale, 'home.reels.auroraMacro.title'),
+    description: t(locale, 'home.reels.auroraMacro.body'),
+    tag: adTag,
+    kind: 'beauty',
+  },
+  {
+    src: '/media/projects/kia-dealership-pov-ugc.mp4',
+    poster: '/media/projects/kia-dealership-pov-ugc.jpg',
+    title: t(locale, 'home.reels.kiaPov.title'),
+    description: t(locale, 'home.reels.kiaPov.body'),
+    tag: avatarTag,
+    kind: 'auto',
+  },
+  {
+    src: '/media/projects/cadillac-driver-seat-ugc.mp4',
+    poster: '/media/projects/cadillac-driver-seat-ugc.jpg',
+    title: t(locale, 'projects.piece.driver'),
+    description: t(locale, 'home.carousel.driverBody'),
+    tag: avatarTag,
+    kind: 'auto',
+  },
+  {
+    src: '/media/projects/ugc-creator-kiss-to-camera.mp4',
+    poster: '/media/projects/ugc-creator-kiss-to-camera.jpg',
+    title: t(locale, 'home.reels.kiss.title'),
+    description: t(locale, 'home.reels.kiss.body'),
+    tag: avatarTag,
+    kind: 'face',
   },
 ];
 ---
@@ -156,13 +175,17 @@ const reelCards = [
     <SiteHeader locale={locale} pageKey={pageKey} fixed />
 
     <div class="relative z-20 min-h-svh" data-journey-stage>
-      <canvas
-        class="pointer-events-none absolute inset-0 z-0 h-full w-full"
-        data-scrub-frames
-        data-frame-base="/media/scrub/frame-"
-        data-frame-count={frameCount}
+      <video
+        class="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover"
+        data-hero-film
+        src="/media/hero-loop.mp4"
+        poster="/media/hero-loop.jpg"
+        muted
+        loop
+        playsinline
+        autoplay
         aria-hidden="true"
-      />
+      ></video>
       <div class="video-shade bg-video-shade" aria-hidden="true"></div>
       <div
         class="drift-veil bg-dive-veil"
@@ -181,6 +204,7 @@ const reelCards = [
         data-journey-beat
         data-from="0"
         data-to="0.22"
+        data-phone-reveal
       >
         <p class="label text-ice-blue">{t(locale, 'home.eyebrow')}</p>
         <h1 class="mt-4 max-w-3xl font-serif text-4xl leading-tight text-white md:text-5xl lg:text-6xl">
@@ -215,6 +239,7 @@ const reelCards = [
           data-from="0.2"
           data-to="0.62"
           data-span="0.12"
+          data-phone-reveal
         >
           <VideoCarousel
             items={reelCards}
@@ -232,13 +257,15 @@ const reelCards = [
         class="z-20 flex items-center justify-center px-4 pt-28 pb-8 md:px-10"
         data-journey-row
       >
-        <div class="flex w-full flex-col items-stretch justify-center gap-3 md:w-auto md:flex-row md:gap-5">
-          {cards.map((card) => (
+        <div class="flex w-full flex-col items-center justify-center gap-3 md:w-auto md:flex-row md:items-stretch md:gap-5">
+          {cards.map((card, index) => (
             <article
               class="glass sheen journey-piece flex flex-col gap-3 p-4 md:p-5"
               data-journey-piece
+              data-phone-reveal
               data-sheen
               data-from={card.from}
+              style={index > 0 ? `--phone-reveal-delay: ${index * 120}ms` : undefined}
             >
               <p class="label text-ice-blue">{t(locale, card.eyebrow)}</p>
               <h2 class="font-serif text-2xl leading-tight text-white md:text-3xl">

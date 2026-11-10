@@ -11,23 +11,13 @@ async function openHome(page: import('@playwright/test').Page, path = '/') {
     .toBe('0');
 }
 
-test('home scrubs film frames with scroll', async ({ page }) => {
+test('home plays the background film on its own', async ({ page }) => {
   await openHome(page);
-  const frames = page.locator('[data-scrub-frames]');
-  await expect(frames).toHaveCount(1);
-
-  await page.evaluate(() => {
-    const stage = document.querySelector('[data-snow-dive]') as HTMLElement;
-    window.scrollTo(0, (stage.offsetHeight - window.innerHeight) * 0.55);
-  });
+  const film = page.locator('[data-hero-film]');
+  await expect(film).toHaveCount(1);
   await expect
-    .poll(async () => Number(await frames.getAttribute('data-frame')), { timeout: 8_000 })
-    .toBeGreaterThan(20);
-
-  await page.evaluate(() => window.scrollTo(0, 0));
-  await expect
-    .poll(async () => Number(await frames.getAttribute('data-frame')), { timeout: 8_000 })
-    .toBeLessThan(3);
+    .poll(async () => film.evaluate((node) => (node as HTMLVideoElement).currentTime), { timeout: 8_000 })
+    .toBeGreaterThan(0.2);
 });
 
 test('home is the scroll scene only', async ({ page }) => {

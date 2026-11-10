@@ -3,7 +3,8 @@
  * Row of VideoCards on a scroll-snap track. The centred card is full size and the only one
  * playing; the side cards shrink and dim (src/motion/carousel.ts). Two floating glass buttons,
  * swipe, trackpad, mouse drag, arrow keys, or a click on a side card move it. By default it loops:
- * three copies of the items in a shuffled order, so there are always films on both sides.
+ * three copies of the items, so there are always films on both sides. Each visit shuffles
+ * within a subject and then spaces cars, beauty and faces apart.
  */
 import VideoCard from '@/components/home/VideoCard.astro';
 
@@ -13,6 +14,8 @@ interface Item {
   title: string;
   description: string;
   tag?: string;
+  /** Subject used to keep the same service from running back to back. */
+  kind: string;
 }
 
 interface Props {
@@ -42,7 +45,7 @@ const {
   class: className,
 } = Astro.props;
 
-// Three copies for the loop. The order is shuffled on the client, the same way in each copy.
+// Three copies for the loop. The client reorders every copy the same way.
 const copies = loop && items.length > 1 ? [0, 1, 2] : [0];
 
 ---
@@ -58,7 +61,13 @@ const copies = loop && items.length > 1 ? [0, 1, 2] : [0];
     {
       copies.map((copy) =>
         items.map((item, index) => (
-          <div class="video-carousel__slide" data-carousel-slide data-copy={copy} data-item={index}>
+          <div
+            class="video-carousel__slide"
+            data-carousel-slide
+            data-copy={copy}
+            data-item={index}
+            data-kind={item.kind}
+          >
             <VideoCard {...item} {soundOnLabel} {soundOffLabel} {pauseLabel} {playLabel} managed />
           </div>
         )),
@@ -204,6 +213,64 @@ const copies = loop && items.length > 1 ? [0, 1, 2] : [0];
   import { initCenterCarousel } from '../../motion/carousel';
   import { onPageReady } from '../../motion/ready';
 
+  /** Shuffle within each subject, lay the biggest group on an even stride, then fill the gaps. */
+  function mixSubjects(kinds: string[]): number[] {
+    const groups = new Map<string, number[]>();
+    kinds.forEach((kind, index) => {
+      const list = groups.get(kind);
+      if (list) list.push(index);
+      else groups.set(kind, [index]);
+    });
+    for (const list of groups.values()) {
+      for (let i = list.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const swap = list[i] as number;
+        list[i] = list[j] as number;
+        list[j] = swap;
+      }
+    }
+    const total = kinds.length;
+    const slots: Array<number | undefined> = Array.from({ length: total });
+    const buckets = [...groups.values()].sort((a, b) => b.length - a.length);
+    for (const list of buckets) {
+      const step = total / list.length;
+      let bestOffset = 0;
+      let bestScore = -1;
+      const attempts = Math.max(1, Math.round(step));
+      for (let offset = 0; offset < attempts; offset += 1) {
+        const taken = new Set<number>();
+        for (let i = 0; i < list.length; i += 1) {
+          let pos = Math.floor(offset + i * step) % total;
+          let guard = 0;
+          while ((slots[pos] !== undefined || taken.has(pos)) && guard < total) {
+            pos = (pos + 1) % total;
+            guard += 1;
+          }
+          taken.add(pos);
+        }
+        if (taken.size > bestScore) {
+          bestScore = taken.size;
+          bestOffset = offset;
+        }
+      }
+      for (let i = 0; i < list.length; i += 1) {
+        let pos = Math.floor(bestOffset + i * step) % total;
+        let guard = 0;
+        while (slots[pos] !== undefined && guard < total) {
+          pos = (pos + 1) % total;
+          guard += 1;
+        }
+        slots[pos] = list[i];
+      }
+    }
+    const placed = slots.map((index) => index ?? 0);
+    const seamOk = (shift: number) =>
+      kinds[placed[shift] as number] !== kinds[placed[(shift + total - 1) % total] as number];
+    const shifts = placed.map((_, shift) => shift).filter(seamOk);
+    const shift = shifts.length > 0 ? (shifts[Math.floor(Math.random() * shifts.length)] as number) : 0;
+    return placed.slice(shift).concat(placed.slice(0, shift));
+  }
+
   function bootCarousels() {
     document.querySelectorAll<HTMLElement>('[data-video-carousel]').forEach((root) => {
       if (root.dataset.bound) return;
@@ -215,15 +282,16 @@ const copies = loop && items.length > 1 ? [0, 1, 2] : [0];
       // A scrollable region must be reachable by keyboard; arrow keys move it once focused.
       track.tabIndex = 0;
 
-      // Shuffle once per visit: one random order, applied to every copy so twins stay aligned.
+      // One order per visit, applied to every copy so twins stay aligned.
+      // Shuffle inside each subject, then space subjects so cars, beauty and faces alternate.
       const all = Array.from(track.querySelectorAll<HTMLElement>('[data-carousel-slide]'));
       const count = all.filter((slide) => slide.dataset.copy === '0').length;
       const copies = all.length / count;
-      const order = Array.from({ length: count }, (_, i) => i);
-      for (let i = order.length - 1; i > 0; i -= 1) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [order[i], order[j]] = [order[j] as number, order[i] as number];
-      }
+      const kinds = Array.from({ length: count }, (_, index) => {
+        const slide = all.find((n) => n.dataset.copy === '0' && n.dataset.item === String(index));
+        return slide?.dataset.kind ?? 'auto';
+      });
+      const order = mixSubjects(kinds);
       for (let copy = 0; copy < copies; copy += 1) {
         for (const item of order) {
           const slide = all.find((n) => n.dataset.copy === String(copy) && n.dataset.item === String(item));

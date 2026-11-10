@@ -2,7 +2,7 @@
 /**
  * Portrait video inside a thick frosted-glass bezel. The lower part of the film sits under a
  * progressive blur with the title, the description, a tag, a play/pause button and a pill that
- * turns the sound on.
+ * turns the sound on. One choice covers every card: the next film keeps it.
  * Lazy: the file only loads and plays once the card scrolls into view. Reduced motion never
  * autoplays; the pill then starts the film with sound.
  */
@@ -259,6 +259,9 @@ const {
   import { prefersReducedMotion } from '../../motion/reduced';
   import { onPageReady } from '../../motion/ready';
 
+  // Starts muted so autoplay is allowed. The viewer's choice then applies to every card.
+  let soundOn = false;
+
   function bootVideoCards() {
     document.querySelectorAll<HTMLElement>('[data-video-card]').forEach((card) => {
       if (card.dataset.bound) return;
@@ -285,8 +288,9 @@ const {
       };
 
       const render = () => {
-        const on = !film.muted && !film.paused;
-        sound.setAttribute('aria-pressed', String(on));
+        document.querySelectorAll('[data-video-card-sound]').forEach((button) => {
+          button.setAttribute('aria-pressed', String(soundOn));
+        });
         if (play) {
           const paused = film.paused;
           play.setAttribute('aria-pressed', String(paused));
@@ -304,6 +308,7 @@ const {
           if (managed && card.closest('[data-carousel-slide][data-active]')) active = true;
           if (visible && active) {
             load();
+            film.muted = !soundOn;
             if (!userPaused) void film.play().catch(() => undefined);
           } else {
             film.pause();
@@ -315,8 +320,9 @@ const {
 
       sound.addEventListener('click', () => {
         load();
-        film.muted = !film.muted;
-        if (!film.muted && film.paused) {
+        soundOn = !soundOn;
+        film.muted = !soundOn;
+        if (soundOn && film.paused) {
           userPaused = false;
           void film.play().catch(() => undefined);
         }
@@ -327,6 +333,7 @@ const {
         load();
         if (film.paused) {
           userPaused = false;
+          film.muted = !soundOn;
           void film.play().catch(() => undefined);
         } else {
           userPaused = true;
@@ -338,6 +345,7 @@ const {
       card.addEventListener('video-card:active', () => {
         active = true;
         load();
+        film.muted = !soundOn;
         if (visible && !userPaused) void film.play().catch(() => undefined);
         render();
       });
@@ -345,6 +353,7 @@ const {
       card.addEventListener('video-card:inactive', () => {
         active = false;
         film.pause();
+        // Silence this copy. The shared choice stays for the card that comes next.
         film.muted = true;
         render();
       });

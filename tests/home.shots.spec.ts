@@ -41,8 +41,10 @@ test('reduced motion flattens the journey', async ({ page }) => {
     .evaluateAll((nodes) => nodes.filter((n) => getComputedStyle(n).opacity !== '1').length);
   expect(hidden).toBe(0);
 
-  // The film is a single still on the canvas when motion is reduced.
-  await expect(page.locator('[data-scrub-frames]')).toHaveCount(1);
+  // Reduced motion keeps the film paused on its poster.
+  const film = page.locator('[data-hero-film]');
+  await expect(film).toHaveCount(1);
+  await expect(film).toHaveJSProperty('paused', true);
 });
 
 test('home keeps falling snow over the film', async ({ page }) => {

@@ -239,3 +239,32 @@
 - Update (2026-11-07, ADR-028): No ice-blue border; the card keeps the glass border. The layout is unchanged (pill fields, name and email side by side, brand, needs, a two-line brief box, consent, full-width send). Labels now float: at rest they sit in the field like placeholders; on focus or once filled they rise and shrink (transform only) until their middle sits on the top border. The border is drawn by an `aria-hidden` fieldset whose legend repeats the label at the floated size and opens a real gap in the line, so the cut works over translucent glass. The brief's example placeholder is gone, since the label takes its place.
 - Update (2026-11-07, ADR-028): `html.quote-open { overflow: hidden }` hid the scrollbar and shifted the page sideways on open. It now applies only to coarse pointers. On desktop the scrollbar stays and a non-passive wheel listener blocks scrolling outside the panel (on top of the Lenis pause, and it also covers reduced motion where Lenis is off). The panel gets more top padding (3.25rem, 3.75rem from `md`) so the close button clears the first fields.
 
+## ADR-031 — Reel order spaces subjects, and two new films join it
+
+- Date: 2026-11-09
+- Context: Two new films arrived in `public/media`: a 15 s selfie kiss (`LOVE.mp4`, 720×1280, 11.2 MB) and a 15 s square Aurora cream macro (960×960, 8.5 MB). A pure shuffle of the reel put several car films in a row.
+- Decision: Encode both like ADR-028 (H.264 High, CRF 26, AAC 128 kbps, `+faststart`). The kiss stays 720×1280 as `ugc-creator-kiss-to-camera`. The macro stays square at 720×720 as `aurora-skin-cream-macro`; the portrait card crops it with the existing `object-fit: cover`. Masters are deleted. Each card has a `kind` (`auto`, `beauty`, `face`). Each visit still shuffles within a kind, then places the largest kind on an even stride and fills the gaps, and rotates so the loop seam is two different kinds. The kiss carries the AI avatar tag. The macro carries the ad tag.
+- Consequences: The two files are about 5 MB instead of about 20 MB. With eight car films and four others, two cars in a row still happens; three of the same subject do not, while another subject remains.
+
+## ADR-032 — The home film plays, it does not scrub
+
+- Date: 2026-11-09
+- Context: The pinned home drew 380 WebP stills and stepped them with scroll. The client wants that background to play as a normal video. `hero-loop.mp4` (1080p, about 25 s, no audio, 25 MB) and its poster were deleted on 2026-11-05 and were still in git. `hero-snowfield.mp4` is a different film and stays unwired.
+- Decision: Restore `hero-loop.mp4` and `hero-loop.jpg`. The stage background is a muted, looping, `playsinline` video with `object-cover`. Scroll still drives the headline, the reel and the service cards. The loader closes on `canplay`, or after 4 s. Reduced motion pauses the video on the poster. The scrub stills stay in `public/media/scrub/` and are not requested.
+- Consequences: The first view downloads one 25 MB film instead of streaming stills. A lighter encode would need a new pass; this file is the one already cut from those stills.
+
+## ADR-033 — No pinned journey below 768px
+
+- Date: 2026-11-09
+- Context: The pinned scroll feels right with a mouse and uncomfortable on a phone: a long sticky screen, pieces fading in and out, and snow running the whole time. Lenis was already off for a coarse pointer.
+- Decision: Below 768px the stage is not pinned. The headline, reel and service cards stack in document order and stay visible. The background film is `position: fixed`. Snow and the scroll scene do not start. Crossing the breakpoint rebuilds the scene. From `md` up, the 680vh pin is unchanged.
+- Consequences: A phone scrolls a normal page. The 440vh phone pin is gone.
+- Update (2026-11-09): Below 768px the headline, the reel and the service cards fade and rise when they enter the screen (`data-phone-reveal`, the same 24px / `dur-reveal` as `data-reveal`). The service cards are centered in the column. From `md` up neither rule applies.
+
+## ADR-034 — One sound choice for the whole reel
+
+- Date: 2026-11-09
+- Context: Each card remembered its own mute. Turning sound on, then moving to the next film, started that film muted again.
+- Decision: The reel starts muted. The sound pill writes one shared choice. The card that becomes centred plays with that choice; leaving a card only silences that copy. Pause still belongs to the card being watched.
+- Consequences: Sound on, then next, keeps the audio. Mute, then next, stays quiet. A browser that blocks unmuted playback still shows the film; the choice remains for the next gesture.
+

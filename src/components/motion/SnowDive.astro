@@ -5,13 +5,7 @@
   import { onPageReady } from '../../motion/ready';
   import { pointer } from '../../motion/pointer';
   import { prefersReducedMotion } from '../../motion/reduced';
-
-  /** Frames the home loader waits for before the page opens (about 1.5 MB). */
-  const FRAME_GATE = 10;
-  /** Background passes after the gate, coarse to fine. */
-  const FRAME_STRIDES = [8, 4, 2, 1];
-  /** Parallel frame requests, so the sequence never starves the rest of the page. */
-  const FRAME_CONCURRENCY = 4;
+  import { initPhoneReveal } from '../../motion/reveal';
 
   let diveTrigger: ScrollTrigger | undefined;
   let diveFrame = 0;
@@ -30,12 +24,25 @@
     stopSmoothScroll();
   }
 
+  /** Same break as the pinned stage: below `md` the journey is a normal page. */
+  function isPhoneLayout(): boolean {
+    return window.matchMedia('(max-width: 767px)').matches;
+  }
+
+  function clearSceneStyles(nodes: HTMLElement[]) {
+    for (const node of nodes) {
+      node.style.removeProperty('opacity');
+      node.style.removeProperty('visibility');
+      node.style.removeProperty('pointer-events');
+      node.style.removeProperty('transform');
+    }
+  }
+
   function bootDive() {
     teardownDive();
     const root = document.querySelector<HTMLElement>('[data-snow-dive]');
     if (!root) return;
     root.dataset.diveBound = 'true';
-    startSmoothScroll();
 
     const canvas = root.querySelector<HTMLCanvasElement>('[data-dive-snow]');
     const layers = [...root.querySelectorAll<HTMLElement>('[data-drift-layer]')];
@@ -44,9 +51,18 @@
     const pieces = [...root.querySelectorAll<HTMLElement>('[data-journey-piece]')];
     const mouse = pointer();
     let progress = 0;
-    const scrubCanvas = root.querySelector<HTMLCanvasElement>('[data-scrub-frames]');
-    const frameScrub = bindScrubFrames(scrubCanvas, () => progress);
-    stopFrames = frameScrub.stop;
+    const hero = root.querySelector<HTMLVideoElement>('[data-hero-film]');
+    stopFrames = bindHeroFilm(hero);
+    const phone = isPhoneLayout();
+    if (phone) {
+      clearSceneStyles([...beats, ...pieces]);
+      for (const piece of pieces) {
+        if (piece.dataset.enter === 'stagger') {
+          piece.dispatchEvent(new CustomEvent('journey:enter', { detail: 1 }));
+        }
+      }
+      initPhoneReveal();
+    }
     // `dive` tracks scroll *speed*, not position: moving makes the snow come at the camera,
     // stopping lets it settle back into a calm fall. It decays on its own in the frame loop.
     let dive = 0;
@@ -64,12 +80,14 @@
       if (veil) veil.style.opacity = String(Math.min(1, progress * 1.25));
     };
 
+    if (!phone) startSmoothScroll();
+
     runScrollScene(() => {
+      if (phone) return;
       const apply = (self: ScrollTrigger) => {
         progress = self.progress;
         diveTarget = Math.min(1, Math.abs(self.getVelocity()) / 2400);
         place();
-        frameScrub.scrub();
         for (const beat of beats) {
           const from = Number(beat.dataset.from);
           const to = Number(beat.dataset.to);
@@ -136,20 +154,23 @@
       diveFrame = window.requestAnimationFrame(frameLoop);
     });
 
-    if (!prefersReducedMotion() && canvas) {
+    if (!prefersReducedMotion() && !phone && canvas) {
       // `data-snow-direction="dive"` on the canvas is the previous head-on field.
       const direction = canvas.dataset.snowDirection === 'dive' ? 'dive' : 'fall';
       stopSnow =
         direction === 'dive' ? mountSnow(canvas, () => dive, mouse) : mountFallingSnow(canvas, mouse);
     }
 
-    window.requestAnimationFrame(() => {
-      ScrollTrigger.refresh();
-    });
+    if (!phone) {
+      window.requestAnimationFrame(() => {
+        ScrollTrigger.refresh();
+      });
+    }
   }
 
   document.addEventListener('astro:before-swap', teardownDive);
   onPageReady(bootDive);
+  window.matchMedia('(max-width: 767px)').addEventListener('change', bootDive);
 
   function pieceOpacity(progress: number, from: number, to: number, fade = 0.1): number {
     if (progress < from) return 0;
@@ -168,147 +189,42 @@
   }
 
   /**
-   * Scroll-scrubbed stills for the home film. Each frame is a full 1080p image, so the film
-   * advances with scroll position instead of playing on its own.
+   * The home film plays on its own. The loader closes once the first frames can play,
+   * or after a short wait so a slow connection never traps the page.
    */
-  function bindScrubFrames(canvas: HTMLCanvasElement | null, readProgress: () => number) {
-    if (!canvas) return { scrub: () => {}, stop: () => {} };
-    const context = canvas.getContext('2d');
-    if (!context) return { scrub: () => {}, stop: () => {} };
-    const ctx = context;
-
-    const listed = Number(canvas.dataset.frameCount);
-    const count = Number.isFinite(listed) && listed > 0 ? Math.floor(listed) : 0;
-    if (!count) return { scrub: () => {}, stop: () => {} };
-    const total = prefersReducedMotion() ? 1 : count;
-    const base = canvas.dataset.frameBase || '/media/scrub/frame-';
-    const images: (HTMLImageElement | undefined)[] = new Array(total);
-    const loaded: boolean[] = new Array(total).fill(false);
-    // Frames the loader waits for. The rest stream in behind the page.
-    const gate = Math.min(total, FRAME_GATE);
-    let shown = -1;
-    let target = 0;
-    let gateReady = 0;
-    let disposed = false;
-
+  function bindHeroFilm(video: HTMLVideoElement | null) {
     const loader = document.querySelector<HTMLElement>('[data-loader]');
     const bar = document.querySelector<HTMLElement>('[data-loader-bar]');
-
-    const finishLoader = () => {
+    const finish = () => {
+      if (bar) bar.style.transform = 'scaleX(1)';
       loader?.classList.add('is-done');
       loader?.setAttribute('aria-hidden', 'true');
     };
-
-    /** Closest frame that has already arrived, so a fast scroll never lands on a blank canvas. */
-    const nearestLoaded = (index: number) => {
-      if (loaded[index]) return index;
-      for (let step = 1; step < total; step += 1) {
-        if (index - step >= 0 && loaded[index - step]) return index - step;
-        if (index + step < total && loaded[index + step]) return index + step;
-      }
-      return -1;
-    };
-
-    const paint = (index: number, force = false) => {
-      target = index;
-      canvas.dataset.frame = String(index);
-      const source = nearestLoaded(index);
-      if (source < 0 || (!force && source === shown)) return;
-      const img = images[source];
-      if (!img || img.naturalWidth === 0) return;
-      const { width, height } = canvas.getBoundingClientRect();
-      const imageRatio = img.naturalWidth / img.naturalHeight;
-      const viewRatio = width / height;
-      let dw = width;
-      let dh = height;
-      let dx = 0;
-      let dy = 0;
-      if (imageRatio > viewRatio) {
-        dw = height * imageRatio;
-        dx = (width - dw) / 2;
-      } else {
-        dh = width / imageRatio;
-        dy = (height - dh) / 2;
-      }
-      ctx.clearRect(0, 0, width, height);
-      ctx.drawImage(img, dx, dy, dw, dh);
-      shown = source;
-    };
-
-    const resize = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      const { width, height } = canvas.getBoundingClientRect();
-      canvas.width = Math.max(1, Math.floor(width * dpr));
-      canvas.height = Math.max(1, Math.floor(height * dpr));
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      paint(target, true);
-    };
-
-    const noteSettled = (index: number, ok: boolean) => {
-      if (disposed) return;
-      loaded[index] = ok;
-      if (ok && (shown < 0 || Math.abs(index - target) < Math.abs(shown - target))) paint(target);
-      if (index < gate) {
-        gateReady += 1;
-        if (bar) bar.style.transform = `scaleX(${Math.min(1, gateReady / gate)})`;
-        if (gateReady >= gate) finishLoader();
-      }
-    };
-
-    /** Coarse to fine: every 8th frame first, then 4th, 2nd, and the rest. Any scroll position
-     * always has a close neighbour on screen while the finer passes fill in. */
-    const order: number[] = [];
-    const queued = new Set<number>();
-    const enqueue = (index: number) => {
-      if (index >= total || queued.has(index)) return;
-      queued.add(index);
-      order.push(index);
-    };
-    for (let index = 0; index < gate; index += 1) enqueue(index);
-    for (const stride of FRAME_STRIDES) {
-      for (let index = 0; index < total; index += stride) enqueue(index);
+    if (!video) {
+      finish();
+      return () => {};
     }
-
-    let cursor = 0;
-    let inFlight = 0;
-    const pump = () => {
-      while (!disposed && inFlight < FRAME_CONCURRENCY && cursor < order.length) {
-        // Images started before `load` hold the page's load event open.
-        // Only the gate frames may do that; the streamed rest waits until the page is done.
-        if (cursor >= gate && document.readyState !== 'complete') {
-          window.addEventListener('load', pump, { once: true });
-          return;
-        }
-        const index = order[cursor];
-        cursor += 1;
-        inFlight += 1;
-        const img = new Image();
-        img.decoding = 'async';
-        images[index] = img;
-        const settle = (ok: boolean) => {
-          inFlight -= 1;
-          noteSettled(index, ok);
-          pump();
-        };
-        img.onload = () => settle(true);
-        img.onerror = () => settle(false);
-        img.src = `${base}${String(index + 1).padStart(3, '0')}.webp`;
-      }
+    if (prefersReducedMotion()) {
+      video.pause();
+      video.autoplay = false;
+      finish();
+      return () => {};
+    }
+    let closed = false;
+    const close = () => {
+      if (closed) return;
+      closed = true;
+      finish();
     };
-
-    resize();
-    window.addEventListener('resize', resize, { passive: true });
-    pump();
-
-    return {
-      scrub: () => {
-        const index = Math.min(total - 1, Math.max(0, Math.round(readProgress() * (total - 1))));
-        if (index !== target) paint(index);
-      },
-      stop: () => {
-        disposed = true;
-        window.removeEventListener('resize', resize);
-      },
+    if (video.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA) close();
+    else video.addEventListener('canplay', close, { once: true });
+    const timer = window.setTimeout(close, 4000);
+    const play = video.play();
+    play?.catch(() => close());
+    return () => {
+      window.clearTimeout(timer);
+      video.removeEventListener('canplay', close);
+      video.pause();
     };
   }
 

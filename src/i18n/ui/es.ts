@@ -145,4 +145,8 @@ export const es = {
   'home.reels.subaru.body': 'Un creador habla a cámara junto al coche en una carretera tranquila.',
   'home.reels.tap.title': 'Un toque a la cámara',
   'home.reels.tap.body': 'Una creadora toca el objetivo para captar la atención desde el primer segundo.',
+  'home.reels.kiss.title': 'Un beso a cámara',
+  'home.reels.kiss.body': 'Una creadora se acerca y besa el objetivo, como gancho de un selfie.',
+  'home.reels.auroraMacro.title': 'Crema Aurora, en macro',
+  'home.reels.auroraMacro.body': 'Un dedo rompe la superficie de la crema rosa. El producto lleva el anuncio.',
 } as const satisfies Record<UiKey, string>;

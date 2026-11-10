@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| URLs | `/` · `/es/` (scroll-scrubbed frame film). The old V1 loop and `/v2` were removed on 2026-11-05. |
+| URLs | `/` · `/es/` (looping `hero-loop.mp4` behind the pinned scroll). The frame scrub was the background until 2026-11-09. |
 | Goal | Impact, a summary of everything, a quote request. |
 | Rhythm | Twelve blocks alternating dark (cinema) and light (snow). Every block pushes toward the quote. |
 | Roadmap | Step 4. Blocks 1–2 exist as `HomeEntry` + `SnowDive`; 3–12 are still to do. |

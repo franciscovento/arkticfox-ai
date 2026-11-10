@@ -4,7 +4,17 @@ let observer: IntersectionObserver | null = null;
 
 /** Bind fade-and-rise reveals. Safe to call once per page. */
 export function initReveal(): void {
-  const nodes = document.querySelectorAll<HTMLElement>('[data-reveal]');
+  bindReveal('[data-reveal]');
+}
+
+/** Same fade, only for the stacked phone page. No effect from `md` up. */
+export function initPhoneReveal(): void {
+  if (!window.matchMedia('(max-width: 767px)').matches) return;
+  bindReveal('[data-phone-reveal]');
+}
+
+function bindReveal(selector: string): void {
+  const nodes = document.querySelectorAll<HTMLElement>(selector);
   if (nodes.length === 0) return;
 
   if (prefersReducedMotion()) {
